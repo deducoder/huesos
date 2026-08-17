@@ -22,14 +22,9 @@ export const BONE_REGIONS = [
 
 export type BoneRegion = (typeof BONE_REGIONS)[number]
 
-export interface Bone {
+interface BoneCore {
   /** Slug estable en inglés. Sobrevive a un cambio de nomenclatura del modelo. */
   id: string
-  /**
-   * Nombre de la malla en `skeleton.glb`, que ancla la entrada a su geometría.
-   * `null` solo para una ausencia declarada, que entonces exige `missingReason`.
-   */
-  meshName: string | null
   side: Side
   /** Nombre en español. */
   es: string
@@ -40,9 +35,29 @@ export interface Bone {
   region: BoneRegion
   /** Identificador en la Foundational Model of Anatomy, cuando se conoce. */
   fma?: string
-  /** Por qué esta entrada no tiene geometría. Solo legal si `meshName` es `null`. */
-  missingReason?: string
 }
+
+/** Un hueso con geometría en `skeleton.glb`. */
+interface MappedBone extends BoneCore {
+  /** Nombre de la malla que ancla la entrada a su geometría. */
+  meshName: string
+  missingReason?: never
+}
+
+/** Un hueso que el modelo no incluye, y que por eso debe explicarse. */
+interface UnmappedBone extends BoneCore {
+  meshName: null
+  /** Por qué esta entrada no tiene geometría. */
+  missingReason: string
+}
+
+/**
+ * Una entrada del catálogo. La unión hace **imposible** el estado incoherente:
+ * no se puede escribir una razón de ausencia en un hueso que sí tiene malla, ni
+ * omitirla en uno que no la tiene. Sin la unión, esa invariante viviría solo en
+ * el test.
+ */
+export type Bone = MappedBone | UnmappedBone
 
 /** Las regiones cuyos huesos son siempre impares. */
 const UNPAIRED_REGIONS: ReadonlySet<BoneRegion> = new Set<BoneRegion>(['hyoid'])
