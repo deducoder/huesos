@@ -2,7 +2,7 @@
 type: adr
 id: ADR-009
 title: "El camino accesible completo se traslada a Fichas → ficha; Explorar deja de convivir con la lista"
-status: accepted
+status: superseded by ADR-010
 date: 2026-08-17
 epic: e7
 supersedes: ADR-002 (parcial)

@@ -172,3 +172,26 @@ test('el panel de identidad usa el mínimo táctil y la tipografía display', as
     .evaluate((h) => getComputedStyle(h).fontFamily)
   expect(familia, 'familia del título del hueso').toContain('Fredoka')
 })
+
+test('el lienzo de Explorar ocupa toda la pantalla disponible', async ({ page }) => {
+  await page.goto('/')
+  await expect(page.getByRole('button', { name: 'fémur derecho', exact: true })).toBeVisible()
+  const lienzo = page.locator('canvas').first()
+  await expect
+    .poll(async () => (await lienzo.boundingBox())?.height ?? 0, {
+      timeout: 15_000,
+      intervals: [200],
+    })
+    .toBeGreaterThan(250)
+
+  // El alto disponible bajo la cabecera y las pestañas — no el viewport
+  // entero, que también incluye ese encabezado.
+  const altoDisponible = await page.evaluate(() => {
+    const nav = document.querySelector('nav[aria-label="Modo de estudio"]')
+    return nav ? window.innerHeight - nav.getBoundingClientRect().bottom : 0
+  })
+  const caja = await lienzo.boundingBox()
+  expect(caja?.height ?? 0, 'alto del lienzo en Explorar').toBeGreaterThanOrEqual(
+    altoDisponible - 2,
+  )
+})
