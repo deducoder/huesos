@@ -3,3 +3,4 @@
 - [La disciplina de commits se invierte con el volumen](commit-discipline-inverts-with-volume.md) — se agrupa justo donde más falta hacen los puntos de retroceso.
 - [El activo 3D es irregular por naturaleza](model-mesh-names-are-irregular.md) — ningún nombre de malla se puede derivar por regla; hay que leer la lista real.
 - [Lo intestable va al final, sobre algo que funcione](untestable-layers-go-last.md) — ordenar el epic convierte un riesgo en un extra.
+- [Probar el dato al otro lado de la librería](test-the-data-after-the-library.md) — b2.1: 80 tests en verde y solo 3 huesos seleccionables.
