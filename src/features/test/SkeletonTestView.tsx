@@ -13,7 +13,12 @@ export function SkeletonTestView() {
     <TestQuestion
       bones={catalog}
       renderScene={(boneId) => (
-        <SkeletonScene bones={catalog} selected={boneId} onPick={() => {}} />
+        <SkeletonScene
+          bones={catalog}
+          selected={boneId}
+          onPick={() => {}}
+          accessibleHint="Un hueso está señalado en el esqueleto. Escribí su nombre en el campo de respuesta."
+        />
       )}
     />
   )
