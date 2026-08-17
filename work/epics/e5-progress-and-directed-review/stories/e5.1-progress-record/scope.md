@@ -40,11 +40,15 @@ Then el resultado es equivalente al original
 
 | Input | Action | Expected output |
 |-------|--------|-----------------|
-| registro vacío | consultar `"vomer"` | `{ aciertos: 0, fallos: 0 }` |
-| registro vacío | registrar fallo en `"frontal"` | `{ frontal: { aciertos: 0, fallos: 1 } }` |
-| `{ frontal: { aciertos: 0, fallos: 1 } }` | registrar fallo en `"frontal"` | `{ frontal: { aciertos: 0, fallos: 2 } }` |
-| `{ frontal: { aciertos: 0, fallos: 2 } }` | registrar acierto en `"frontal"` | `{ frontal: { aciertos: 1, fallos: 2 } }` |
-| `{ frontal: { aciertos: 1, fallos: 2 } }` | registrar acierto en `"sacrum"` | `{ frontal: {...}, sacrum: { aciertos: 1, fallos: 0 } }` — el resto intacto |
+| registro vacío | consultar `"vomer"` | `{ correct: 0, incorrect: 0 }` |
+| registro vacío | registrar fallo en `"frontal"` | `{ frontal: { correct: 0, incorrect: 1 } }` |
+| `{ frontal: { correct: 0, incorrect: 1 } }` | registrar fallo en `"frontal"` | `{ frontal: { correct: 0, incorrect: 2 } }` |
+| `{ frontal: { correct: 0, incorrect: 2 } }` | registrar acierto en `"frontal"` | `{ frontal: { correct: 1, incorrect: 2 } }` |
+| `{ frontal: { correct: 1, incorrect: 2 } }` | registrar acierto en `"sacrum"` | `{ frontal: {...}, sacrum: { correct: 1, incorrect: 0 } }` — el resto intacto |
+
+Los campos van en inglés como el resto de la superficie exportada del proyecto
+(`Bone` usa `id`, `side`, `meshName`); la prosa de los criterios habla de
+aciertos y fallos, que es lo mismo dicho en el idioma de trabajo.
 
 ## In scope
 
