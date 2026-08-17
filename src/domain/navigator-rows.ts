@@ -5,8 +5,22 @@ import type { Bone } from '../data/bone'
  * impar en la suya propia.
  */
 export type NavigatorRow =
-  | { kind: 'paired'; name: string; right: Bone; left: Bone }
+  | {
+      kind: 'paired'
+      name: string
+      /** Nunca `side: null` — es la condición que arma el par. */
+      right: Bone & { side: 'right' }
+      left: Bone & { side: 'left' }
+    }
   | { kind: 'single'; bone: Bone }
+
+function esLadoDerecho(bone: Bone): bone is Bone & { side: 'right' } {
+  return bone.side === 'right'
+}
+
+function esLadoIzquierdo(bone: Bone): bone is Bone & { side: 'left' } {
+  return bone.side === 'left'
+}
 
 /**
  * Agrupa huesos pares adyacentes en una sola fila.
@@ -23,12 +37,16 @@ export function toNavigatorRows(bones: readonly Bone[]): NavigatorRow[] {
     const hueso = bones[i]
     if (hueso === undefined) continue
     const siguiente = bones[i + 1]
-    const esParConsecutivo =
-      hueso.side === 'right' &&
+    // El chequeo va inline, no en una variable booleana intermedia: es lo que
+    // deja que TypeScript estreche `hueso`/`siguiente` a `side: 'right'` /
+    // `side: 'left'` dentro del bloque — una variable separada pierde el
+    // estrechamiento y obligaría a un `as` para construir la fila tipada.
+    if (
+      esLadoDerecho(hueso) &&
       siguiente !== undefined &&
-      siguiente.side === 'left' &&
+      esLadoIzquierdo(siguiente) &&
       siguiente.id === hueso.id.replace(/-right$/, '-left')
-    if (esParConsecutivo && siguiente !== undefined) {
+    ) {
       filas.push({ kind: 'paired', name: hueso.es, right: hueso, left: siguiente })
       i++
       continue

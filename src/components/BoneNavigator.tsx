@@ -110,7 +110,6 @@ export function BoneNavigator({ bones, selected, onSelect }: Props) {
                       {fila.name}
                     </span>
                     {[fila.right, fila.left].map((bone) => {
-                      if (bone.side === null) return null
                       const ladoId = `${bone.id}-lado`
                       const descriptionId =
                         bone.meshName === null ? `${bone.id}-missing` : undefined
