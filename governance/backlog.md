@@ -9,11 +9,13 @@ The epics that deliver the vision, roughly in order.
 | E3 | Ficha del hueso | Vista individual del hueso aislado, con región anatómica y datos del catálogo (RF-03) |
 | E4 | Motor de test | Modo test sobre esqueleto y sobre hueso aislado, respuesta escrita, validación tolerante y corrección explícita (RF-04 a RF-07) |
 | E5 | Progreso y repaso dirigido | Registro persistente de aciertos y fallos por hueso, y selección de preguntas que prioriza los huesos fallados (RF-09) |
-| E6 | Catálogo completo | Completar las 206 entradas región por región hasta la condición de lanzamiento, con la prueba de integridad en verde (RF-08) |
+| E6 | Condición de lanzamiento | Cerrar `RF-08`: decidir qué significa "catálogo completo" cuando el modelo 3D no dibuja siete de los 206 huesos, dejarlo escrito en el requisito y afirmarlo con una prueba |
 
 ## Nota de secuencia
 
-E6 es contenido, no software: se puede avanzar en paralelo a E2-E5 en cuanto E1
-fije el esquema del catálogo. El software queda terminado y probado con un
-catálogo parcial; el lanzamiento espera a que E6 llegue a 206. Esa espera es una
-decisión tomada a conciencia del proyecto, no un efecto secundario del plan.
+La nota original decía que E6 era contenido y no software, y que el lanzamiento
+esperaría a que el catálogo llegara a 206. **El catálogo llegó a 206 en E1**, con
+las siete entradas sin geometría declaradas como excepción explícita (ADR-001,
+punto 4). Lo que quedaba no era contenido sino una decisión: `RF-08` exigía
+geometría para esos siete y por tanto era imposible de cumplir por
+construcción. E6 la toma (ADR-006) y deja el requisito diciendo lo decidido.
