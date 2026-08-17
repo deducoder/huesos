@@ -23,3 +23,4 @@
 - [Una comprobación necesita comprobar que miró](a-check-needs-a-check-that-it-looked.md) — si el caso feliz es una lista vacía, un andamiaje roto da verde; hay que afirmar que el instrumento funciona.
 - [Los aprendizajes tienen que cambiar el plan siguiente](learnings-should-change-the-next-plan.md) — si la lección solo queda en la retrospectiva, la historia de al lado repite el error; hay que llevarla al `plan.md`.
 - [Un doble tiene que poder fallar como el original](test-doubles-must-be-able-to-fail-like-the-real-thing.md) — si reproduce la firma pero no lo observable, la suite verde habla del doble y no del componente.
+- [Las filas del backlog envejecen como los planes](backlog-rows-age-like-plans.md) — E6 describía trabajo terminado en E1 y sobrevivió cuatro épicas; medir contra el código antes de arrancar.
