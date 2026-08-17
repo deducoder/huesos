@@ -74,20 +74,24 @@ describe('la vista de exploración', () => {
     expect(screen.getByRole('status')).not.toBeEmptyDOMElement()
   })
 
-  it('pasa a la escena la malla del hueso elegido, no su identificador', async () => {
+  it('pasa a la escena el hueso elegido, no su malla', async () => {
     const user = userEvent.setup()
     render(<ExploreView />)
     await user.click(screen.getByRole('button', { name: /^fémur izquierdo$/i }))
-    // `femur-left` y `femur-right` comparten malla: el modelo solo trae el
-    // hemicuerpo derecho y el lado lo pone el catálogo.
-    expect(screen.getByTestId('escena-sustituida')).toHaveAttribute('data-malla', 'Femur.r')
+    // Corregido en b2.1: la escena recibe el `id`, no el `meshName`.
+    // `femur-left` y `femur-right` comparten malla, así que pasarle la malla la
+    // obligaría a encender los dos lados. Solo la escena sabe en qué mitad se
+    // pulsó, así que es ella quien resuelve malla + mitad → hueso.
+    expect(screen.getByTestId('escena-sustituida')).toHaveAttribute('data-hueso', 'femur-left')
   })
 
-  it('no pasa ninguna malla cuando el hueso elegido no tiene geometría', async () => {
+  it('avisa cuando el hueso elegido no tiene geometría que resaltar', async () => {
     const user = userEvent.setup()
     render(<ExploreView />)
     await user.click(screen.getByRole('button', { name: /^martillo izquierdo$/i }))
-    expect(screen.getByTestId('escena-sustituida')).toHaveAttribute('data-malla', '')
+    // La escena recibe el id igual; no encontrará malla para él, que es lo
+    // correcto, y el panel lo explica.
+    expect(screen.getByTestId('escena-sustituida')).toHaveAttribute('data-hueso', 'malleus-left')
     expect(screen.getByText(/no se puede señalar/i)).toBeInTheDocument()
   })
 

@@ -18,7 +18,14 @@ const HIGHLIGHT = new Color('#38bdf8')
 
 interface HalfProps {
   bones: readonly Bone[]
-  selectedMesh: string | null
+  /**
+   * El **hueso** seleccionado, no su malla.
+   *
+   * Una malla es dos huesos cuando el hueso es par —el modelo trae un solo
+   * hemicuerpo—, así que comparar por nombre de malla encendería los dos lados.
+   * Cada mitad resuelve qué hueso le corresponde a cada malla y compara ids.
+   */
+  selected: string | null
   half: SceneHalf
   onPick: (id: string) => void
 }
@@ -27,7 +34,7 @@ interface HalfProps {
  * Una de las dos copias del esqueleto. La original es el hemicuerpo derecho tal
  * como viene el modelo; la espejada completa el izquierdo.
  */
-function SkeletonHalf({ bones, selectedMesh, half, onPick }: HalfProps) {
+function SkeletonHalf({ bones, selected, half, onPick }: HalfProps) {
   const { scene } = useGLTF(skeletonUrl, DRACO_PATH)
   const copia = useMemo(() => scene.clone(true), [scene])
 
@@ -43,10 +50,14 @@ function SkeletonHalf({ bones, selectedMesh, half, onPick }: HalfProps) {
         malla.userData.ownMaterial = true
       }
       const propio = malla.material as MeshStandardMaterial
-      propio.emissive = malla.name === selectedMesh ? HIGHLIGHT : new Color('#000000')
-      propio.emissiveIntensity = malla.name === selectedMesh ? 0.6 : 0
+      // El nombre llega ya saneado por el cargador; `boneIdForMesh` normaliza
+      // ambos lados, y la mitad decide el lado del hueso par.
+      const esteHueso = boneIdForMesh(bones, malla.name, half)
+      const resaltado = esteHueso !== null && esteHueso === selected
+      propio.emissive = resaltado ? HIGHLIGHT : new Color('#000000')
+      propio.emissiveIntensity = resaltado ? 0.6 : 0
     })
-  }, [copia, selectedMesh])
+  }, [copia, selected, bones, half])
 
   const handleClick = (evento: ThreeEvent<MouseEvent>) => {
     evento.stopPropagation()
@@ -79,20 +90,20 @@ function LoadingNotice() {
 
 interface Props {
   bones: readonly Bone[]
-  /** Malla del hueso seleccionado, o `null`. La escena no conoce ids: solo mallas. */
-  selectedMesh: string | null
+  /** El `id` del hueso seleccionado, o `null`. */
+  selected: string | null
   onPick: (id: string) => void
 }
 
-export function SkeletonScene({ bones, selectedMesh, onPick }: Props) {
+export function SkeletonScene({ bones, selected, onPick }: Props) {
   return (
     <div className="relative h-full w-full">
       <Canvas camera={{ position: [0, 0.2, 3], fov: 45 }} aria-label="Esqueleto humano en 3D">
         <ambientLight intensity={0.8} />
         <directionalLight position={[2, 4, 3]} intensity={1.2} />
         <Suspense fallback={<LoadingNotice />}>
-          <SkeletonHalf bones={bones} selectedMesh={selectedMesh} half="original" onPick={onPick} />
-          <SkeletonHalf bones={bones} selectedMesh={selectedMesh} half="mirrored" onPick={onPick} />
+          <SkeletonHalf bones={bones} selected={selected} half="original" onPick={onPick} />
+          <SkeletonHalf bones={bones} selected={selected} half="mirrored" onPick={onPick} />
         </Suspense>
         <OrbitControls enablePan enableZoom makeDefault />
       </Canvas>
