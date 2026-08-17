@@ -38,3 +38,32 @@
 
 **Nada que el plan no anticipara.** Los tres cambios fueron mecánicos, tal
 como el design los dejó escritos con clases concretas de antes/después.
+
+## T4 · Verificación manual
+
+Hecha por el usuario en el teléfono, por el túnel. Veredicto: **funciona** —
+botón, tipografía y campo «Lado» en fémur; sin lado en martillo; el panel se
+ve igual desde `ExploreView` y desde `BoneDetailView`.
+
+## Cierre
+
+**Chequeo de tests huérfanos:** `ExploreView.test.tsx` y `BoneDetailView.test.tsx`
+—los dos consumidores de `BoneIdentity`— no fueron tocados por esta historia
+y siguen verdes.
+
+**Criterios de aceptación:**
+
+| Criterio | Estado |
+|---|---|
+| Must 1 · botón ≥ 44×44 px | cumplido |
+| Must 2 · `h2` con `--font-display` | cumplido |
+| Must 3 · `isSideIrrelevant` correcto contra el catálogo real | cumplido |
+| Must 4 · campo visible y anuncio vivo con la misma condición | cumplido |
+| Must 5 · `navigator-rows.test.ts` verde sin reescribirse | cumplido |
+| Should 1 · borde/radio del aviso coherente | cumplido |
+| Must NOT 1 · `isUnpaired`/catálogo intactos | respetado |
+| Must NOT 2 · `missingReason` sin cambios | respetado |
+| Must NOT 3 · nunca oculta ante la duda | respetado — probado explícitamente |
+
+**Gates finales:** `./scripts/check` verde (225 tests) ·
+`npx playwright test` verde (12/12).
