@@ -3,7 +3,7 @@ import { groupByRegion } from '../domain/regions'
 import { REGION_LABEL, SIDE_LABEL } from './labels'
 
 /** El nombre que oye un lector de pantalla: el hueso y, si es par, su lado. */
-export function accessibleName(bone: Bone): string {
+function accessibleName(bone: Bone): string {
   return bone.side === null ? bone.es : `${bone.es} ${SIDE_LABEL[bone.side]}`
 }
 
