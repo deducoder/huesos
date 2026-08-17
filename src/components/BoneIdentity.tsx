@@ -44,14 +44,18 @@ export function BoneIdentity({ bone, onViewDetail }: Props) {
       <p className="mt-1 text-acento text-lg italic">{bone.la}</p>
 
       <dl className="mt-4 space-y-1 text-sm">
-        <div className="flex gap-2">
+        <div className="flex items-center gap-2">
           <dt className="text-tinta-suave">Región</dt>
-          <dd>{REGION_LABEL[bone.region]}</dd>
+          <dd className="w-fit rounded-tarjeta border-2 border-tinta bg-acento-suave px-3 py-0.5 font-semibold">
+            {REGION_LABEL[bone.region]}
+          </dd>
         </div>
         {bone.side !== null && !ocultarLado && (
-          <div className="flex gap-2">
+          <div className="flex items-center gap-2">
             <dt className="text-tinta-suave">Lado</dt>
-            <dd>{SIDE_LABEL[bone.side]}</dd>
+            <dd className="w-fit rounded-tarjeta border-2 border-tinta bg-panel px-3 py-0.5 font-semibold">
+              {SIDE_LABEL[bone.side]}
+            </dd>
           </div>
         )}
         {isUnpaired(bone) && (

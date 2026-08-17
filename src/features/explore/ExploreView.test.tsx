@@ -69,6 +69,17 @@ describe('la vista de exploración', () => {
     expect(screen.getByText('os femoris')).toBeInTheDocument()
   })
 
+  it('la tarjeta tiene un botón para cerrarla sin volver a tocar el hueso en la escena', async () => {
+    const user = userEvent.setup()
+    render(<ExploreViewConSuEstado />)
+
+    await user.click(screen.getByRole('button', { name: /^fémur derecho$/i }))
+    expect(screen.getByRole('heading', { name: /^fémur$/i })).toBeInTheDocument()
+
+    await user.click(screen.getByRole('button', { name: /cerrar/i }))
+    expect(screen.queryByRole('heading', { name: /^fémur$/i })).not.toBeInTheDocument()
+  })
+
   it('mantiene sincronizados la lista y el panel al cambiar de hueso', async () => {
     const user = userEvent.setup()
     render(<ExploreViewConSuEstado />)

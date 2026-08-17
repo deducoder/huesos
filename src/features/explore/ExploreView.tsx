@@ -38,6 +38,14 @@ export function ExploreView({ selected, onSelect, onViewDetail }: Props) {
           data-testid="tarjeta-identidad"
           className="absolute inset-x-4 bottom-4 max-h-[45vh] overflow-y-auto rounded-tarjeta border-2 border-tinta bg-panel shadow-dura"
         >
+          <button
+            type="button"
+            aria-label="Cerrar"
+            onClick={() => onSelect(bone.id)}
+            className="absolute top-3 right-3 flex min-h-tactil min-w-tactil items-center justify-center rounded-full border-2 border-tinta bg-panel text-tinta"
+          >
+            <span aria-hidden="true">✕</span>
+          </button>
           <BoneIdentity bone={bone} onViewDetail={onViewDetail} />
         </div>
       )}
