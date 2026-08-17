@@ -112,3 +112,13 @@ teclado», el `accessibleHint` del lienzo) **siguen siendo ciertos** desde la
 corrección de ADR-010: el navegador sigue montado, solo oculto. No hay nada
 que hacer acá — ya registrado como delta en `design.md` al detectarlo, antes
 de llegar a esta tarea.
+
+## T4 · Verificación manual — no realizada
+
+El usuario pidió cerrar la historia directamente, sin correr la verificación
+manual en dispositivo que el plan tenía como T4. Se deja registrado tal cual
+ocurrió, no como si hubiera pasado: los gates automáticos —`./scripts/check`
+y la suite de navegador completa (13/13, dos corridas)— están verdes, pero
+nadie tocó la aplicación con el dedo en un teléfono real para esta historia.
+Es la primera de la épica que cierra sin esa verificación. Riesgo aceptado
+por decisión explícita, no por descuido.
