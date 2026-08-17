@@ -36,3 +36,29 @@ const NUNCA_PREGUNTADO: BoneProgress = { correct: 0, incorrect: 0 }
 export function boneProgress(record: ProgressRecord, boneId: string): BoneProgress {
   return record[boneId] ?? NUNCA_PREGUNTADO
 }
+
+/**
+ * El registro tras anotar el veredicto de una respuesta.
+ *
+ * Devuelve un registro **nuevo**: el recibido no se toca. No es ceremonia — el
+ * registro va a vivir en estado de React y en almacenamiento, y mutar en el
+ * sitio es cómo se pierde un re-render o se guarda algo que nadie observó.
+ *
+ * Un acierto **no** borra los fallos acumulados: la cuenta de fallos es lo que
+ * `e5.4` usa para insistir con un hueso, así que olvidarla al primer acierto
+ * vaciaría de sentido a toda la épica.
+ */
+export function recordAnswer(
+  record: ProgressRecord,
+  boneId: string,
+  wasCorrect: boolean,
+): ProgressRecord {
+  const actual = boneProgress(record, boneId)
+  return {
+    ...record,
+    [boneId]: {
+      correct: actual.correct + (wasCorrect ? 1 : 0),
+      incorrect: actual.incorrect + (wasCorrect ? 0 : 1),
+    },
+  }
+}

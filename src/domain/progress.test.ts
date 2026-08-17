@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { boneProgress, EMPTY_PROGRESS } from './progress'
+import { boneProgress, EMPTY_PROGRESS, recordAnswer } from './progress'
 
 describe('el registro de progreso', () => {
   it('devuelve el estado inicial para un hueso que nunca se respondió', () => {
@@ -16,5 +16,41 @@ describe('el registro de progreso', () => {
   it('lee el estado de un hueso que sí está registrado', () => {
     const registro = { frontal: { correct: 1, incorrect: 2 } }
     expect(boneProgress(registro, 'frontal')).toEqual({ correct: 1, incorrect: 2 })
+  })
+
+  it('anota un acierto sobre un registro vacío', () => {
+    const despues = recordAnswer(EMPTY_PROGRESS, 'femur-right', true)
+    expect(boneProgress(despues, 'femur-right')).toEqual({ correct: 1, incorrect: 0 })
+  })
+
+  it('anota un fallo sobre un registro vacío', () => {
+    const despues = recordAnswer(EMPTY_PROGRESS, 'frontal', false)
+    expect(boneProgress(despues, 'frontal')).toEqual({ correct: 0, incorrect: 1 })
+  })
+
+  it('acumula fallos sucesivos del mismo hueso', () => {
+    const uno = recordAnswer(EMPTY_PROGRESS, 'frontal', false)
+    const dos = recordAnswer(uno, 'frontal', false)
+    expect(boneProgress(dos, 'frontal')).toEqual({ correct: 0, incorrect: 2 })
+  })
+
+  it('un acierto no borra los fallos acumulados de ese hueso', () => {
+    const fallado = { 'scaphoid-left': { correct: 0, incorrect: 2 } }
+    const despues = recordAnswer(fallado, 'scaphoid-left', true)
+    expect(boneProgress(despues, 'scaphoid-left')).toEqual({ correct: 1, incorrect: 2 })
+  })
+
+  it('no toca el resto del registro al anotar un hueso', () => {
+    const antes = { frontal: { correct: 1, incorrect: 2 } }
+    const despues = recordAnswer(antes, 'sacrum', true)
+    expect(boneProgress(despues, 'frontal')).toEqual({ correct: 1, incorrect: 2 })
+    expect(boneProgress(despues, 'sacrum')).toEqual({ correct: 1, incorrect: 0 })
+  })
+
+  it('no modifica el registro que recibe: devuelve uno nuevo', () => {
+    const antes = { frontal: { correct: 0, incorrect: 1 } }
+    const despues = recordAnswer(antes, 'frontal', false)
+    expect(antes).toEqual({ frontal: { correct: 0, incorrect: 1 } })
+    expect(despues).not.toBe(antes)
   })
 })
