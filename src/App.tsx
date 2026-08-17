@@ -34,7 +34,9 @@ type Pestania = (typeof PESTANIAS)[number]
  */
 function Pestanas({ modo, onCambiar }: { modo: Modo; onCambiar: (tipo: Pestania) => void }) {
   const clase = (activa: boolean) =>
-    `rounded px-3 py-1.5 text-sm ${activa ? 'bg-sky-700 font-semibold text-white' : 'text-slate-300 hover:bg-slate-800'}`
+    `inline-flex min-h-tactil min-w-tactil items-center justify-center rounded-suave border-2 border-tinta px-4 text-sm ${
+      activa ? 'bg-acento font-semibold text-panel shadow-dura' : 'bg-panel text-tinta'
+    }`
   const activa = (pestania: Pestania) =>
     modo.tipo === pestania || (pestania === 'test-elegir' && modo.tipo.startsWith('test-'))
   const etiqueta: Record<Pestania, string> = {
@@ -44,7 +46,10 @@ function Pestanas({ modo, onCambiar }: { modo: Modo; onCambiar: (tipo: Pestania)
   }
 
   return (
-    <nav className="flex gap-2 border-slate-800 border-b px-6 py-2" aria-label="Modo de estudio">
+    <nav
+      className="flex gap-2 border-tinta border-b-2 bg-panel px-4 py-2"
+      aria-label="Modo de estudio"
+    >
       {PESTANIAS.map((pestania) => (
         <button
           key={pestania}
@@ -67,19 +72,19 @@ function ElegirVarianteDeTest({
 }) {
   return (
     <div className="flex h-full flex-col items-center justify-center gap-4">
-      <p className="text-slate-300">¿Sobre qué querés que te pregunte?</p>
+      <p className="text-tinta-suave">¿Sobre qué querés que te pregunte?</p>
       <div className="flex gap-3">
         <button
           type="button"
           onClick={() => onElegir('test-esqueleto')}
-          className="rounded border border-slate-700 px-4 py-2 hover:bg-slate-800"
+          className="rounded border border-tinta px-4 py-2 hover:bg-acento-suave"
         >
           Esqueleto completo
         </button>
         <button
           type="button"
           onClick={() => onElegir('test-hueso')}
-          className="rounded border border-slate-700 px-4 py-2 hover:bg-slate-800"
+          className="rounded border border-tinta px-4 py-2 hover:bg-acento-suave"
         >
           Hueso aislado
         </button>
@@ -96,9 +101,9 @@ export function App() {
   const [selected, setSelected] = useState<SelectionId>(null)
 
   return (
-    <main className="flex h-screen flex-col bg-slate-950 text-slate-100">
-      <header className="border-slate-800 border-b px-6 py-3">
-        <h1 className="font-semibold text-xl">huesos-mono</h1>
+    <main className="flex h-dvh flex-col bg-superficie text-tinta">
+      <header className="border-tinta border-b-2 bg-panel px-4 py-3">
+        <h1 className="font-semibold text-titulo">huesos-mono</h1>
       </header>
       {modo.tipo !== 'ficha' && <Pestanas modo={modo} onCambiar={(tipo) => setModo({ tipo })} />}
       <div className="min-h-0 flex-1">

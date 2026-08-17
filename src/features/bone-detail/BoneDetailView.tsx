@@ -19,8 +19,8 @@ interface Props {
 function AusenciaEnElModelo() {
   return (
     <div className="flex h-full flex-col items-center justify-center gap-3 p-8 text-center">
-      <p className="font-semibold text-slate-200">Este hueso no está en el modelo 3D</p>
-      <p className="max-w-md text-slate-400 text-sm">
+      <p className="font-semibold text-tinta">Este hueso no está en el modelo 3D</p>
+      <p className="max-w-md text-tinta-suave text-sm">
         Forma parte de los 206 huesos del esqueleto y su ficha está completa; lo único que falta es
         su geometría. El motivo está en la ficha, al lado.
       </p>
@@ -42,19 +42,19 @@ export function BoneDetailView({ boneId, onBack }: Props) {
 
   return (
     <div className="grid h-full min-h-0 grid-cols-1 md:grid-cols-[1fr_22rem]">
-      <div className="min-h-0 bg-slate-900">
+      <div className="min-h-0 bg-panel">
         {bone && bone.meshName === null ? (
           <AusenciaEnElModelo />
         ) : (
           <IsolatedBoneScene bones={catalog} boneId={boneId} />
         )}
       </div>
-      <div className="min-h-0 overflow-y-auto border-slate-800 border-l">
+      <div className="min-h-0 overflow-y-auto border-tinta border-l">
         <div className="p-6 pb-0">
           <button
             type="button"
             onClick={onBack}
-            className="rounded border border-slate-700 px-3 py-1.5 text-slate-300 text-sm hover:bg-slate-800"
+            className="rounded border border-tinta px-3 py-1.5 text-tinta text-sm hover:bg-acento-suave"
           >
             ← Volver
           </button>

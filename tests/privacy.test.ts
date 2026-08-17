@@ -1,6 +1,7 @@
-import { readdirSync, readFileSync } from 'node:fs'
-import { extname, join, resolve } from 'node:path'
+import { readFileSync } from 'node:fs'
+import { resolve } from 'node:path'
 import { describe, expect, it } from 'vitest'
+import { fuentesDeLaAplicacion } from './sources'
 
 /**
  * `must-privacy-006`: el progreso del estudiante no sale del navegador — sin
@@ -22,17 +23,6 @@ const SALIDAS_A_LA_RED = [
   { nombre: 'navigator.sendBeacon', patron: /sendBeacon/ },
   { nombre: 'WebSocket', patron: /new\s+WebSocket/ },
 ]
-
-/** Todos los archivos de código bajo `src/`, sin pruebas. */
-function fuentesDeLaAplicacion(directorio = resolve('src')): string[] {
-  return readdirSync(directorio, { withFileTypes: true }).flatMap((entrada) => {
-    const ruta = join(directorio, entrada.name)
-    if (entrada.isDirectory()) return fuentesDeLaAplicacion(ruta)
-    if (!['.ts', '.tsx'].includes(extname(entrada.name))) return []
-    if (entrada.name.includes('.test.')) return []
-    return [ruta]
-  })
-}
 
 describe('must-privacy-006: la aplicación no sale a la red', () => {
   it('ningún archivo de `src/` escribe una salida a la red', () => {
