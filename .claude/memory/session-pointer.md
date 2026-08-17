@@ -7,22 +7,22 @@ metadata:
   modified: 2026-08-17
 ---
 
-Last session: **2026-08-17** — s1 cerrada tras encontrar la causa real del gate
-rojo, y E5 (`RF-09`) y E6 (condición de lanzamiento) completas y publicadas. Las
-seis épicas cerradas y etiquetadas; el producto es publicable.
+Last session: **2026-08-17** — b2.3 cerrado y enviado (el espejado duplicaba 36
+de las 144 mallas del modelo), kit de skills de diseño instalado y versionado, y
+E7 «mobile-first redesign» abierta, diseñada y planificada con 10 historias.
 
-Full handoff: `work/sessions/2026-08-17-e5-e6-and-launch.md` (read it in full
+Full handoff: `work/sessions/2026-08-17-b2.3-and-e7-design.md` (read it in full
 via `session-start`).
 
-Next action: **decidir qué se hace ahora que el producto es publicable** — o se
-publica (no hay épica de despliegue declarada), o se abre la siguiente del
-parking lot; la candidata con más valor es la auditoría de contenido del
-catálogo, porque los sinónimos nunca se validaron contra cómo escriben los
-estudiantes y el modo test los da por válidos desde E4.
+Next action: **arrancar e7.1, tokens y shell** — `/gemba:story-start`, rama
+`story/e7.1/tokens-and-shell` desde `main`. Es la única historia de E7 sin la
+que ninguna otra puede empezar.
 
-`RF-08` ya no es la condición imposible que era: ADR-006 decidió que una entrada
-con razón documentada cuenta como completa, y `./scripts/check` lo afirma con
-una prueba que el propio requisito cita por su nombre.
+El `session-start` de este repositorio afirma que la comparación de caché no
+aplica porque las skills se ejecutan desde `.claude/skills/`. Es falso y ya está
+en el parking lot: todas las de la sesión anterior se cargaron desde
+`~/.claude/plugins/cache/gemba/gemba/`, con el snapshot cambiando a mitad de
+sesión. No saltar esa comprobación por lo que diga la skill.
 
 Overwritten on every `session-close`; this is a pointer, the handoff is the
 source of truth.
