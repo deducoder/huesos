@@ -41,9 +41,9 @@ npx vitest -t "nombre del test"     # uno solo
 npm run test:watch                  # en watch, mientras dura el ciclo RED-GREEN
 ```
 
-Los gates corren con `--passWithNoTests` **solo mientras el repositorio no tiene
-tests**, que es hoy. La primera historia trae el primer test y esa bandera se
-quita: a partir de ahí, cero tests es un gate rojo.
+Los gates corrían con `--passWithNoTests` mientras el repositorio no tenía
+tests. La bandera se quitó al llegar el primero, en la historia e1.1: desde
+entonces, cero tests es un gate rojo.
 
 Everything else about how work is organized (branches, commit format, where
 artifacts land) is in **Conventions** below.
