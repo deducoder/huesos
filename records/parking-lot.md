@@ -311,3 +311,19 @@ porque bloquea a quien usa el teléfono fijado en un soporte.
 comportamiento fuera del móvil vertical). La afirmación sobre
 `screen.orientation.lock()` se verifica en esa historia antes de decidir, no
 se da por buena desde acá.
+
+## 2026-08-17 · Pulido visual fino, diferido al cierre de la épica (verificación de e7.4)
+
+Probando e7.4 en el teléfono, el usuario decide que el pulido visual fino
+—ajustes de detalle sobre lo que cada historia entrega— se revisa una vez, al
+cerrar E7, en vez de historia por historia.
+
+**Por qué no se hizo ahora:** cada historia de E7 ya verifica en dispositivo
+real y corrige lo que encuentra —b2.3, e7.1, e7.2 y e7.4 lo hicieron—, pero un
+repaso historia por historia no ve el conjunto: cómo se sienten las seis
+vistas una detrás de otra, no cada una aislada.
+
+**Destino:** una pasada de pulido visual al cierre de la épica, después de
+e7.9 (escritorio como ampliación) y antes de e7.10 (medición de
+`should-perf-007`), con las seis vistas ya completas y el recorrido entero
+disponible para juzgarlo junto.
