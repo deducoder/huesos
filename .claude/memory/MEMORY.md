@@ -16,3 +16,4 @@
 - [Medir el elemento después del layout](measure-the-element-after-layout.md) — un `<canvas>` mide 300x150 hasta que alguien lo dimensiona; la carrera la pierde la máquina rápida.
 - ["Intermitente" es una hipótesis, no un hallazgo](intermittent-is-a-hypothesis.md) — la explicación ambiental nunca se contradice y por eso nunca se investiga.
 - [Un defecto reintroducido tiene que romper algo](a-reintroduced-defect-must-actually-break.md) — un rojo no prueba nada con el andamiaje roto, ni un verde con un cambio que era un no-op.
+- [El estado inicial no puede ser un objeto compartido](initial-state-must-not-be-a-shared-object.md) — devolverlo desde una constante de módulo hace global y permanente la mutación de cualquier consumidor; `Readonly<Record<K,V>>` no protege a `V`.
