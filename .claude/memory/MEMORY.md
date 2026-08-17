@@ -7,3 +7,4 @@
 - [El encuadre dinámico de cámara necesita un componente](dynamic-camera-framing-needs-a-component.md) — la prop `camera` de `Canvas` solo se lee al montar; usar `<PerspectiveCamera>` de drei cuando el encuadre se calcula después.
 - [La propiedad del estado sigue a la supervivencia, no a la prolijidad](state-ownership-follows-survival-not-cleanliness.md) — un componente deja de poder ser dueño de su estado en cuanto otra vista necesita que sobreviva a su desmontaje.
 - [El diseño de una épica es una hipótesis](epic-design-is-a-hypothesis.md) — el gemba de cada historia sigue siendo la autoridad, incluso sobre el propio `design.md` que la contiene.
+- [Las capas de dominio puras pagan después](pure-domain-layers-pay-off-later.md) — una función pura bien cortada se reutiliza en historias que nadie planeó cuando se escribió, no solo se prueba más fácil.
