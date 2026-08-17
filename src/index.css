@@ -48,3 +48,27 @@
   /* La familia sigue siendo la del sistema hasta e7.3; acá solo la escala. */
   --text-titulo: 1.75rem;
 }
+
+/*
+ * Un `<canvas>` de esta aplicación es siempre una escena 3D, y se queda con sus
+ * propios gestos.
+ *
+ * Sin esto el navegador reclama el arrastre **vertical** para hacer scroll de
+ * la página: girar el esqueleto hacia arriba o hacia abajo con el dedo nunca
+ * llega a OrbitControls, y el gesto que el navegador cancela termina disparando
+ * un tap que selecciona un hueso que nadie quiso elegir. En horizontal no
+ * ocurría porque ahí no hay scroll que disputar.
+ *
+ * Va en CSS y no como prop del componente: `<Canvas className>` de
+ * react-three-fiber **no llega al elemento canvas** —comprobado en navegador,
+ * el canvas y su padre quedan con `touch-action: auto`— y es el canvas quien
+ * tiene que declararlo, porque el gesto empieza ahí.
+ *
+ * Encontrado en un teléfono real durante e7.2. La emulación táctil de Playwright
+ * no lo reproduce: sus eventos sintéticos no disputan el scroll como un dedo.
+ */
+@layer base {
+  canvas {
+    touch-action: none;
+  }
+}

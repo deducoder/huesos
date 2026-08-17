@@ -90,3 +90,38 @@ valor, y el material del modelo intacto.
 **Nota de alcance:** con el reparto 1/2/1 la lista de huesos queda con unos
 190 px de alto y su propio scroll. Es usable y es **provisional** — e7.6 decide
 el reparto definitivo con las tres piezas ya rediseñadas.
+
+## T4 · El gesto vertical, encontrado en un teléfono real
+
+La verificación manual del usuario produjo una tarea que el plan no tenía.
+Reportado: en horizontal el esqueleto gira bien; **al arrastrar en vertical se
+selecciona un hueso junto con el desplazamiento de la lista superior.**
+
+- **Reproducción: no se logró en emulación, y eso quedó dicho.** Los eventos
+  táctiles sintéticos de Playwright no disputan el scroll como un dedo — el
+  propio `explore.spec.ts` ya documenta que alcanzan menos que un gesto real.
+  Lo que sí se observó es la causa mecánica: **el `<canvas>` tenía
+  `touch-action: auto`**, así que el navegador reclamaba el arrastre vertical
+  para hacer scroll, la rotación no llegaba a OrbitControls, y el gesto
+  cancelado terminaba disparando un tap. En horizontal no ocurría porque ahí no
+  hay scroll que disputar.
+- **GREEN:** `@layer base { canvas { touch-action: none } }` en `src/index.css`.
+  En esta aplicación todo `<canvas>` es una escena 3D, así que la regla es
+  exacta, no una red amplia.
+- **Gates:** `./scripts/check` verde · suite de navegador entera verde (7/7).
+
+**Dos errores propios que conviene dejar escritos:**
+
+- **Medí tres veces contra un build viejo.** El `vite preview` levantado a mano
+  para exponer la aplicación por túnel se quedó ocupando el puerto 4173, y
+  `playwright.config.ts` trae `reuseExistingServer: !process.env.CI`: la suite
+  reutilizó ese servidor en vez de construir, así que mis sondas midieron el
+  `dist` de antes del arreglo. Concluí «la regla CSS no se aplica» cuando la
+  regla ni siquiera estaba en el bundle que se estaba sirviendo. **Se descubrió
+  al buscar la regla en `dist/assets/*.css` y encontrarla ahí**, contradiciendo
+  lo que el navegador decía.
+- **Afirmé sin evidencia válida que `<Canvas className>` no llega al canvas.**
+  Era cierto, pero lo había «comprobado» contra ese mismo build viejo. Se
+  reprobó en limpio —quitando la regla CSS, poniendo la clase, reconstruyendo—
+  y el canvas sigue con `class=""` y `touch-action: auto`. La conclusión se
+  sostiene; la primera evidencia no valía.
