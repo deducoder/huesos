@@ -179,3 +179,22 @@ tenía épica dueña viva.
 **Destino:** aparcado. O se mide (es media hora con la aplicación ya
 construida), o se marca explícitamente el guardrail como no verificado hasta
 que alguien lo haga. Lo que no sirve es dejar la tabla afirmando lo que no es.
+
+## 2026-08-17 · El validador del almacén re-codifica la forma de `BoneProgress` (architecture-review e5)
+
+`esProgresoDeHueso` en `src/storage/progress-store.ts` comprueba a mano que
+existan `correct` e `incorrect` y que sean enteros no negativos. Esa forma
+también está declarada en el tipo `BoneProgress` de `src/domain/progress.ts`.
+**Son dos codificaciones de la misma verdad**: si el tipo ganara un campo, el
+validador seguiría aceptando registros sin él, y ningún test lo notaría.
+
+**Por qué no se hizo ahora:** el tipo tiene dos campos y su propio comentario
+lo declara plano y serializable a propósito, así que la probabilidad de que
+crezca es baja. La solución que elimina la duplicación —un esquema declarativo
+del que se derive el tipo— es una dependencia nueva y toda una forma de
+trabajar, desproporcionada para dos enteros.
+
+**Destino:** aparcado, con un disparador claro. Si `BoneProgress` llega a tener
+un tercer campo, la duplicación deja de ser teórica y ahí sí toca resolverla —
+esquema declarativo, o un test que compare las claves del tipo contra las que
+el validador exige.
