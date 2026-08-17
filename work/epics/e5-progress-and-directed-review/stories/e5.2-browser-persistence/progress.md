@@ -61,3 +61,40 @@ y aquí el commit se hizo primero. Se arregló con un commit propio
 (`style(storage): apply the formatter to the shape validator`) en vez de
 enmendar la historia, porque esconder un commit rojo es peor que mostrarlo.
 Gate verde tras el arreglo — 166 tests.
+
+## T4 · Prueba de integración manual — el `localStorage` de verdad
+
+Ejecutado en Chromium contra el build servido. Las cuatro asunciones que el
+adaptador hace sobre una API que nunca había tocado, confirmadas:
+
+1. **`getItem` de una clave ausente devuelve `null`**, no `undefined` —
+   `setItem` devuelve `undefined`. La comprobación `crudo === null` del
+   adaptador es la correcta; `?? null` habría sido igual de válido pero por
+   casualidad.
+2. **El valor sobrevive a `page.reload()`** — el observable de `RF-09` a nivel
+   de almacén, un paso antes de que `e5.3` lo conecte al motor de test.
+3. **Un valor corrupto hace lanzar `SyntaxError` a `JSON.parse`**, no devuelve
+   `null` ni `undefined`. El `try/catch` del adaptador está puesto donde hace
+   falta; sin esta comprobación no había forma de saberlo sin ejecutarlo.
+4. **206 entradas escritas y releídas del `localStorage` real vuelven
+   equivalentes**, ocupando 8.131 bytes — del mismo orden que los 9.822 medidos
+   en Node sobre los ids reales del catálogo (la diferencia es que aquí los ids
+   son sintéticos y más cortos).
+
+Ninguna asunción resultó equivocada, que es un resultado y no una formalidad:
+el riesgo que el plan nombraba —"escribir el adaptador contra una idea de
+`localStorage` en vez de contra el real"— era real y quedó descartado con
+evidencia en vez de con confianza.
+
+## Finalize
+
+- Full gate set: `./scripts/check` verde — **166 tests** (151 al empezar la
+  historia, 15 nuevos en `progress-store.test.ts`).
+- Orphaned-test check: limpio — ningún test fuera de esta historia importa
+  `src/storage/progress-store`; el módulo es nuevo y su consumidor llega en
+  `e5.3`.
+- Dirección de la dependencia verificada: la única aparición de "storage" bajo
+  `src/domain/` es un comentario que la explica. Ningún `import`.
+- Acceptance criteria: los seis escenarios del `scope.md` y el escenario delta
+  del `design.md`, cumplidos y con test propio. Los cinco `Done when`
+  cumplidos.
