@@ -24,3 +24,30 @@ Gate: `./scripts/check` verde — 156 tests.
 2. Ese doble compartido quedó sin usar en T1 y el gate lo rechazó
    (`noUnusedVariables` + `TS6133`). Se retiró hasta T2, que es donde lo usa.
    El gate hizo de red exactamente donde tenía que hacerla.
+
+## T2 · Leer y guardar el registro completo
+
+Cuatro tests del camino normal: primera visita, ida y vuelta, escritura real
+comprobada con un segundo almacén sobre los mismos datos, y el registro
+completo de los 206 huesos del catálogo real.
+
+**Desviación: no hubo RED.** Los cuatro pasaron sin escribir una línea de
+código, porque T1 ya había tenido que traer `read`/`write` con su serialización
+JSON — probar la degradación a memoria exige que guardar y leer existan. **El
+corte T1/T2 del plan era artificial**: ordenar por riesgo puso primero una
+tarea que no podía existir sin la segunda. Los tests se quedan igual —fijan el
+camino normal y valen por sí solos— pero se commitearon como `test(...)` y no
+como `feat(...)`, que es lo que son.
+
+Gate: `./scripts/check` verde — 160 tests.
+
+## T3 · Validar la forma de lo que vuelve
+
+`esRegistroDeProgreso`, un guarda de tipo que rechaza lo que no sea un objeto
+de contadores enteros no negativos, y descarta el **registro entero** ante
+cualquier entrada mala en vez de repararlo a medias.
+
+RED: 4 tests fallando — hoy cualquier JSON válido entraba al dominio tal cual,
+incluidos `"hola"`, `42`, `[1,2,3]`, contadores negativos y no enteros.
+
+Gate: `./scripts/check` verde — 166 tests. Desviación: ninguna.
