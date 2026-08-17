@@ -75,10 +75,7 @@ export function BoneNavigator({ bones, selected, onSelect }: Props) {
                 }
                 const nombreId = `${fila.right.id}-nombre`
                 return (
-                  <li
-                    key={fila.right.id}
-                    className="flex flex-wrap items-center gap-x-2 gap-y-1 py-0.5"
-                  >
+                  <li key={fila.right.id} className="flex flex-wrap items-center gap-x-2 gap-y-1">
                     <span id={nombreId} className="min-w-20 flex-1">
                       {fila.name}
                     </span>

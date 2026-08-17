@@ -134,3 +134,26 @@ test('las filas del navegador de huesos alcanzan el mínimo táctil', async ({ p
   const cajaImpar = await impar.boundingBox()
   expect(cajaImpar?.height ?? 0, 'alto de "esfenoides"').toBeGreaterThanOrEqual(44)
 })
+
+test('el nombre más largo se lee completo, y el navegador entero recorre más corto que antes de e7.4', async ({
+  page,
+}) => {
+  await page.goto('/')
+  await page.getByRole('button', { name: /^fichas$/i }).click()
+
+  // El nombre de 44 caracteres del catálogo, en su fila `paired`. No se
+  // recorta: el texto completo tiene que estar en el DOM, sin ellipsis.
+  const nombreLargo = page.getByText('falange proximal del segundo dedo de la mano', {
+    exact: true,
+  })
+  await expect(nombreLargo.first()).toBeVisible()
+
+  // El alto total del navegador con los 206 huesos. 6.208 px es la cifra
+  // medida en `main` antes de esta historia (ver scope.md e7.4). El
+  // prototipo de design.md proyectó 5.720 sin relleno vertical alguno; el
+  // componente real mide 5.832 con un poco de aire entre filas — sigue por
+  // debajo de la base, la proyección exacta no se sostuvo al pixel.
+  const nav = page.locator('nav[aria-label="Huesos del esqueleto"]')
+  const alto = await nav.evaluate((n) => n.scrollHeight)
+  expect(alto, 'alto total del navegador con los 206 huesos').toBeLessThanOrEqual(6208)
+})
