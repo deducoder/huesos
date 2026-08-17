@@ -63,9 +63,16 @@ export function TestQuestion({ bones, renderScene }: Props) {
           </form>
         ) : (
           <div className="flex items-center gap-4">
-            <p role="status" className="font-semibold text-sm">
-              {resultado === 'correcto' ? 'Correcto' : 'Incorrecto'}
-            </p>
+            <div role="status">
+              <p className="font-semibold text-sm">
+                {resultado === 'correcto' ? 'Correcto' : 'Incorrecto'}
+              </p>
+              {resultado === 'incorrecto' && (
+                <p className="text-slate-300 text-sm">
+                  {bone.es} / {bone.la}
+                </p>
+              )}
+            </div>
             <button
               type="button"
               onClick={siguiente}
