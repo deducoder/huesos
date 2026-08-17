@@ -72,9 +72,7 @@ const UNPAIRED_IDS: ReadonlySet<string> = new Set([
   'mandible',
   'sacrum',
   'coccyx',
-  'sternum-manubrium',
-  'sternum-body',
-  'sternum-xiphoid',
+  'sternum',
 ])
 
 /**
