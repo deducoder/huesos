@@ -241,3 +241,32 @@ afirmación hizo saltar en la orientación de sesión una comprobación que sí
 correspondía.
 
 **Destino:** aparcado — es un defecto de la skill, no del producto.
+
+## 2026-08-17 · Búsqueda y filtros en el navegador de huesos (epic-design e7)
+
+E7 resuelve los 206 huesos en pantalla chica apoyándose en la jerarquía que ya
+existe —las 10 regiones de `groupByRegion`—, no añadiendo una función nueva.
+Buscar por nombre, filtrar por región o navegar por facetas queda fuera.
+
+**Por qué no se hizo ahora:** el objetivo de la épica es que la aplicación se
+pueda usar en un teléfono, y eso lo cumple la jerarquía existente. Añadir
+búsqueda sería construir una capacidad nueva bajo el disfraz de un rediseño,
+y tiene su propio diseño —¿busca por nombre en español, en latín, por sinónimo?
+`isCorrectAnswer` ya resuelve algo parecido en el dominio del test y habría que
+decidir si se reutiliza.
+
+**Destino:** aparcado, con un disparador claro. Si al usar la aplicación en la
+mano recorrer por región resulta lento, es una épica propia y el dominio ya
+tiene la mitad hecha.
+
+## 2026-08-17 · Animación y micro-interacción (epic-design e7)
+
+El brief de E7 la nombra como rabbit hole y el scope la deja fuera. El kit de
+skills de diseño instalado en esta sesión invita a ello.
+
+**Por qué no se hizo ahora:** una transición sobre un canvas WebGL cuesta
+rendimiento en el mismo móvil de gama media que `should-perf-007` vigila, y hoy
+**no hay ninguna medición** con la que juzgar ese coste.
+
+**Destino:** aparcado, con el disparador puesto en e7.10 — la historia que
+produce esa medición. Después de ella la conversación se puede tener con datos.
