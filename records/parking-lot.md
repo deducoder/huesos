@@ -113,3 +113,21 @@ comparación real.
 **Destino:** aparcado. Si E4 (modo test) necesita una tercera variante de
 "cargar el modelo y recorrerlo por malla", ahí sí hay tres puntos de datos
 reales para decidir qué parte compartir — antes no.
+
+## 2026-08-17 · `SkeletonScene` y `IsolatedBoneScene` describen su lienzo de dos formas distintas (epic-review e4)
+
+`SkeletonScene.accessibleHint` agrega un `<p className="sr-only">`
+separado, sin vincularlo al `Canvas` (ADR-002, luego extendido en e4.2).
+`IsolatedBoneScene.accessibleLabel` fija el `aria-label` del contenedor
+directamente (e3.2, extendido en e4.4). Mismo propósito —describir el
+lienzo para un lector de pantalla, configurable por consumidor—, dos
+mecanismos.
+
+**Por qué no se unificó ahora:** la inconsistencia es anterior a e4 — cada
+componente ya tenía su propio patrón antes de que esta épica agregara la
+prop configurable siguiéndolo. Unificar el mecanismo es un cambio a dos
+componentes de epics anteriores (E2, E3), fuera del objetivo de e4.
+
+**Destino:** aparcado. Candidato a una historia corta de consolidación si
+aparece un tercer consumidor con la misma necesidad, o si algún epic futuro
+ya va a tocar ambos componentes por otro motivo.
