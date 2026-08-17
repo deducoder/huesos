@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest'
+import { catalog } from '../data/catalog'
 import { boneProgress, EMPTY_PROGRESS, recordAnswer } from './progress'
 
 describe('el registro de progreso', () => {
@@ -52,5 +53,20 @@ describe('el registro de progreso', () => {
     const despues = recordAnswer(antes, 'frontal', false)
     expect(antes).toEqual({ frontal: { correct: 0, incorrect: 1 } })
     expect(despues).not.toBe(antes)
+  })
+
+  it('sobrevive a una ida y vuelta por JSON, con los ids reales del catálogo', () => {
+    // Contra el catálogo real y no contra ids inventados: es el
+    // almacenamiento de e5.2 quien va a serializar esto, y probar la ida y
+    // vuelta con datos de juguete probaría `JSON`, no el registro.
+    let registro = EMPTY_PROGRESS
+    for (const bone of catalog) registro = recordAnswer(registro, bone.id, bone.id.length % 2 === 0)
+
+    const vuelto = JSON.parse(JSON.stringify(registro))
+
+    expect(Object.keys(vuelto)).toHaveLength(catalog.length)
+    for (const bone of catalog) {
+      expect(boneProgress(vuelto, bone.id)).toEqual(boneProgress(registro, bone.id))
+    }
   })
 })
