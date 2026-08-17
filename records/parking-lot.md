@@ -131,3 +131,31 @@ componentes de epics anteriores (E2, E3), fuera del objetivo de e4.
 **Destino:** aparcado. Candidato a una historia corta de consolidación si
 aparece un tercer consumidor con la misma necesidad, o si algún epic futuro
 ya va a tocar ambos componentes por otro motivo.
+
+## 2026-08-17 · Borrar o reiniciar el progreso (epic-design e5)
+
+E5 crea un registro persistente de aciertos y fallos por hueso, y no da
+ninguna forma de borrarlo. Nadie lo ha pedido: ni `RF-09`, ni el outcome
+del que cuelga, ni los guardrails.
+
+**Por qué no se hizo ahora:** no bloquea el objetivo de la épica — el
+fallo dirige el estudio igual, se pueda reiniciar o no — y agregarlo sin
+pedido es construir para un usuario imaginado.
+
+**Destino:** aparcado. Es una historia corta (una función pura que ya
+existirá en `progress.ts`, más un botón) el día que alguien estudie de
+verdad y quiera empezar de cero.
+
+## 2026-08-17 · Mostrar el progreso al estudiante (epic-design e5)
+
+`RF-09` pide que el sistema **recuerde** y **priorice**, no que exhiba.
+El brief de E5 nombra el panel de estadísticas como rabbit hole y el
+scope lo declara fuera.
+
+**Por qué no se hizo ahora:** el requisito no lo pide y la épica cumple su
+objetivo sin ello. Además cambiaría la naturaleza del trabajo: pasa de
+dominio y almacenamiento a diseño de interfaz.
+
+**Destino:** aparcado como épica propia. El dato ya estará ahí —completo y
+por hueso—, así que el día que se quiera mostrar, lo que falta es solo la
+vista.
