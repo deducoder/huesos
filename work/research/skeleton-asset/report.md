@@ -2,13 +2,84 @@
 
 **Date:** 2026-08-16 · **Depth:** standard
 
+## Revisión 2 — activo 3D de CASK Anatomy / AnatomyTOOL
+
+> Añadida el mismo día, tras revisar un activo que la primera pasada no
+> encontró. **La recomendación cambia.** Se conserva abajo el razonamiento
+> original: era correcto sobre la evidencia que tenía, y equivocado sobre la
+> evidencia completa.
+
+`https://caskanatomy.info/open3dviewer/?model=overview-skeleton` sirve un
+**glTF binario de 3,4 MB** que se descargó y se abrió. Lo que contiene:
+
+- **144 mallas con nombre, hueso por hueso**: `Atlas (C1)`, `Axis (C2)`, cada
+  vértebra por su nivel, las 12 costillas, cada carpiano (escafoides, semilunar,
+  piramidal, pisiforme, trapecio, trapezoide, grande, ganchoso), cada falange,
+  y los craneales profundos que el SVG no puede mostrar — etmoides, esfenoides,
+  vómer, lagrimal, palatino, cornete inferior.
+- Descontando lo que no son huesos — 14 dientes, 10 cartílagos costales, 2
+  agrupaciones de sesamoideos — quedan **118 estructuras óseas**: 82 del lado
+  derecho, a espejar, más 36 impares o ya explícitas por lado.
+- **Cobertura estimada 200 de 206.** La brecha es exactamente hioides y los seis
+  huesecillos del oído medio, verificados ausentes por búsqueda directa en los
+  nombres. Es el mismo agujero que la primera pasada identificó por razonamiento
+  anatómico, ahora confirmado por medición sobre un activo independiente. *El
+  conteo clasifica por nombre y tiene ±1 de holgura; la cifra exacta pide
+  revisión manual.*
+- Geometría comprimida con `KHR_draco_mesh_compression`, generada desde Blender.
+
+### Lo que cuesta
+
+| Coste | Detalle |
+|---|---|
+| **Licencia del modelo** | CC BY-SA 4.0. Espejar, renombrar y podar **sí** produce obra adaptada, así que el activo derivado debe publicarse CC BY-SA 4.0 con atribución. La conversión de formato sola no la produce: el texto legal dice que las modificaciones técnicas del art. 2(a)(4) «never produce Adapted Material» |
+| **Texturas NC** | 132 mapas de normales embebidos bajo **CC BY-NC-SA** («Thoracic walls», Krebs et al.). **Salida limpia:** son solo `normalTexture`; ningún material usa `baseColorTexture`, el color es un factor plano. Quitarlos cuesta relieve de superficie y sale del NC — decisión a tomar a conciencia, no por descuido |
+| **Accesibilidad** | Choque real con **must-a11y-005**: un canvas WebGL no expone rol ni nombre accesible por hueso. Exigiría una lista accesible paralela sincronizada con la escena. En SVG el guardrail sale casi gratis |
+| **Peso y tubería** | 3,4 MB ya comprimidos, más el decodificador Draco en cliente, frente a 304 KB del SVG con gzip. Rompe **should-perf-007** tal como está escrito |
+| **Sin metadatos** | El archivo no lleva copyright ni atribución dentro; la atribución la tenemos que llevar nosotros |
+
+El visor de CASK es GPL 3.0, pero **no nos afecta**: usaríamos react-three-fiber
+sobre el modelo, no su código.
+
+### Recomendación revisada
+
+**Adoptar el modelo 3D de AnatomyTOOL como activo del catálogo — Confidence:
+MEDIUM-HIGH.** El argumento decisivo no es que el 3D sea mejor producto, es que
+`RF-08` es condición de lanzamiento: con el SVG, llegar a 206 significa etiquetar
+a mano los huesos que hoy viven en subgrupos anónimos; con este modelo, 200 ya
+vienen nombrados. Convierte el cuello de botella del proyecto en una tarea de
+conversión.
+
+Queda abierta una **vía híbrida que merece evaluarse antes de cerrar el ADR**:
+usar el modelo 3D como *fuente de verdad del catálogo* — nombres y cobertura — y
+renderizar en SVG, proyectando siluetas por hueso desde Blender. Daría la
+cobertura del 3D con el peso y la accesibilidad del 2D. No está verificada: es
+exactamente lo que un spike debe medir.
+
+**Lo que este informe ya no sostiene:** que el activo 2D de dominio público sea
+la mejor base. Sigue siendo la mejor base *2D*, y su ventaja en peso y
+accesibilidad es real, pero sus 43 regiones no pueden cumplir RF-08 sin un
+trabajo manual que este modelo hace innecesario.
+
+### Fuentes de esta revisión
+
+| Source | Type | Level | Key finding | Date |
+|--------|------|-------|-------------|------|
+| [Visor open3d de CASK Anatomy](https://caskanatomy.info/open3dviewer/?model=overview-skeleton&export=on) | primary | Very High | Visor Babylon.js GPL 3.0 (Daniel Jansma, LUMC); carga `3dmodels/{model}/{model}.glb` | 2026-08-16 |
+| Inspección directa del `.glb` descargado | primary | Very High | 144 mallas nombradas, 118 óseas, ~200/206; Draco; 132 normal maps; sin metadatos de licencia | 2026-08-16 |
+| [AnatomyTOOL — Open3DModel create](https://anatomytool.org/open3dmodel-create) | primary | Very High | Fuentes en .blend/.obj/.glb; modelos CC BY-SA 4.0; **texturas CC BY-NC-SA** (Krebs et al.) | 2026-08-16 |
+| [AnatomyTOOL — Open3DModel](https://anatomytool.org/open3dmodel) | primary | High | «The model is based on predecessor models BodyParts and Z-Anatomy» | 2026-08-16 |
+| [Texto legal CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/legalcode.en) | primary | Very High | Definición de Adapted Material; las modificaciones técnicas del 2(a)(4) «never produce Adapted Material» | 2026-08-16 |
+
+---
+
 ## Question
 
 - **Primary:** ¿Existe un activo del esqueleto humano, con licencia que permita usarlo en este producto, en el que cada hueso sea una región o malla identificable por separado — SVG o 3D — y consumible desde React?
 - **Secondary:** ¿Qué librerías React libres cubren esto? ¿Qué cobertura de huesos alcanza cada activo frente a los 206 de RF-08? ¿Qué obliga cada licencia? ¿Cuál es el coste real de adaptar frente a dibujar?
 - **Unblocks:** E1 (activo anatómico) y la elección 2D/3D, que merece ADR-001.
 
-## Recommendation
+## Recommendation (primera pasada — revisada arriba)
 
 Adoptar **`Human skeleton front en.svg` de Wikimedia Commons (LadyofHats, dominio
 público)** como base 2D, y construir sobre él el mapeo hueso→región. Descartar el
