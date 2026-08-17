@@ -26,7 +26,7 @@ camino está probado.
 
 ## Milestones
 
-- [ ] **Walking skeleton** — e1.1, e1.2, e1.4 — una entrada del catálogo pasa la
+- [x] **Walking skeleton** — e1.1, e1.2, e1.4 — una entrada del catálogo pasa la
       prueba de integridad contra el `.glb` real, y `./scripts/check` corre en
       verde ya sin `--passWithNoTests`.
 - [ ] **Core MVP** — + e1.3, e1.5 — la columna vertebral completa, 26 entradas
@@ -55,7 +55,7 @@ Updated by `story-close` as each story lands — the only cross-artifact write.
 | e1.1 | done | S | S · 4 commits |
 | e1.2 | done | S | S · 3 commits |
 | e1.3 | todo | M | — |
-| e1.4 | todo | S | — |
+| e1.4 | done | S | S · 1 commit |
 | e1.5 | todo | M | — |
 | e1.6 | todo | L | — |
 
