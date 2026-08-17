@@ -49,3 +49,19 @@ test('el lienzo del esqueleto ocupa una porción útil de la pantalla', async ({
   const caja = await lienzo.boundingBox()
   expect(caja?.y ?? Number.MAX_SAFE_INTEGER, 'dónde empieza el lienzo').toBeLessThan(alto)
 })
+
+test('el lienzo de la ficha completa se dimensiona con el mismo criterio', async ({ page }) => {
+  await page.goto('/')
+  await page.getByRole('button', { name: 'fémur derecho', exact: true }).click()
+  await page.getByRole('button', { name: /ver ficha completa/i }).click()
+
+  const alto = page.viewportSize()?.height ?? 0
+  const lienzo = page.locator('canvas').first()
+
+  await expect
+    .poll(async () => (await lienzo.boundingBox())?.height ?? 0, {
+      timeout: 15_000,
+      intervals: [100],
+    })
+    .toBeGreaterThan(alto * 0.3)
+})
