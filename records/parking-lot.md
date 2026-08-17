@@ -159,3 +159,23 @@ dominio y almacenamiento a diseño de interfaz.
 **Destino:** aparcado como épica propia. El dato ya estará ahí —completo y
 por hueso—, así que el día que se quiera mostrar, lo que falta es solo la
 vista.
+
+## 2026-08-17 · `should-perf-007` declara una medición de la que no hay rastro (epic-review e5)
+
+La tabla de `governance/guardrails.md` dice que `should-perf-007` se verifica
+con "medición manual con throttling en DevTools antes de cerrar el epic de
+visualización". E2 (Explorar el esqueleto) está cerrada y ninguno de sus
+artefactos menciona esa medición.
+
+**Por qué no se hizo ahora:** es un `should`, no bloquea nada, y no es trabajo
+de E5 — su épica dueña ya cerró. Corregirlo desde aquí sería trabajo fuera de
+alcance sobre una épica ajena.
+
+**Por qué importa igual:** es el mismo patrón que e5.5 encontró en
+`must-privacy-006` — una columna "cómo se verifica" rellena hace parecer
+verificado lo que nadie comprobó. La diferencia es que aquel era un `must` y
+tenía épica dueña viva.
+
+**Destino:** aparcado. O se mide (es media hora con la aplicación ya
+construida), o se marca explícitamente el guardrail como no verificado hasta
+que alguien lo haga. Lo que no sirve es dejar la tabla afirmando lo que no es.
