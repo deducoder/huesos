@@ -52,16 +52,32 @@ describe('la vista de exploración', () => {
     expect(screen.getByTestId('escena-sustituida')).toBeInTheDocument()
   })
 
-  it('al elegir un hueso en la lista, el panel muestra su nombre latino', async () => {
+  it('sin selección, no hay tarjeta de identidad flotando', () => {
+    // e7.6: antes de elegir, la vista es solo el lienzo — ni siquiera se
+    // monta el estado vacío de BoneIdentity, porque no hay nada que flote.
+    render(<ExploreViewConSuEstado />)
+    expect(screen.queryByText(/elegí un hueso/i)).not.toBeInTheDocument()
+  })
+
+  it('al elegir un hueso en la lista, la tarjeta muestra su nombre latino', async () => {
     const user = userEvent.setup()
     render(<ExploreViewConSuEstado />)
-
-    expect(screen.getByText(/elegí un hueso/i)).toBeInTheDocument()
 
     await user.click(screen.getByRole('button', { name: /^fémur derecho$/i }))
 
     expect(screen.getByRole('heading', { name: /^fémur$/i })).toBeInTheDocument()
     expect(screen.getByText('os femoris')).toBeInTheDocument()
+  })
+
+  it('la tarjeta tiene un botón para cerrarla sin volver a tocar el hueso en la escena', async () => {
+    const user = userEvent.setup()
+    render(<ExploreViewConSuEstado />)
+
+    await user.click(screen.getByRole('button', { name: /^fémur derecho$/i }))
+    expect(screen.getByRole('heading', { name: /^fémur$/i })).toBeInTheDocument()
+
+    await user.click(screen.getByRole('button', { name: /cerrar/i }))
+    expect(screen.queryByRole('heading', { name: /^fémur$/i })).not.toBeInTheDocument()
   })
 
   it('mantiene sincronizados la lista y el panel al cambiar de hueso', async () => {
