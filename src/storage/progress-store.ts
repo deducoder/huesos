@@ -1,4 +1,4 @@
-import { EMPTY_PROGRESS, type ProgressRecord } from '../domain/progress'
+import { type BoneProgress, EMPTY_PROGRESS, type ProgressRecord } from '../domain/progress'
 
 /**
  * La persistencia del progreso (`RF-09`, ADR-004).
@@ -59,15 +59,23 @@ function esContador(valor: unknown): valor is number {
  * resto de ese mismo texto, y un registro reparado a medias es un dato
  * inventado con aspecto de dato real.
  */
+function esProgresoDeHueso(valor: unknown): valor is BoneProgress {
+  // Se estrecha con `in` en vez de con `as`: `must-type-004` prohíbe usar
+  // aserciones de tipo para callar al compilador, y aquí no hacen falta —
+  // `'correct' in valor` estrecha lo suficiente para leer la propiedad.
+  return (
+    typeof valor === 'object' &&
+    valor !== null &&
+    'correct' in valor &&
+    'incorrect' in valor &&
+    esContador(valor.correct) &&
+    esContador(valor.incorrect)
+  )
+}
+
 function esRegistroDeProgreso(valor: unknown): valor is ProgressRecord {
   if (typeof valor !== 'object' || valor === null || Array.isArray(valor)) return false
-  return Object.values(valor).every(
-    (entrada) =>
-      typeof entrada === 'object' &&
-      entrada !== null &&
-      esContador((entrada as Record<string, unknown>).correct) &&
-      esContador((entrada as Record<string, unknown>).incorrect),
-  )
+  return Object.values(valor).every(esProgresoDeHueso)
 }
 
 /**
