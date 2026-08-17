@@ -13,3 +13,6 @@
 - [Verificar antes de nombrar un bug sospechado](verify-before-naming-a-suspected-bug.md) — un caso de control (Math.random fijo, un valor grande y conocido) confirma o descarta una sospecha antes de escribirla como hallazgo.
 - [Verificar tamaños extremos, no solo típicos](verify-extreme-sizes-not-just-typical-ones.md) — un componente con encuadre/layout dinámico necesita probarse contra el elemento más chico y el más grande del rango real, no un ejemplo cómodo de elegir.
 - [Reutilizar un componente no es sinónimo de sin riesgo](reused-components-arent-risk-free.md) — el nuevo caso de uso puede exponerlo a un rango o contexto que ninguna verificación previa cubrió, aunque el código no cambie.
+- [Medir el elemento después del layout](measure-the-element-after-layout.md) — un `<canvas>` mide 300x150 hasta que alguien lo dimensiona; la carrera la pierde la máquina rápida.
+- ["Intermitente" es una hipótesis, no un hallazgo](intermittent-is-a-hypothesis.md) — la explicación ambiental nunca se contradice y por eso nunca se investiga.
+- [Un defecto reintroducido tiene que romper algo](a-reintroduced-defect-must-actually-break.md) — un rojo no prueba nada con el andamiaje roto, ni un verde con un cambio que era un no-op.
