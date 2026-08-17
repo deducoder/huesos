@@ -20,12 +20,32 @@
 - Descontando lo que no son huesos — 14 dientes, 10 cartílagos costales, 2
   agrupaciones de sesamoideos — quedan **118 estructuras óseas**: 82 del lado
   derecho, a espejar, más 36 impares o ya explícitas por lado.
-- **Cobertura estimada 200 de 206.** La brecha es exactamente hioides y los seis
-  huesecillos del oído medio, verificados ausentes por búsqueda directa en los
-  nombres. Es el mismo agujero que la primera pasada identificó por razonamiento
-  anatómico, ahora confirmado por medición sobre un activo independiente. *El
-  conteo clasifica por nombre y tiene ±1 de holgura; la cifra exacta pide
-  revisión manual.*
+- **Cobertura 199 de 206**, verificada región por región contra el desglose
+  canónico (ver tabla abajo). La brecha son **7 huesos: los seis huesecillos del
+  oído medio y el hioides**, confirmados ausentes por búsqueda directa. Es el
+  mismo agujero que la primera pasada identificó por razonamiento anatómico,
+  ahora confirmado midiendo sobre un activo independiente.
+
+| Región | Canon | Modelo |
+|---|---:|---:|
+| Craneales | 8 | 8 |
+| Faciales | 14 | 14 |
+| Osículos del oído | 6 | **0** |
+| Hioides | 1 | **0** |
+| Columna | 26 | 26 |
+| Costillas | 24 | 24 |
+| Esternón | 1 | 1 |
+| Cintura escapular | 4 | 4 |
+| Miembro superior | 60 | 60 |
+| Cintura pélvica | 2 | 2 |
+| Miembro inferior | 60 | 60 |
+| **Total** | **206** | **199** |
+
+  El modelo trae el esternón partido en `Manubrium of sternum` y `Body of
+  sternum` —ventaja didáctica, porque son piezas que se examinan por separado—
+  pero **sin apéndice xifoides**, y en el conteo de 206 el esternón es un solo
+  hueso. Una primera medición automática dio 200 justamente por contar esas dos
+  piezas como dos huesos.
 - Geometría comprimida con `KHR_draco_mesh_compression`, generada desde Blender.
 
 ### Lo que cuesta
@@ -46,7 +66,7 @@ sobre el modelo, no su código.
 **Adoptar el modelo 3D de AnatomyTOOL como activo del catálogo — Confidence:
 MEDIUM-HIGH.** El argumento decisivo no es que el 3D sea mejor producto, es que
 `RF-08` es condición de lanzamiento: con el SVG, llegar a 206 significa etiquetar
-a mano los huesos que hoy viven en subgrupos anónimos; con este modelo, 200 ya
+a mano los huesos que hoy viven en subgrupos anónimos; con este modelo, 199 ya
 vienen nombrados. Convierte el cuello de botella del proyecto en una tarea de
 conversión.
 
@@ -66,7 +86,7 @@ trabajo manual que este modelo hace innecesario.
 | Source | Type | Level | Key finding | Date |
 |--------|------|-------|-------------|------|
 | [Visor open3d de CASK Anatomy](https://caskanatomy.info/open3dviewer/?model=overview-skeleton&export=on) | primary | Very High | Visor Babylon.js GPL 3.0 (Daniel Jansma, LUMC); carga `3dmodels/{model}/{model}.glb` | 2026-08-16 |
-| Inspección directa del `.glb` descargado | primary | Very High | 144 mallas nombradas, 118 óseas, ~200/206; Draco; 132 normal maps; sin metadatos de licencia | 2026-08-16 |
+| Inspección directa del `.glb` descargado | primary | Very High | 144 mallas nombradas, 118 óseas, 199/206; Draco; 132 normal maps; sin metadatos de licencia | 2026-08-16 |
 | [AnatomyTOOL — Open3DModel create](https://anatomytool.org/open3dmodel-create) | primary | Very High | Fuentes en .blend/.obj/.glb; modelos CC BY-SA 4.0; **texturas CC BY-NC-SA** (Krebs et al.) | 2026-08-16 |
 | [AnatomyTOOL — Open3DModel](https://anatomytool.org/open3dmodel) | primary | High | «The model is based on predecessor models BodyParts and Z-Anatomy» | 2026-08-16 |
 | [Texto legal CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/legalcode.en) | primary | Very High | Definición de Adapted Material; las modificaciones técnicas del 2(a)(4) «never produce Adapted Material» | 2026-08-16 |
