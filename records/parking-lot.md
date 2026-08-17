@@ -270,3 +270,44 @@ rendimiento en el mismo móvil de gama media que `should-perf-007` vigila, y hoy
 
 **Destino:** aparcado, con el disparador puesto en e7.10 — la historia que
 produce esa medición. Después de ella la conversación se puede tener con datos.
+
+## 2026-08-17 · La vista Explorar en móvil sin lista superior, con ficha flotante (e7.2, verificación en teléfono)
+
+Probando e7.2 en un teléfono real, el usuario propone quitar el navegador de
+huesos de la parte superior en móvil y que, al seleccionar, la identidad
+aparezca abajo en una **tarjeta flotante**. Referencia aportada:
+`~/refs/cards.jpg` — píldoras de esquina muy redondeada con borde negro grueso,
+sombra dura desplazada y relleno pastel plano sobre fondo crema.
+
+**Por qué no se hizo ahora:** e7.2 dimensiona el lienzo y decide su superficie;
+su reparto vertical está declarado provisional en su propio `scope.md`. Cambiar
+qué piezas se ven y cuándo es una decisión de arquitectura de información, no de
+dimensionado, y afecta a dos historias que aún no existen: **e7.4** decide la
+forma del navegador de 206 huesos —si desaparece de la vista Explorar, ese
+diseño cambia— y **e7.6** decide cómo conviven las tres zonas en 390 px.
+Hacerlo dentro de e7.2 sería resolver e7.6 sin sus piezas rediseñadas.
+
+**Destino:** entra en **e7.6** como entrada de diseño, con `~/refs/cards.jpg`
+como referencia y esta propuesta como punto de partida. e7.4 debe conocerla
+antes de cortar su propio diseño: si el navegador deja de vivir en Explorar,
+su historia cambia de forma.
+
+## 2026-08-17 · Bloquear la orientación vertical en móvil (e7.2, verificación en teléfono)
+
+El usuario no quiere que la aplicación gire a apaisado en el teléfono: la
+prefiere fija en vertical.
+
+**Por qué no se hizo ahora:** además de estar fuera del alcance de e7.2, **una
+web normal no puede bloquear la orientación.** `screen.orientation.lock()` exige
+contexto de pantalla completa en los navegadores que lo implementan, y Safari en
+iOS no lo implementa. Las tres salidas reales son distintas entre sí y ninguna
+es gratis: (a) declarar `orientation: portrait` en un manifiesto de PWA, que
+solo obedece Android y solo si la aplicación se instala; (b) diseñar el layout
+apaisado para que no moleste, que es trabajo de e7.9; (c) mostrar en apaisado un
+aviso pidiendo girar el teléfono, que es una decisión de producto discutible
+porque bloquea a quien usa el teléfono fijado en un soporte.
+
+**Destino:** decisión pendiente, con dueño en **e7.9** (los breakpoints y el
+comportamiento fuera del móvil vertical). La afirmación sobre
+`screen.orientation.lock()` se verifica en esa historia antes de decidir, no
+se da por buena desde acá.

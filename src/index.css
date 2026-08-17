@@ -23,6 +23,14 @@
   --color-acento: #2f5fe0; /* selección — 5.48 con texto panel encima */
   --color-acento-suave: #dce6ff; /* fondo del estado activo — 14.61 con tinta */
   --color-acento-fuerte: #1f41a8; /* el acento bajo el puntero — 8.82 con panel */
+  /* La superficie del lienzo 3D. Oscura dentro de un tema claro, y no por
+     gusto: el hueso del modelo es un beige muy claro, así que sobre blanco
+     pierde contorno, y sobre cualquier fondo azulado el resaltado celeste del
+     hueso elegido (#38bdf8) deja de distinguirse — comprobado con capturas en
+     e7.2. Es la salida reversible que el brief prefería frente a tocar el
+     material del activo, que es un no-go. */
+  --color-lienzo: #4a4640;
+
   --color-aviso: #b4560a; /* borde de lo que el modelo no representa */
   --color-aviso-fondo: #fff1dc;
   --color-aviso-tinta: #5c3200; /* 9.87 sobre aviso-fondo */
@@ -39,4 +47,28 @@
 
   /* La familia sigue siendo la del sistema hasta e7.3; acá solo la escala. */
   --text-titulo: 1.75rem;
+}
+
+/*
+ * Un `<canvas>` de esta aplicación es siempre una escena 3D, y se queda con sus
+ * propios gestos.
+ *
+ * Sin esto el navegador reclama el arrastre **vertical** para hacer scroll de
+ * la página: girar el esqueleto hacia arriba o hacia abajo con el dedo nunca
+ * llega a OrbitControls, y el gesto que el navegador cancela termina disparando
+ * un tap que selecciona un hueso que nadie quiso elegir. En horizontal no
+ * ocurría porque ahí no hay scroll que disputar.
+ *
+ * Va en CSS y no como prop del componente: `<Canvas className>` de
+ * react-three-fiber **no llega al elemento canvas** —comprobado en navegador,
+ * el canvas y su padre quedan con `touch-action: auto`— y es el canvas quien
+ * tiene que declararlo, porque el gesto empieza ahí.
+ *
+ * Encontrado en un teléfono real durante e7.2. La emulación táctil de Playwright
+ * no lo reproduce: sus eventos sintéticos no disputan el scroll como un dedo.
+ */
+@layer base {
+  canvas {
+    touch-action: none;
+  }
 }
