@@ -66,3 +66,32 @@ navegador: una suite `./scripts/check-integration` que el proyecto no tiene.
 
 **Destino:** aparcado — es la carencia estructural más seria que el proyecto
 tiene hoy.
+
+## 2026-08-17 · `governance/architecture/system-design.md` describe módulos que no existen (e3-design)
+
+El documento nombra `features/bone`, `features/quiz`, `domain/answer-check`,
+`domain/quiz`, `domain/progress`, `state/session`, `components/Skeleton`,
+`components/BoneShape`, `components/AnswerInput` y `data/skeleton.svg` —
+ninguno existe en el código real. Quedó escrito antes de ADR-001 (que cambió
+el SVG por el modelo glTF) y nunca se actualizó durante E1 ni E2.
+
+**Por qué importa:** un gemba walk que confíe en este documento en vez de leer
+el código real parte de una foto equivocada de la arquitectura.
+
+**Destino:** aparcado. No bloquea E3 — el gemba walk de e3-design leyó el
+código real, no el documento. Candidato a una tarea de documentación corta
+antes de empezar E4, cuando probablemente vuelva a tocarse.
+
+## 2026-08-17 · La prueba de alcance de selección de s1 está pausada (`test.fixme`)
+
+`e2e/explore.spec.ts` — la prueba que pulsa una rejilla de 121 puntos para
+verificar que se alcanzan huesos distintos (regresión de b2.1/b2.2) quedó
+intermitente en el sandbox remoto de esta sesión (renderizado por software sin
+GPU: entre 20s y más de 2 minutos en corridas idénticas, sin cambios de código
+entre ellas). Verificada a mano en navegador real por el usuario: se alcanzan
+bastantes más de los 6 que el umbral automático pedía.
+
+**Destino:** aparcado con `test.fixme` explícito (no borrado, no debilitado
+más) en `story/s1/browser-integration-suite`, commit `62badce`. Se retoma
+cuando el usuario pueda correr la suite en su propia máquina con GPU real, para
+confirmar si la intermitencia es del entorno o de la prueba misma.
