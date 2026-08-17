@@ -1,0 +1,40 @@
+# Parking lot
+
+Hallazgos nombrados que no se resolvieron donde aparecieron. Append-only.
+
+## 2026-08-16 · El bundle conserva la URL del CDN de Draco (e2.4)
+
+`three` trae `https://www.gstatic.com/draco/...` como ruta por defecto del
+decodificador, y esa cadena queda dentro del bundle aunque la escena configure
+`/draco/` y sirva el decodificador desde el propio origen (verificado: HTTP 200
+en `/draco/draco_decoder.wasm`, 192 420 bytes).
+
+**Por qué importa:** `must-privacy-006` exige que no haya ninguna petición de red
+en tiempo de ejecución. Hoy no la hay, pero la ruta por defecto sigue en el
+código: un descuido futuro —quitar el segundo argumento de `useGLTF`— la
+activaría en silencio, y el test actual no lo vería porque inspecciona el fuente
+de la escena, no el bundle.
+
+**Qué haría falta:** una prueba que intercepte la red con la aplicación
+realmente ejecutándose. Eso es una suite de integración con navegador, que el
+proyecto no tiene y que sería `./scripts/check-integration`.
+
+**Destino:** aparcado. No bloquea e2 y no hay incumplimiento hoy.
+
+## 2026-08-16 · El recorrido de tabulación es largo (e2.2)
+
+206 botones en un solo orden de tabulación. Un lector de pantalla salta por
+encabezados de región, pero quien navegue solo con `Tab` tarda en llegar al
+miembro inferior. Se notará en cuanto alguien lo use en serio.
+
+**Destino:** aparcado; candidato a historia propia si aparece una vista de
+búsqueda o un salto por regiones.
+
+## 2026-08-16 · Sin verificación con lector de pantalla real (e2.2, e2.3)
+
+Las pruebas usan roles y nombres accesibles, y `userEvent` emite eventos de
+teclado auténticos, pero **nadie ha oído la aplicación**. Entre «tiene los
+atributos correctos» y «se entiende al oírla» hay una distancia que el epic no
+cubre.
+
+**Destino:** aparcado, pendiente de una sesión de prueba manual con lector.
