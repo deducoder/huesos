@@ -1,1 +1,41 @@
 @import "tailwindcss";
+
+/*
+ * La única fuente del aspecto de la aplicación (ADR-007).
+ *
+ * Tailwind 4 configura en CSS, no en un archivo JS: `@theme` es su mecanismo,
+ * y cada namespace emite sus utilidades — `--color-*` da `bg-*`/`text-*`/
+ * `border-*`, `--spacing-*` da `min-h-*`/`min-w-*`/`p-*`, `--radius-*` da
+ * `rounded-*`. Por eso el mínimo táctil puede ser un token y no una decisión
+ * repetida en cada componente.
+ *
+ * Los nombres van en español, como el resto de la capa de vista: un
+ * `bg-superficie` se distingue de un `bg-slate-50` de un vistazo, y eso es
+ * justamente lo que `tests/design-tokens.test.ts` vigila.
+ */
+@theme {
+  /* Neobrutalismo suave sobre tema claro. Contraste calculado contra WCAG 2.1,
+     que exige 4.5:1 para texto normal — el par más ajustado da 5.13. */
+  --color-superficie: #faf7f2; /* fondo de la aplicación — crema */
+  --color-panel: #ffffff; /* tarjetas, paneles y barras */
+  --color-tinta: #17150f; /* texto y borde negro — 17.08 sobre superficie */
+  --color-tinta-suave: #5a554a; /* texto secundario — 6.94 sobre superficie */
+  --color-acento: #2f5fe0; /* selección — 5.48 con texto panel encima */
+  --color-acento-suave: #dce6ff; /* fondo del estado activo — 14.61 con tinta */
+  --color-aviso: #b4560a; /* borde de lo que el modelo no representa */
+  --color-aviso-fondo: #fff1dc;
+  --color-aviso-tinta: #5c3200; /* 9.87 sobre aviso-fondo */
+
+  /* Esquina redondeada generosa: suave, no el brutalismo de esquina viva. */
+  --radius-suave: 0.75rem;
+  --radius-tarjeta: 1.25rem;
+
+  /* Sombra desplazada y sin desenfoque, que es lo que la hace dura. */
+  --shadow-dura: 3px 3px 0 0 #17150f;
+
+  /* El mínimo táctil, como token: 44 px es la decisión, no un valor suelto. */
+  --spacing-tactil: 44px;
+
+  /* La familia sigue siendo la del sistema hasta e7.3; acá solo la escala. */
+  --text-titulo: 1.75rem;
+}
