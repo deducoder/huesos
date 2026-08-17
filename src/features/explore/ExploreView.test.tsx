@@ -13,7 +13,19 @@ import { ExploreView } from './ExploreView'
  * el scope de e2.4 lo declara así.
  */
 vi.mock('../../components/SkeletonScene', () => ({
-  SkeletonScene: () => <div data-testid="escena-sustituida" />,
+  SkeletonScene: ({
+    selectedMesh,
+    onPick,
+  }: {
+    selectedMesh: string | null
+    onPick: (id: string) => void
+  }) => (
+    <div data-testid="escena-sustituida" data-malla={selectedMesh ?? ''}>
+      <button type="button" onClick={() => onPick('tibia-left')}>
+        simular clic en la escena
+      </button>
+    </div>
+  ),
 }))
 
 describe('la vista de exploración', () => {
@@ -60,5 +72,43 @@ describe('la vista de exploración', () => {
     await user.tab()
     await user.keyboard('{Enter}')
     expect(screen.getByRole('status')).not.toBeEmptyDOMElement()
+  })
+
+  it('pasa a la escena la malla del hueso elegido, no su identificador', async () => {
+    const user = userEvent.setup()
+    render(<ExploreView />)
+    await user.click(screen.getByRole('button', { name: /^fémur izquierdo$/i }))
+    // `femur-left` y `femur-right` comparten malla: el modelo solo trae el
+    // hemicuerpo derecho y el lado lo pone el catálogo.
+    expect(screen.getByTestId('escena-sustituida')).toHaveAttribute('data-malla', 'Femur.r')
+  })
+
+  it('no pasa ninguna malla cuando el hueso elegido no tiene geometría', async () => {
+    const user = userEvent.setup()
+    render(<ExploreView />)
+    await user.click(screen.getByRole('button', { name: /^martillo izquierdo$/i }))
+    expect(screen.getByTestId('escena-sustituida')).toHaveAttribute('data-malla', '')
+    expect(screen.getByText(/no se puede señalar/i)).toBeInTheDocument()
+  })
+
+  it('refleja en la lista un hueso elegido desde la escena', async () => {
+    const user = userEvent.setup()
+    render(<ExploreView />)
+    await user.click(screen.getByRole('button', { name: /simular clic en la escena/i }))
+    expect(screen.getByRole('button', { name: /^tibia izquierdo$/i })).toHaveAttribute(
+      'aria-pressed',
+      'true',
+    )
+  })
+
+  it('nunca marca más de un hueso a la vez', async () => {
+    const user = userEvent.setup()
+    render(<ExploreView />)
+    await user.click(screen.getByRole('button', { name: /^fémur izquierdo$/i }))
+    await user.click(screen.getByRole('button', { name: /simular clic en la escena/i }))
+    const marcados = screen
+      .getAllByRole('button')
+      .filter((b) => b.getAttribute('aria-pressed') === 'true')
+    expect(marcados).toHaveLength(1)
   })
 })
