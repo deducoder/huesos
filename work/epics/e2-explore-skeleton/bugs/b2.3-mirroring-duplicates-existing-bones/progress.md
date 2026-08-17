@@ -102,3 +102,26 @@ se mide es solo el resaltado del hueso bajo prueba. Bajar el umbral habría hech
 pasar la prueba dejando el instrumento roto, y con él la incapacidad de medir
 cualquier hueso pequeño. Verificado que sigue detectando el defecto: con el
 arreglo desactivado da 72/65, un 1,1:1 que la prueba rechaza.
+
+## T4 · Manual integration test
+
+Generadas tres vistas con una sonda temporal —ya borrada— y **entregadas al
+humano para revisión**, que es lo que la tarea pide; lo que sigue es lo que yo
+observo en ellas, no un veredicto que me corresponda dar.
+
+1. **La calota desde arriba, con el parietal derecho seleccionado.** El
+   resaltado ocupa un solo hemisferio y la sutura sagital queda como un borde
+   nítido en la línea media. El moteado simétrico que reprodujo el bug ha
+   desaparecido. Es la misma vista y el mismo encuadre que la captura de
+   `bug-start`, para que se puedan comparar.
+2. **El esqueleto entero.** Cráneo, mandíbula, columna completa, esternón,
+   costillas de ambos lados, pelvis y las cuatro extremidades. Nada de línea
+   media desapareció al dejar de espejarse, que era el riesgo real del arreglo.
+3. **El fémur derecho seleccionado.** Los dos fémures siguen dibujados y solo
+   se enciende el del lado elegido: un par normal no se vio afectado.
+
+**Queda por confirmar a ojo humano** una cosa que no me atrevo a afirmar desde
+una captura a esta escala: si los cartílagos costales —azulados por su propio
+material— siguen presentes en los dos hemitórax. No deberían haberse tocado
+(viven en `Cartilages_right`, que sí se espeja), pero a este tamaño no se
+distingue con certeza y prefiero decirlo a darlo por bueno.
