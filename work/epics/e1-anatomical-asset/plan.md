@@ -31,7 +31,7 @@ camino está probado.
       verde ya sin `--passWithNoTests`.
 - [x] **Core MVP** — + e1.3, e1.5 — la columna vertebral completa, 26 entradas
       con nomenclatura bilingüe, verificadas contra la geometría.
-- [ ] **Feature complete** — + e1.6 — las 199 entradas y las 7 excepciones
+- [x] **Feature complete** — + e1.6 — las 199 entradas y las 7 excepciones
       declaradas.
 - [ ] **Epic complete** — criterios de `scope.md` cumplidos, documentación
       actualizada, retrospectiva hecha.
@@ -57,7 +57,7 @@ Updated by `story-close` as each story lands — the only cross-artifact write.
 | e1.3 | done | M | M · 3 commits |
 | e1.4 | done | S | S · 1 commit |
 | e1.5 | done | M | M · 2 commits |
-| e1.6 | todo | L | — |
+| e1.6 | done | L | L · 3 commits |
 
 ## Sequencing risks
 
