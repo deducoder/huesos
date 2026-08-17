@@ -159,3 +159,45 @@ Then ese solapamiento se acepta como el costo normal de un panel flotante
      mapas—, y no se resuelve encogiendo o desplazando la escena: tocar el
      encuadre dinámicamente es una historia mayor que esta, y no está pedida
 ```
+
+## Corrección durante la implementación (ADR-010)
+
+Este delta se agrega tras escribir el diseño de arriba, al descubrir en T1 que
+quitar `BoneNavigator` del todo rompía la precisión de dos pruebas de
+navegador que protegen b2.1/b2.2 y b2.3 (seleccionan un hueso específico por
+nombre en la escena combinada; la pestaña Fichas usa una escena aislada
+distinta, que no sirve de reemplazo). Preguntado al usuario, la resolución
+—registrada en **ADR-010**, que supersede a ADR-009— es: `BoneNavigator`
+**sigue montado** dentro de `ExploreView`, con `sr-only` en vez de una
+columna visible.
+
+**Lo que esto cambia respecto al diseño original:**
+
+- **ADR-009 queda superseded.** El camino accesible no se traslada a Fichas;
+  sigue viviendo dentro de Explorar, invisible pero funcional — más fiel a
+  ADR-002 de lo que la primera versión de esta historia terminó siendo.
+- **Los Must 4 y 5 (corregir los dos textos) quedan sin objeto.** El estado
+  vacío de `BoneIdentity» («Podés recorrer la lista con el teclado…») sigue
+  siendo cierto: la lista existe, solo que no se ve. El `accessibleHint` por
+  defecto de `SkeletonScene` («usá la lista de huesos por región») también
+  sigue siendo cierto y **no se sobreescribe** — sería trabajo innecesario
+  corregir un texto que no está roto.
+- **`ExploreView.test.tsx` no necesita el doble de escena con múltiples
+  botones simulados** que la primera versión de este plan proponía: al seguir
+  montado `BoneNavigator` (real, sin mockear), las pruebas existentes que
+  seleccionan por la lista **siguen funcionando en jsdom sin cambios** —
+  `sr-only` no afecta las consultas de Testing Library, solo el layout visual
+  real de un navegador.
+- **`explore.spec.ts` sí necesita ajustarse**, pero de otra forma: Playwright
+  rechaza `.toBeVisible()` y `.click()` normal sobre un elemento `sr-only`
+  —lo recorta a 1×1 px—, así que `esperarEscena` deja de esperar la
+  visibilidad del botón (el lienzo ya prueba que la escena cargó) y
+  `seleccionar` pasa a usar `.click({ force: true })`, con la razón escrita
+  en el propio archivo.
+
+**Acceptance criteria corregidos:**
+
+- Must 4 y 5 originales: **retirados** — no hay nada que corregir.
+- Nuevo Must: `explore.spec.ts` sigue verde, con `esperarEscena` y
+  `seleccionar` ajustados a un elemento `sr-only` en vez de reescribir su
+  intención (siguen protegiendo exactamente b2.1/b2.2/b2.3).
