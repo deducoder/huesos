@@ -4,7 +4,7 @@ import { catalog } from '../data/catalog'
 import { boneIdForMesh } from './mesh-lookup'
 
 /**
- * Reproducción de b2.1.
+ * Regresión de b2.1.
  *
  * `three` sanitiza el nombre de cada nodo al cargar el glTF, así que el nombre
  * que llega en el evento de la escena **no** es el `meshName` del catálogo. Este
