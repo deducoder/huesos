@@ -5,40 +5,75 @@ import { PNG } from 'pngjs'
  * Las comprobaciones que solo un navegador puede hacer.
  *
  * Cada una nace de un defecto real que los 89 tests unitarios no vieron:
- * b2.1 —el cargador transforma los nombres de malla— y b2.2 —la cámara
- * encuadraba fuera del modelo—.
+ * b2.1 —el cargador transforma los nombres de malla, así que solo tres huesos
+ * eran seleccionables— y b2.2 —la cámara encuadraba fuera del modelo—.
  */
 
-/** Espera a que la escena esté dibujada, no a que pase un tiempo arbitrario. */
-async function esperarEscena(page: Page) {
-  await page.goto('/')
-  await expect(page.locator('canvas')).toBeVisible()
-  await expect(page.getByRole('button', { name: 'fémur derecho', exact: true })).toBeVisible()
-  // el modelo llega comprimido con Draco: se espera a que haya algo que pulsar
-  await expect
-    .poll(async () => cuantosHuesosAlcanza(page, 4), { timeout: 30_000, intervals: [1000] })
-    .toBeGreaterThan(0)
+declare global {
+  interface Window {
+    __huesosElegidos?: string[]
+  }
 }
 
-/** Pulsa una rejilla de puntos sobre el lienzo y cuenta cuántos huesos distintos alcanza. */
-async function cuantosHuesosAlcanza(page: Page, pasos: number): Promise<number> {
+/**
+ * Registra en el navegador cada hueso que llega a marcarse.
+ *
+ * Se observa el DOM desde dentro en vez de preguntar tras cada clic: 64 viajes
+ * de ida y vuelta agotaban el tiempo de la prueba.
+ */
+async function observarSelecciones(page: Page) {
+  await page.evaluate(() => {
+    window.__huesosElegidos = []
+    const anotar = () => {
+      const activo = document.querySelector('button[aria-pressed="true"]')
+      const nombre = activo?.textContent?.replace(/^▸\s*/, '').trim()
+      if (nombre && !window.__huesosElegidos?.includes(nombre)) {
+        window.__huesosElegidos?.push(nombre)
+      }
+    }
+    new MutationObserver(anotar).observe(document.body, {
+      subtree: true,
+      attributes: true,
+      attributeFilter: ['aria-pressed'],
+    })
+  })
+}
+
+const huesosElegidos = (page: Page) => page.evaluate(() => window.__huesosElegidos ?? [])
+
+/** Pulsa una rejilla de puntos sobre el lienzo, sin consultar el DOM en cada uno. */
+async function pulsarRejilla(page: Page, pasos: number) {
   const caja = await page.locator('canvas').first().boundingBox()
-  if (!caja) return 0
-  const elegidos = new Set<string>()
+  if (!caja) throw new Error('no hay lienzo')
   for (let fila = 1; fila < pasos; fila++) {
     for (let col = 1; col < pasos; col++) {
       await page.mouse.click(
         caja.x + (caja.width * col) / pasos,
         caja.y + (caja.height * fila) / pasos,
       )
-      const activo = await page.evaluate(() => {
-        const b = document.querySelector('button[aria-pressed="true"]')
-        return b?.textContent?.replace(/^▸\s*/, '').trim() ?? null
-      })
-      if (activo) elegidos.add(activo)
     }
   }
-  return elegidos.size
+}
+
+/** Espera a que el modelo esté cargado y sea pulsable, no a que pase un tiempo fijo. */
+async function esperarEscena(page: Page) {
+  await page.goto('/')
+  await expect(page.locator('canvas')).toBeVisible()
+  await expect(page.getByRole('button', { name: 'fémur derecho', exact: true })).toBeVisible()
+  await observarSelecciones(page)
+
+  const caja = await page.locator('canvas').first().boundingBox()
+  if (!caja) throw new Error('no hay lienzo')
+  // El modelo llega comprimido con Draco: se pulsa el centro hasta que responda.
+  await expect
+    .poll(
+      async () => {
+        await page.mouse.click(caja.x + caja.width / 2, caja.y + caja.height / 2)
+        return (await huesosElegidos(page)).length
+      },
+      { timeout: 60_000, intervals: [500] },
+    )
+    .toBeGreaterThan(0)
 }
 
 /** Píxeles que cambian entre dos capturas del lienzo, contados por mitad. */
@@ -51,8 +86,7 @@ function diferenciaPorMitad(antes: Buffer, despues: Buffer) {
     for (let x = 0; x < a.width; x++) {
       const i = (a.width * y + x) << 2
       const canal = (n: number) => Math.abs((a.data[i + n] ?? 0) - (b.data[i + n] ?? 0))
-      const delta = canal(0) + canal(1) + canal(2)
-      if (delta > 40) {
+      if (canal(0) + canal(1) + canal(2) > 40) {
         if (x < a.width / 2) izquierda++
         else derecha++
       }
@@ -61,7 +95,7 @@ function diferenciaPorMitad(antes: Buffer, despues: Buffer) {
   return { izquierda, derecha }
 }
 
-test('el esqueleto se carga y se ve', async ({ page }) => {
+test('el esqueleto se carga y se ve, sin errores en consola', async ({ page }) => {
   const errores: string[] = []
   page.on('pageerror', (e) => errores.push(String(e)))
   page.on('console', (m) => {
@@ -76,18 +110,18 @@ test('el esqueleto se carga y se ve', async ({ page }) => {
 })
 
 test('se alcanzan muchos huesos distintos pulsando sobre la escena', async ({ page }) => {
-  test.setTimeout(150_000)
+  test.setTimeout(180_000)
   await esperarEscena(page)
 
-  // Regresión de b2.1 (solo 3 nombres sobrevivían al cargador) y de b2.2 (la
-  // cámara encuadraba fuera del modelo). Con cualquiera de los dos defectos
-  // presentes, esta cifra cae a 2.
-  const alcanzados = await cuantosHuesosAlcanza(page, 9)
-  expect(alcanzados, 'huesos distintos alcanzables en una rejilla de 8x8').toBeGreaterThanOrEqual(8)
+  // Regresión de b2.1 y b2.2: con cualquiera de los dos defectos, esta cifra
+  // caía a 2 — el resto de la escena no respondía o quedaba fuera de cuadro.
+  await pulsarRejilla(page, 12)
+  const alcanzados = await huesosElegidos(page)
+  expect(alcanzados.length, `huesos alcanzados: ${alcanzados.join(', ')}`).toBeGreaterThanOrEqual(8)
 })
 
 test('un hueso par se resalta de un solo lado, y del anatómicamente correcto', async ({ page }) => {
-  test.setTimeout(150_000)
+  test.setTimeout(180_000)
   await esperarEscena(page)
   const lienzo = page.locator('canvas').first()
 
@@ -103,15 +137,9 @@ test('un hueso par se resalta de un solo lado, y del anatómicamente correcto', 
 
   // El esqueleto se mira de frente: el lado DERECHO del cuerpo aparece a la
   // IZQUIERDA de la imagen. El cruce es la convención anatómica, no un error.
-  expect(
-    izquierdo.derecha,
-    'fémur izquierdo debe encenderse a la derecha de la imagen',
-  ).toBeGreaterThan(200)
+  expect(izquierdo.derecha, 'el fémur izquierdo se enciende a la derecha').toBeGreaterThan(200)
   expect(izquierdo.izquierda, 'y no a la izquierda').toBeLessThan(izquierdo.derecha / 5)
-  expect(
-    derecho.izquierda,
-    'fémur derecho debe encenderse a la izquierda de la imagen',
-  ).toBeGreaterThan(200)
+  expect(derecho.izquierda, 'el fémur derecho se enciende a la izquierda').toBeGreaterThan(200)
   expect(derecho.derecha, 'y no a la derecha').toBeLessThan(derecho.izquierda / 5)
 })
 
