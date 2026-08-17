@@ -1,2 +1,4 @@
 - [Huesos que faltan en el modelo 3D](skeleton-model-missing-bones.md) — 199 de 206: los 6 osículos del oído y el hioides, y la decisión de asumir el riesgo.
 - [Los tests de activos observan bytes, no referencias](asset-tests-observe-bytes.md) — un criterio que no dice a qué nivel se observa produce un test que mide lo cómodo.
+- [La disciplina de commits se invierte con el volumen](commit-discipline-inverts-with-volume.md) — se agrupa justo donde más falta hacen los puntos de retroceso.
+- [El activo 3D es irregular por naturaleza](model-mesh-names-are-irregular.md) — ningún nombre de malla se puede derivar por regla; hay que leer la lista real.
