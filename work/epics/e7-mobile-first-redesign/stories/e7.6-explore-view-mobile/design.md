@@ -201,3 +201,36 @@ columna visible.
 - Nuevo Must: `explore.spec.ts` sigue verde, con `esperarEscena` y
   `seleccionar` ajustados a un elemento `sr-only` en vez de reescribir su
   intención (siguen protegiendo exactamente b2.1/b2.2/b2.3).
+
+## Segunda corrección: mockup de Claude Design importado
+
+El usuario trajo un mockup (`claude.ai/design`, proyecto "Rediseño aplicación
+anatomía ósea") que toca cuatro partes de la app. Decisión, con el conflicto
+señalado y confirmado dos veces:
+
+- **La tarjeta flotante de T2** adopta el lenguaje visual del mockup: pills
+  para Región y Lado en vez de lista de definiciones, botón "✕" explícito
+  para cerrar. **Entra en esta tarea.**
+- **El navbar** (logo + pestañas + menú en una fila flotante) reabre e7.1 —
+  fuera de esta historia, historia propia.
+- **El acordeón de Fichas** reabre e7.4 — cruza a propósito el rabbit hole
+  que el brief de la épica declaró explícito ("rehacer el navegador como
+  arquitectura nueva es otra épica"). Historia propia.
+- **Test con opciones múltiples** es alcance nuevo, no rediseño. Historia
+  propia.
+- **No adoptado:** la paleta de 10 colores por región del mockup
+  (`REGION_STYLES`). Es una decisión de sistema de diseño con su propio
+  costo de verificación de contraste —como e7.1 hizo con los tokens
+  actuales—, no algo para improvisar dentro de una tarea de T2. El sheet usa
+  el único acento ya establecido.
+- **No adoptado:** los campos "Articula con" y "Dato clínico" del detalle.
+  No existen en el catálogo (`Bone`); poblarlos para 206 huesos es autoría
+  de contenido médico, no una tarea de diseño visual.
+
+### T2 corregida
+
+- **Files:** modify `src/components/BoneIdentity.tsx` (Región y Lado como
+  pills), `src/features/explore/ExploreView.tsx` (botón de cerrar explícito).
+- **Must NOT añadido:** no se toca la paleta por región, ni se agregan
+  campos al catálogo, ni se toca `BoneDetailView.tsx` — solo mejora
+  visualmente el mismo `BoneIdentity` que ya usa.
