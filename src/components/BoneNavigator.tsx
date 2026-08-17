@@ -74,6 +74,36 @@ export function BoneNavigator({ bones, selected, onSelect }: Props) {
                   )
                 }
                 const nombreId = `${fila.right.id}-nombre`
+
+                // Ningún lado tiene malla: los dos son indistinguibles en todo
+                // lo que se puede ver —mismo motivo, nunca aparecen en la
+                // escena, y `pickTestableBone` ya los excluye del modo test.
+                // Elegir lado no distingue nada observable, así que la fila
+                // colapsa a un solo objetivo. Se selecciona el lado derecho
+                // por convención: alguna entrada concreta tiene que ir a
+                // `BoneIdentity`, y es el mismo lado de referencia que ya usa
+                // el dominio en otros lugares (`mesh-lookup`).
+                if (fila.right.meshName === null && fila.left.meshName === null) {
+                  const descriptionId = `${fila.right.id}-missing`
+                  return (
+                    <li key={fila.right.id}>
+                      <button
+                        type="button"
+                        aria-pressed={selected === fila.right.id}
+                        aria-describedby={descriptionId}
+                        onClick={() => onSelect(fila.right.id)}
+                        className={`min-h-tactil w-full rounded-suave px-2 text-left text-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-acento ${claseObjetivo(selected === fila.right.id)}`}
+                      >
+                        {fila.name}
+                        <span aria-hidden="true"> ·</span>
+                      </button>
+                      <span id={descriptionId} className="sr-only">
+                        {fila.right.missingReason}
+                      </span>
+                    </li>
+                  )
+                }
+
                 return (
                   <li key={fila.right.id} className="flex flex-wrap items-center gap-x-2 gap-y-1">
                     <span id={nombreId} className="min-w-20 flex-1">

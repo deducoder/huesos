@@ -58,3 +58,36 @@ la cifra real, medida sobre el componente que se está cerrando, no sobre un
 archivo HTML aislado.
 
 - **Gates:** `./scripts/check` verde · suite de navegador entera verde (11/11).
+
+## T3.5 · Los pares sin geometría en ningún lado colapsan a una fila
+
+Hallazgo del usuario en la verificación manual de T4: los osículos del oído
+—martillo, yunque, estribo, los 6 sin malla en ningún lado— mostraban dos
+píldoras de lado que no distinguen nada observable: mismo motivo de ausencia,
+nunca aparecen en la escena, y `pickTestableBone` ya los excluye del modo
+test. Decisión del usuario: colapsar a una sola fila, seleccionando el lado
+derecho por convención al tocarla.
+
+- **RED:** `src/components/BoneNavigator.test.tsx` — se reescribió el ejemplo
+  de "martillo izquierdo" a "martillo" y se añadieron dos pruebas nuevas: un
+  par totalmente ausente no ofrece elegir lado; un par con geometría en ambos
+  —fémur— sigue ofreciéndolo. **Esto rompe deliberadamente el Must 4 del
+  scope** («`BoneNavigator.test.tsx` sigue verde sin reescribirse»): el
+  comportamiento cambió a propósito, no por descuido, y se reescribió el test
+  para que siga protegiendo lo que ahora es cierto.
+- **GREEN:** en `BoneNavigator.tsx`, la fila `paired` comprueba si
+  `right.meshName === null && left.meshName === null`; si es así, renderiza
+  una fila simple con el nombre común, seleccionando `fila.right.id`.
+- **Dos consumidores huérfanos encontrados y corregidos** —el chequeo que
+  `story-implement` exige antes de cerrar—: `ExploreView.test.tsx` también
+  usaba "martillo izquierdo" como su ejemplo de "hueso sin geometría
+  seleccionado desde la lista", y esperaba `data-hueso="malleus-left"`.
+  Actualizado a "martillo" / `malleus-right`, conservando la aserción de fondo
+  —la escena recibe el id igual, el panel explica la ausencia—. Verificados y
+  descartados como no afectados: `selection.test.ts` y `BoneIdentity.test.tsx`
+  usan `malleus-left` operando sobre el dato directamente (`findBone`, prop
+  directa), no a través del navegador — el id sigue existiendo en el
+  catálogo, solo cambió cómo se alcanza desde la lista.
+- **Gates:** `./scripts/check` verde, **219 tests** (217 + 2 nuevos) ·
+  suite de navegador entera verde (11/11). Verificado con captura: martillo,
+  yunque y estribo se ven como filas simples, igual que hioides.

@@ -106,10 +106,13 @@ describe('la vista de exploración', () => {
   it('avisa cuando el hueso elegido no tiene geometría que resaltar', async () => {
     const user = userEvent.setup()
     render(<ExploreViewConSuEstado />)
-    await user.click(screen.getByRole('button', { name: /^martillo izquierdo$/i }))
+    // e7.4: martillo no tiene malla en ningún lado, así que el navegador lo
+    // ofrece como una sola fila —elegir lado no distingue nada observable—
+    // y selecciona `malleus-right` por convención.
+    await user.click(screen.getByRole('button', { name: /^martillo$/i }))
     // La escena recibe el id igual; no encontrará malla para él, que es lo
     // correcto, y el panel lo explica.
-    expect(screen.getByTestId('escena-sustituida')).toHaveAttribute('data-hueso', 'malleus-left')
+    expect(screen.getByTestId('escena-sustituida')).toHaveAttribute('data-hueso', 'malleus-right')
     expect(screen.getByText(/no se puede señalar/i)).toBeInTheDocument()
   })
 
