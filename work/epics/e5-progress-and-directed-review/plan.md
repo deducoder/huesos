@@ -41,7 +41,7 @@ no bloquea nada.
 
 ## Milestones
 
-- [ ] **Walking skeleton** — e5.1, e5.2, e5.3 — responder una pregunta,
+- [x] **Walking skeleton** — e5.1, e5.2, e5.3 — responder una pregunta,
       recargar la página, y ver que el registro de ese hueso conserva el
       resultado. Verificado **en navegador real**, que es el único sitio donde
       "recargar" significa algo.
@@ -51,7 +51,7 @@ no bloquea nada.
 - [ ] **Epic complete** — + e5.5 — `./scripts/check` falla ante cualquier
       petición de red en tiempo de ejecución, y los cuatro criterios de
       `Done when` se cumplen.
-- [ ] **E2E integration checkpoint** — anclado en el hito del esqueleto andante,
+- [x] **E2E integration checkpoint** — anclado en el hito del esqueleto andante,
       no antes del final: la costura que importa (dominio ↔ almacenamiento ↔
       React ↔ recarga del navegador) solo existe una vez que e5.3 la cierra, y
       ninguna prueba unitaria puede recargar una página. Se apoya en la suite de
@@ -76,7 +76,7 @@ Updated by `story-close` as each story lands — the only cross-artifact write.
 |-------|:------:|:----:|:------:|
 | e5.1 | done | S | S |
 | e5.2 | done | M | M |
-| e5.3 | todo | M | — |
+| e5.3 | done | M | S-M |
 | e5.4 | todo | M | — |
 | e5.5 | todo | S | — |
 
