@@ -95,3 +95,21 @@ bastantes más de los 6 que el umbral automático pedía.
 más) en `story/s1/browser-integration-suite`, commit `62badce`. Se retoma
 cuando el usuario pueda correr la suite en su propia máquina con GPU real, para
 confirmar si la intermitencia es del entorno o de la prueba misma.
+
+## 2026-08-17 · `SkeletonScene` e `IsolatedBoneScene` repiten la forma clonar+recorrer (epic-close e3)
+
+Las dos cargan `skeleton.glb`, clonan la escena y la recorren con
+`traverse` decidiendo una acción por malla (`SkeletonScene`: resaltar por
+material y manejar el clic; `IsolatedBoneScene`: mostrar/ocultar y calcular
+el encuadre). Es la misma forma estructural, con una acción distinta en
+cada caso.
+
+**Por qué no se extrajo ahora:** dos ocurrencias con responsabilidades que
+todavía difieren en detalle real (interacción de clic vs. cálculo de caja
+delimitadora) no justifican una abstracción compartida — regla de tres,
+YAGNI. Forzarla ahora sería adivinar la forma correcta con un solo caso de
+comparación real.
+
+**Destino:** aparcado. Si E4 (modo test) necesita una tercera variante de
+"cargar el modelo y recorrerlo por malla", ahí sí hay tres puntos de datos
+reales para decidir qué parte compartir — antes no.
