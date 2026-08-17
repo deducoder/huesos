@@ -1,4 +1,14 @@
+import { existsSync } from 'node:fs'
 import { defineConfig, devices } from '@playwright/test'
+
+/**
+ * Algunos entornos de ejecución traen Chromium preinstalado en una ruta fija
+ * en vez de la que gestiona Playwright — con una versión de navegador que no
+ * siempre coincide con la que este proyecto fija. Se usa solo si existe; en
+ * cualquier otra máquina, Playwright resuelve el binario que instaló.
+ */
+const CHROMIUM_PREINSTALADO = '/opt/pw-browsers/chromium'
+const executablePath = existsSync(CHROMIUM_PREINSTALADO) ? CHROMIUM_PREINSTALADO : undefined
 
 /**
  * Suite de integración: la aplicación de verdad, en un navegador de verdad.
@@ -21,9 +31,18 @@ export default defineConfig({
   use: {
     baseURL: 'http://localhost:4173',
     viewport: { width: 1400, height: 900 },
-    trace: 'retain-on-failure',
+    // Sin trace: registrar una instantánea del DOM tras cada acción es carísimo
+    // bajo renderizado por software (~2s por acción), y Playwright no permite
+    // desactivarlo prueba por prueba sin forzar un worker nuevo por prueba. La
+    // rejilla de 121 clics —la única que lo necesitaba— corre en <1s sin trace.
+    trace: 'off',
   },
-  projects: [{ name: 'chromium', use: { ...devices['Desktop Chrome'] } }],
+  projects: [
+    {
+      name: 'chromium',
+      use: { ...devices['Desktop Chrome'], launchOptions: { executablePath } },
+    },
+  ],
   webServer: {
     // `vite build` a secas: la comprobación de tipos ya la hace ./scripts/check
     command: 'npx vite build && npx vite preview --port 4173',

@@ -30,8 +30,17 @@ it — a red check will not stop a commit — so run it yourself while working:
 ./scripts/check              # lint · format · types · unit tests (seconds)
 ```
 
-No hay `./scripts/check-integration`: no existe ninguna suite que necesite
-servicios levantados. Si algún día la hay, se agrega ahí y corre al hacer push.
+```bash
+./scripts/check-integration  # navegador real contra el build (minutos) — antes de hacer push
+```
+
+`check-integration` es el segundo punto de entrada que la convención de gates
+contempla: arranca el build de producción, abre Chromium con Playwright y
+comprueba que el esqueleto carga, se puede seleccionar desde decenas de puntos
+distintos, resalta el lado correcto en un hueso par, y no pide nada a ningún
+tercero. Nace de b2.1 y b2.2, dos defectos que ninguna prueba unitaria podía
+ver. No corre en cada commit —tarda un orden de magnitud más que `check`— sino
+antes de empujar.
 
 The gates above do not run a single test. A task's RED step does, so this project's
 way to run one lives here too — not a gate, just the command the loop needs:
