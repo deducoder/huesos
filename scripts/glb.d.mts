@@ -6,6 +6,18 @@ export interface GlbNode {
   children?: number[]
 }
 
+/** La caja de una malla vive en el accessor de POSITION: glTF exige min/max. */
+export interface GlbAccessor {
+  min?: number[]
+  max?: number[]
+  count?: number
+}
+
+export interface GlbMesh {
+  name?: string
+  primitives: { attributes: Record<string, number>; material?: number }[]
+}
+
 export interface GlbMaterial {
   name?: string
   [key: string]: unknown
@@ -13,12 +25,13 @@ export interface GlbMaterial {
 
 export interface Glb {
   nodes: GlbNode[]
-  meshes?: { primitives?: unknown[] }[]
+  meshes?: GlbMesh[]
   materials?: GlbMaterial[]
   images?: unknown[]
   textures?: unknown[]
   samplers?: unknown[]
-  accessors?: unknown[]
+  accessors?: GlbAccessor[]
+  scenes?: { nodes: number[] }[]
   bufferViews: { byteOffset?: number; byteLength: number }[]
   buffers?: { byteLength: number }[]
   __bin?: Buffer

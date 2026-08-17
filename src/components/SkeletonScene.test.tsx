@@ -25,9 +25,16 @@ describe('la escena del esqueleto', () => {
     expect(fuente).toMatch(/data\/skeleton\.glb/)
   })
 
-  it('espeja el hemicuerpo, porque el modelo solo trae el derecho', () => {
+  it('espeja la parte lateral, que el modelo solo trae del lado derecho', () => {
     expect(fuente).toMatch(/\[-1, 1, 1\]/)
     expect(fuente).toMatch(/half="mirrored"/)
+  })
+
+  it('no espeja lo que el modelo ya trae en su sitio', () => {
+    // b2.3: espejar el modelo entero duplicaba 36 mallas —la línea media y los
+    // parietales— encima de sí mismas, y las dejaba pulsables en el hemisferio
+    // contrario aunque no se vieran.
+    expect(fuente).toMatch(/stripMidline\(/)
   })
 
   it('resuelve el lado por la mitad de la escena, no por el nombre de la malla', () => {

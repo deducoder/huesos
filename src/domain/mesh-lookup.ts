@@ -4,9 +4,13 @@ import type { Bone } from '../data/bone'
 /**
  * Cuál de las dos copias de la escena se pulsó.
  *
- * El modelo trae solo el hemicuerpo derecho, así que el esqueleto completo se
- * dibuja dos veces y **la misma malla existe dos veces en la escena**. El lado
- * de un hueso par no puede deducirse de su nombre de malla: lo decide la mitad.
+ * El modelo trae **su parte lateral** en un solo lado —el derecho—, así que la
+ * escena la dibuja dos veces y esas mallas existen dos veces. El lado de un
+ * hueso par así no puede deducirse de su nombre de malla: lo decide la mitad.
+ *
+ * No vale para todo el modelo, y creerlo costó b2.3: las piezas de línea media
+ * y el par que el activo ya trae completo —los parietales— **no** se espejan.
+ * Cuáles son lo declara el propio activo; lo aplica `stripMidline`.
  */
 export type SceneHalf = 'original' | 'mirrored'
 
