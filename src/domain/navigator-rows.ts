@@ -1,4 +1,5 @@
 import type { Bone } from '../data/bone'
+import { siblingId } from './side-pairing'
 
 /**
  * Una fila del navegador: un par de huesos que comparten fila, o un hueso
@@ -45,7 +46,7 @@ export function toNavigatorRows(bones: readonly Bone[]): NavigatorRow[] {
       esLadoDerecho(hueso) &&
       siguiente !== undefined &&
       esLadoIzquierdo(siguiente) &&
-      siguiente.id === hueso.id.replace(/-right$/, '-left')
+      siguiente.id === siblingId(hueso)
     ) {
       filas.push({ kind: 'paired', name: hueso.es, right: hueso, left: siguiente })
       i++
