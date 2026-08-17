@@ -42,7 +42,7 @@ export function BoneDetailView({ boneId, onBack }: Props) {
 
   return (
     <div className="grid h-full min-h-0 grid-cols-1 md:grid-cols-[1fr_22rem]">
-      <div className="min-h-0 bg-panel">
+      <div className="min-h-0 border-tinta border-y-2 bg-lienzo md:border-y-0">
         {bone && bone.meshName === null ? (
           <AusenciaEnElModelo />
         ) : (

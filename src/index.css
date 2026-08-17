@@ -23,6 +23,14 @@
   --color-acento: #2f5fe0; /* selección — 5.48 con texto panel encima */
   --color-acento-suave: #dce6ff; /* fondo del estado activo — 14.61 con tinta */
   --color-acento-fuerte: #1f41a8; /* el acento bajo el puntero — 8.82 con panel */
+  /* La superficie del lienzo 3D. Oscura dentro de un tema claro, y no por
+     gusto: el hueso del modelo es un beige muy claro, así que sobre blanco
+     pierde contorno, y sobre cualquier fondo azulado el resaltado celeste del
+     hueso elegido (#38bdf8) deja de distinguirse — comprobado con capturas en
+     e7.2. Es la salida reversible que el brief prefería frente a tocar el
+     material del activo, que es un no-go. */
+  --color-lienzo: #4a4640;
+
   --color-aviso: #b4560a; /* borde de lo que el modelo no representa */
   --color-aviso-fondo: #fff1dc;
   --color-aviso-tinta: #5c3200; /* 9.87 sobre aviso-fondo */

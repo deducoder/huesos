@@ -32,7 +32,7 @@ export function ExploreView({ selected, onSelect, onViewDetail }: Props) {
       <div className="min-h-0 overflow-y-auto border-tinta border-r py-2">
         <BoneNavigator bones={catalog} selected={selected} onSelect={onSelect} />
       </div>
-      <div className="min-h-0 bg-panel">
+      <div className="min-h-0 border-tinta border-y-2 bg-lienzo md:border-y-0">
         <SkeletonScene bones={catalog} selected={selected} onPick={onSelect} />
       </div>
       <div className="min-h-0 overflow-y-auto border-tinta border-l">

@@ -57,3 +57,36 @@ vista**. Se comprobó que discrimina en vez de pasar siempre — con el umbral
 subido al 95% del viewport falla con `Expected > 801.8, Received 521.98`.
 
 - **Gates:** `./scripts/check` verde · suite de navegador entera verde (7/7).
+
+## T3 · La superficie que separa el hueso de su fondo
+
+- **Sin RED automático, como el plan declaraba.** Lo decidieron cinco capturas
+  del mismo lienzo con la superficie cambiada en vivo, más tres con el fémur
+  derecho ya seleccionado.
+- **GREEN:** `--color-lienzo: #4a4640` en `@theme`, consumido por `ExploreView`
+  y `BoneDetailView` con `border-tinta border-y-2` en móvil (`md:border-y-0`,
+  porque en escritorio los bordes laterales de las columnas vecinas ya
+  enmarcan).
+- **Gates:** `./scripts/check` verde · suite de navegador entera verde (7/7).
+
+**Lo que decidió la elección, y no fue el gusto:**
+
+| Superficie | Contorno del hueso | Hueso resaltado |
+|---|---|---|
+| `#ffffff` blanco (la de antes) | se difumina, la pelvis y las costillas pierden borde | visible |
+| `#bfb6a4` gris cálido medio | **peor**: mismo tono que el hueso, compite en vez de separar | visible |
+| `#8f9bb3` azul grisáceo | bueno | **se funde con el fondo** |
+| `#4a4640` gris oscuro cálido | todos los contornos definidos | **salta a la vista** |
+
+El criterio que descartó el azul grisáceo es funcional, no estético: el
+resaltado del hueso elegido es `#38bdf8`, un celeste, y sobre cualquier fondo
+azulado deja de leerse. El resaltado es **cómo se ve qué hueso elegiste**, así
+que un fondo que lo apaga rompe la vista aunque se vea bonito.
+
+**No hace falta tocar el activo, que era el no-go.** La superficie oscura es
+exactamente la salida reversible que el brief prefería, y basta: un token, un
+valor, y el material del modelo intacto.
+
+**Nota de alcance:** con el reparto 1/2/1 la lista de huesos queda con unos
+190 px de alto y su propio scroll. Es usable y es **provisional** — e7.6 decide
+el reparto definitivo con las tres piezas ya rediseñadas.
