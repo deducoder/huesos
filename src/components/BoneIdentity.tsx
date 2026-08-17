@@ -1,8 +1,10 @@
-import type { Bone } from '../data/bone'
+import { isUnpaired, type Bone } from '../data/bone'
 import { REGION_LABEL, SIDE_LABEL } from './labels'
 
 interface Props {
   bone: Bone | undefined
+  /** Si se pasa, ofrece abrir la ficha completa del hueso elegido (RF-03). */
+  onViewDetail?: (id: string) => void
 }
 
 /**
@@ -12,7 +14,7 @@ interface Props {
  * `aria-pressed`, la escena la resalta, y esto la escribe con todas las letras.
  * El color nunca viaja solo.
  */
-export function BoneIdentity({ bone }: Props) {
+export function BoneIdentity({ bone, onViewDetail }: Props) {
   if (!bone) {
     return (
       <section className="p-6" aria-labelledby="identidad-vacia">
@@ -45,6 +47,12 @@ export function BoneIdentity({ bone }: Props) {
             <dd>{SIDE_LABEL[bone.side]}</dd>
           </div>
         )}
+        {isUnpaired(bone) && (
+          <div className="flex gap-2">
+            <dt className="text-slate-400">Lateralidad</dt>
+            <dd>impar</dd>
+          </div>
+        )}
         {bone.synonyms.length > 0 && (
           <div className="flex gap-2">
             <dt className="text-slate-400">También</dt>
@@ -57,6 +65,16 @@ export function BoneIdentity({ bone }: Props) {
         <p className="mt-4 rounded border border-amber-700 bg-amber-950 p-3 text-amber-200 text-sm">
           No se puede señalar en el esqueleto. {bone.missingReason}
         </p>
+      )}
+
+      {onViewDetail && (
+        <button
+          type="button"
+          onClick={() => onViewDetail(bone.id)}
+          className="mt-4 rounded border border-sky-700 px-3 py-1.5 text-sky-300 text-sm hover:bg-sky-950"
+        >
+          Ver ficha completa
+        </button>
       )}
 
       {/* Un lector de pantalla anuncia el cambio sin tener que ir a buscar el panel. */}

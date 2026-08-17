@@ -140,14 +140,28 @@ function LoadingNotice() {
   )
 }
 
+const PISTA_POR_DEFECTO =
+  'Vista tridimensional del esqueleto. Para elegir un hueso sin usar el ratón, usá la lista de huesos por región.'
+
 interface Props {
   bones: readonly Bone[]
   /** El `id` del hueso seleccionado, o `null`. */
   selected: string | null
   onPick: (id: string) => void
+  /**
+   * El texto para lectores de pantalla bajo el lienzo. Configurable porque
+   * el mensaje por defecto remite a un navegador de huesos que no existe en
+   * todo consumidor de esta escena — el modo test (`e4.2`) no lo monta.
+   */
+  accessibleHint?: string
 }
 
-export function SkeletonScene({ bones, selected, onPick }: Props) {
+export function SkeletonScene({
+  bones,
+  selected,
+  onPick,
+  accessibleHint = PISTA_POR_DEFECTO,
+}: Props) {
   return (
     <div className="relative h-full w-full">
       <Canvas
@@ -161,10 +175,7 @@ export function SkeletonScene({ bones, selected, onPick }: Props) {
         </Suspense>
         <OrbitControls enablePan enableZoom makeDefault target={[0, 0, 0]} />
       </Canvas>
-      <p className="sr-only">
-        Vista tridimensional del esqueleto. Para elegir un hueso sin usar el ratón, usá la lista de
-        huesos por región.
-      </p>
+      <p className="sr-only">{accessibleHint}</p>
     </div>
   )
 }

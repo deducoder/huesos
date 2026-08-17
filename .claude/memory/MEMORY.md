@@ -4,3 +4,12 @@
 - [El activo 3D es irregular por naturaleza](model-mesh-names-are-irregular.md) — ningún nombre de malla se puede derivar por regla; hay que leer la lista real.
 - [Lo intestable va al final, sobre algo que funcione](untestable-layers-go-last.md) — ordenar el epic convierte un riesgo en un extra.
 - [Probar el dato al otro lado de la librería](test-the-data-after-the-library.md) — b2.1: 80 tests en verde y solo 3 huesos seleccionables.
+- [El encuadre dinámico de cámara necesita un componente](dynamic-camera-framing-needs-a-component.md) — la prop `camera` de `Canvas` solo se lee al montar; usar `<PerspectiveCamera>` de drei cuando el encuadre se calcula después.
+- [La propiedad del estado sigue a la supervivencia, no a la prolijidad](state-ownership-follows-survival-not-cleanliness.md) — un componente deja de poder ser dueño de su estado en cuanto otra vista necesita que sobreviva a su desmontaje.
+- [El diseño de una épica es una hipótesis](epic-design-is-a-hypothesis.md) — el gemba de cada historia sigue siendo la autoridad, incluso sobre el propio `design.md` que la contiene.
+- [Las capas de dominio puras pagan después](pure-domain-layers-pay-off-later.md) — una función pura bien cortada se reutiliza en historias que nadie planeó cuando se escribió, no solo se prueba más fácil.
+- [Una verificación autoconsistente esconde bugs sistemáticos](self-consistent-checks-hide-systematic-bugs.md) — comparar datos normalizados contra sí mismos con la misma normalización prueba consistencia, no corrección; hace falta un criterio externo.
+- [La verificación manual sigue encontrando cosas reales](manual-verification-keeps-finding-real-things.md) — reutilizar un componente probado en un contexto nuevo filtra texto fijo que asumía el contexto original; ningún test unitario lo vería.
+- [Verificar antes de nombrar un bug sospechado](verify-before-naming-a-suspected-bug.md) — un caso de control (Math.random fijo, un valor grande y conocido) confirma o descarta una sospecha antes de escribirla como hallazgo.
+- [Verificar tamaños extremos, no solo típicos](verify-extreme-sizes-not-just-typical-ones.md) — un componente con encuadre/layout dinámico necesita probarse contra el elemento más chico y el más grande del rango real, no un ejemplo cómodo de elegir.
+- [Reutilizar un componente no es sinónimo de sin riesgo](reused-components-arent-risk-free.md) — el nuevo caso de uso puede exponerlo a un rango o contexto que ninguna verificación previa cubrió, aunque el código no cambie.

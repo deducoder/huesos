@@ -1,5 +1,6 @@
 import { render, screen } from '@testing-library/react'
-import { describe, expect, it } from 'vitest'
+import userEvent from '@testing-library/user-event'
+import { describe, expect, it, vi } from 'vitest'
 import { catalog } from '../data/catalog'
 import { findBone } from '../domain/selection'
 import { BoneIdentity } from './BoneIdentity'
@@ -41,5 +42,36 @@ describe('el panel de identidad del hueso', () => {
     render(<BoneIdentity bone={hueso('femur-right')} />)
     const vivo = screen.getByRole('status')
     expect(vivo).toHaveTextContent(/fémur/i)
+  })
+
+  it('dice "impar" explícitamente, no solo omite el lado', () => {
+    render(<BoneIdentity bone={hueso('sacrum')} />)
+    const datos = screen.getAllByRole('definition').map((d) => d.textContent)
+    expect(datos).toContain('impar')
+  })
+
+  it('no dice "impar" en un hueso par', () => {
+    render(<BoneIdentity bone={hueso('femur-right')} />)
+    const datos = screen.getAllByRole('definition').map((d) => d.textContent)
+    expect(datos).not.toContain('impar')
+  })
+
+  it('ofrece ver la ficha completa cuando se le pasa el callback', async () => {
+    const user = userEvent.setup()
+    const onViewDetail = vi.fn()
+    render(<BoneIdentity bone={hueso('femur-right')} onViewDetail={onViewDetail} />)
+
+    await user.click(screen.getByRole('button', { name: /ver ficha completa/i }))
+    expect(onViewDetail).toHaveBeenCalledWith('femur-right')
+  })
+
+  it('no muestra el botón de ficha completa sin el callback', () => {
+    render(<BoneIdentity bone={hueso('femur-right')} />)
+    expect(screen.queryByRole('button', { name: /ver ficha completa/i })).not.toBeInTheDocument()
+  })
+
+  it('no muestra el botón de ficha completa sin hueso elegido', () => {
+    render(<BoneIdentity bone={undefined} onViewDetail={vi.fn()} />)
+    expect(screen.queryByRole('button', { name: /ver ficha completa/i })).not.toBeInTheDocument()
   })
 })

@@ -66,3 +66,68 @@ navegador: una suite `./scripts/check-integration` que el proyecto no tiene.
 
 **Destino:** aparcado — es la carencia estructural más seria que el proyecto
 tiene hoy.
+
+## 2026-08-17 · `governance/architecture/system-design.md` describe módulos que no existen (e3-design)
+
+El documento nombra `features/bone`, `features/quiz`, `domain/answer-check`,
+`domain/quiz`, `domain/progress`, `state/session`, `components/Skeleton`,
+`components/BoneShape`, `components/AnswerInput` y `data/skeleton.svg` —
+ninguno existe en el código real. Quedó escrito antes de ADR-001 (que cambió
+el SVG por el modelo glTF) y nunca se actualizó durante E1 ni E2.
+
+**Por qué importa:** un gemba walk que confíe en este documento en vez de leer
+el código real parte de una foto equivocada de la arquitectura.
+
+**Destino:** aparcado. No bloquea E3 — el gemba walk de e3-design leyó el
+código real, no el documento. Candidato a una tarea de documentación corta
+antes de empezar E4, cuando probablemente vuelva a tocarse.
+
+## 2026-08-17 · La prueba de alcance de selección de s1 está pausada (`test.fixme`)
+
+`e2e/explore.spec.ts` — la prueba que pulsa una rejilla de 121 puntos para
+verificar que se alcanzan huesos distintos (regresión de b2.1/b2.2) quedó
+intermitente en el sandbox remoto de esta sesión (renderizado por software sin
+GPU: entre 20s y más de 2 minutos en corridas idénticas, sin cambios de código
+entre ellas). Verificada a mano en navegador real por el usuario: se alcanzan
+bastantes más de los 6 que el umbral automático pedía.
+
+**Destino:** aparcado con `test.fixme` explícito (no borrado, no debilitado
+más) en `story/s1/browser-integration-suite`, commit `62badce`. Se retoma
+cuando el usuario pueda correr la suite en su propia máquina con GPU real, para
+confirmar si la intermitencia es del entorno o de la prueba misma.
+
+## 2026-08-17 · `SkeletonScene` e `IsolatedBoneScene` repiten la forma clonar+recorrer (epic-close e3)
+
+Las dos cargan `skeleton.glb`, clonan la escena y la recorren con
+`traverse` decidiendo una acción por malla (`SkeletonScene`: resaltar por
+material y manejar el clic; `IsolatedBoneScene`: mostrar/ocultar y calcular
+el encuadre). Es la misma forma estructural, con una acción distinta en
+cada caso.
+
+**Por qué no se extrajo ahora:** dos ocurrencias con responsabilidades que
+todavía difieren en detalle real (interacción de clic vs. cálculo de caja
+delimitadora) no justifican una abstracción compartida — regla de tres,
+YAGNI. Forzarla ahora sería adivinar la forma correcta con un solo caso de
+comparación real.
+
+**Destino:** aparcado. Si E4 (modo test) necesita una tercera variante de
+"cargar el modelo y recorrerlo por malla", ahí sí hay tres puntos de datos
+reales para decidir qué parte compartir — antes no.
+
+## 2026-08-17 · `SkeletonScene` y `IsolatedBoneScene` describen su lienzo de dos formas distintas (epic-review e4)
+
+`SkeletonScene.accessibleHint` agrega un `<p className="sr-only">`
+separado, sin vincularlo al `Canvas` (ADR-002, luego extendido en e4.2).
+`IsolatedBoneScene.accessibleLabel` fija el `aria-label` del contenedor
+directamente (e3.2, extendido en e4.4). Mismo propósito —describir el
+lienzo para un lector de pantalla, configurable por consumidor—, dos
+mecanismos.
+
+**Por qué no se unificó ahora:** la inconsistencia es anterior a e4 — cada
+componente ya tenía su propio patrón antes de que esta épica agregara la
+prop configurable siguiéndolo. Unificar el mecanismo es un cambio a dos
+componentes de epics anteriores (E2, E3), fuera del objetivo de e4.
+
+**Destino:** aparcado. Candidato a una historia corta de consolidación si
+aparece un tercer consumidor con la misma necesidad, o si algún epic futuro
+ya va a tocar ambos componentes por otro motivo.
