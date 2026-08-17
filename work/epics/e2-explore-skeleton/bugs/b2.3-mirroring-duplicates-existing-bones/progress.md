@@ -125,3 +125,31 @@ una captura a esta escala: si los cartílagos costales —azulados por su propio
 material— siguen presentes en los dos hemitórax. No deberían haberse tocado
 (viven en `Cartilages_right`, que sí se espeja), pero a este tamaño no se
 distingue con certeza y prefiero decirlo a darlo por bueno.
+
+## T5 · El arreglo de T3 estaba incompleto (RED → GREEN)
+
+**Lo encontró el usuario probando en vivo, no una prueba.** Reportó que al pulsar
+un lado se seleccionaba a veces el contrario, en puntos concretos y sobre todo
+en la parte superior lateral del cráneo.
+
+Tenía razón, y la causa es que **`visible = false` no saca una malla del
+raycaster**. `three` no comprueba `visible` al calcular intersecciones —
+verificado con una sonda: una malla invisible devuelve 2 intersecciones—, así
+que T3 dejó las 36 mallas de línea media espejadas *ocultas pero pulsables*. En
+la calota, el espejo invisible del parietal derecho cubría el hemisferio
+izquierdo y respondía al clic antes que la malla visible: pulsabas la izquierda
+y se seleccionaba el derecho.
+
+Ninguna de mis pruebas podía verlo: T1 mide **píxeles encendidos**, es decir el
+render, y el render era correcto. Lo que estaba mal era lo que el rayo
+encontraba, que no se renderiza.
+
+`src/domain/mirroring.ts` expone `stripMidline`, que **quita** el grupo del
+grafo (`removeFromParent`) en vez de ocultarlo, y `SkeletonScene` la usa al
+clonar. Sus cinco pruebas usan un `Raycaster` de verdad contra un grafo de
+juguete —no el texto del fuente— e incluyen el caso de control que prueba que
+el rayo apunta donde se cree: sin preparar la escena, la línea media **sí** se
+alcanza. Sin ese caso, un rayo mal apuntado daría verde sin haber mirado nada.
+
+**Gates:** `./scripts/check` verde (199 unitarias) y `./scripts/check-integration`
+verde (4 de 4).

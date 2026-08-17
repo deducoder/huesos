@@ -4,9 +4,9 @@ import { Suspense, useLayoutEffect, useMemo } from 'react'
 import { Box3, Color, type Mesh, MeshStandardMaterial, type Object3D, Vector3 } from 'three'
 import type { Bone } from '../data/bone'
 import skeletonUrl from '../data/skeleton.glb?url'
-import { MIDLINE_GROUP } from '../data/skeleton-groups'
 import { distanceToFit } from '../domain/framing'
 import { boneIdForMesh, type SceneHalf } from '../domain/mesh-lookup'
+import { stripMidline } from '../domain/mirroring'
 
 /**
  * El decodificador Draco, servido desde este mismo sitio.
@@ -36,21 +36,17 @@ interface HalfProps {
  * Una de las dos copias del esqueleto. La original dibuja el modelo entero tal
  * como viene; la espejada completa el hemicuerpo izquierdo.
  *
- * La espejada **no** dibuja el modelo entero: omite el grupo de línea media
- * (b2.3). El modelo no es medio cuerpo —esa premisa costó 36 mallas duplicadas—
- * sino un hemicuerpo derecho *más* las piezas que viven sobre el eje y el único
- * par que ya trae completo. Espejar eso no lo mueve al otro lado: lo copia
- * encima de sí mismo.
+ * La espejada **no** dibuja el modelo entero: se le quita el grupo de línea
+ * media (b2.3). El modelo no es medio cuerpo —esa premisa costó 36 mallas
+ * duplicadas— sino un hemicuerpo derecho *más* las piezas que viven sobre el
+ * eje y el único par que ya trae completo. Espejar eso no lo mueve al otro
+ * lado: lo copia encima de sí mismo.
  */
 function SkeletonHalf({ bones, selected, half, onPick }: HalfProps) {
   const { scene } = useGLTF(skeletonUrl, DRACO_PATH)
   const copia = useMemo(() => {
     const clon = scene.clone(true)
-    if (half === 'mirrored') {
-      const lineaMedia = clon.getObjectByName(MIDLINE_GROUP)
-      if (lineaMedia) lineaMedia.visible = false
-    }
-    return clon
+    return half === 'mirrored' ? stripMidline(clon) : clon
   }, [scene, half])
 
   useLayoutEffect(() => {
