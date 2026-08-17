@@ -46,7 +46,7 @@ dependencia.
 
 | Story | Status | Est. | Actual |
 |-------|:------:|:----:|:------:|
-| e2.1 | todo | S | — |
+| e2.1 | done | S | S · 2 commits |
 | e2.2 | todo | M | — |
 | e2.3 | todo | S | — |
 | e2.4 | todo | M | — |
