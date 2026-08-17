@@ -50,7 +50,7 @@ dependencia.
 | e2.2 | done | M | M · 3 commits |
 | e2.3 | done | S | S · 3 commits |
 | e2.4 | done | M | M · 3 commits |
-| e2.5 | todo | M | — |
+| e2.5 | done | M | M · 3 commits |
 | e2.6 | todo | S | — |
 
 ## Sequencing risks
