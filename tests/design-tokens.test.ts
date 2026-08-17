@@ -60,12 +60,17 @@ const PALETA_DE_FABRICA = [
 ].join('|')
 
 /**
- * `bg-sky-700`, `hover:bg-slate-800`, `focus-visible:outline-sky-400` — y
- * también `text-white`, que no pertenece a ninguna familia numerada pero es
- * igual de literal.
+ * `bg-sky-700`, `hover:bg-slate-800`, `focus-visible:outline-sky-400`;
+ * `text-white`, que no pertenece a ninguna familia numerada pero es igual de
+ * literal; y el valor arbitrario `bg-[#ff0000]`, que es la forma **más** a mano
+ * de todas y la que se le escapaba a este patrón hasta la revisión de e7.1.
  */
 const COLOR_A_MANO = new RegExp(
-  `\\b(?:${PROPIEDADES})-(?:${PALETA_DE_FABRICA})-\\d{2,3}\\b|\\b(?:bg|text|border|outline|ring|divide|placeholder)-(?:white|black)\\b`,
+  [
+    `\\b(?:${PROPIEDADES})-(?:${PALETA_DE_FABRICA})-\\d{2,3}\\b`,
+    '\\b(?:bg|text|border|outline|ring|divide|placeholder)-(?:white|black)\\b',
+    `\\b(?:${PROPIEDADES})-\\[(?:#|rgb|hsl|oklch|color-mix)`,
+  ].join('|'),
   'g',
 )
 
@@ -100,6 +105,8 @@ describe('ADR-007: el aspecto sale de los tokens', () => {
     expect(reconoce('className="hover:bg-slate-800"')).toBe(true)
     expect(reconoce('className="focus-visible:outline-sky-400"')).toBe(true)
     expect(reconoce('className="text-white"')).toBe(true)
+    expect(reconoce('className="bg-[#ff0000]"')).toBe(true)
+    expect(reconoce('className="text-[oklch(0.7_0.1_200)]"')).toBe(true)
 
     expect(reconoce('className="bg-superficie text-tinta"')).toBe(false)
     expect(reconoce('className="border-tinta border-b-2"')).toBe(false)
