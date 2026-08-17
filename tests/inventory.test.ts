@@ -1,4 +1,7 @@
+import { readFileSync } from 'node:fs'
+import { resolve } from 'node:path'
 import { describe, expect, it } from 'vitest'
+import { readGlb } from '../scripts/glb.mjs'
 import { classifyMesh } from '../scripts/inventory.mjs'
 
 describe('la clasificación de una malla del modelo', () => {
@@ -44,5 +47,30 @@ describe('la clasificación de una malla del modelo', () => {
 
   it('tolera el punto sobrante que el modelo dejó en la escápula', () => {
     expect(classifyMesh('Scapula.r.')).toEqual({ kind: 'bone', side: 'right', base: 'Scapula' })
+  })
+})
+
+describe('el inventario del modelo real', () => {
+  const glb = readGlb(readFileSync(resolve('src/data/skeleton.glb')))
+  const mallas = glb.nodes.filter((n) => n.mesh !== undefined).map((n) => n.name ?? '')
+  const porTipo = (kind: string) => mallas.filter((m) => classifyMesh(m).kind === kind)
+
+  it('cuenta las 144 mallas del modelo', () => {
+    expect(mallas).toHaveLength(144)
+  })
+
+  it('cuenta 118 estructuras óseas', () => {
+    expect(porTipo('bone')).toHaveLength(118)
+  })
+
+  it('aparta 14 dientes, 10 cartílagos y 2 sesamoideos', () => {
+    expect(porTipo('tooth')).toHaveLength(14)
+    expect(porTipo('cartilage')).toHaveLength(10)
+    expect(porTipo('sesamoid')).toHaveLength(2)
+  })
+
+  it('deja sin lado solo a las piezas impares y a las ya explícitas por lado', () => {
+    const sinLado = porTipo('bone').filter((m) => classifyMesh(m).side === null)
+    expect(sinLado).toHaveLength(34)
   })
 })
