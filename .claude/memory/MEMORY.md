@@ -28,3 +28,5 @@
 - [Los patrones de exclusión de grep son expresiones regulares](grep-exclusion-patterns-are-regexes.md) — `-v ".test."` se come el directorio `/test/` y devuelve menos sin avisar.
 - [Un servidor levantado a mano envenena la suite](a-hand-started-server-poisons-the-suite.md) — reutiliza el puerto y mide un build viejo; el artefacto sabe más que el navegador.
 - [Las filas automáticas de un grid reparten solo el sobrante](grid-auto-rows-distribute-only-the-leftover.md) — una fila con contenido enorme lo absorbe y la vecina cae a su tamaño intrínseco.
+- [Una webfont ya subseteada no necesita herramienta de subsetting](subsetted-webfonts-need-no-subsetting-tool.md) — el bloque `latin` de Google ya viene recortado; verificar cobertura, no instalar fontTools.
+- [Una muestra renderizada decide mejor que una tabla de características](rendered-samples-beat-feature-tables-for-visual-choices.md) — el texto real de la aplicación revela lo que un pangram no muestra.
