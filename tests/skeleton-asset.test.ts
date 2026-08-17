@@ -19,6 +19,22 @@ describe('el activo del esqueleto', () => {
     expect(referencias).toEqual([])
   })
 
+  it('no conserva los bytes de ninguna imagen en el chunk binario', () => {
+    // Borrar las entradas `images` no basta: sus bytes viven en el buffer y
+    // seguirían dentro del archivo. Esto prueba la compactación, no la
+    // referencia.
+    const crudo = readFileSync(ASSET)
+    const firmas: Record<string, Buffer> = {
+      png: Buffer.from([0x89, 0x50, 0x4e, 0x47]),
+      jpeg: Buffer.from([0xff, 0xd8, 0xff]),
+      webp: Buffer.from('WEBP', 'ascii'),
+      ktx: Buffer.from('KTX ', 'ascii'),
+    }
+    for (const [formato, firma] of Object.entries(firmas)) {
+      expect(crudo.includes(firma), `el activo contiene datos ${formato}`).toBe(false)
+    }
+  })
+
   it('conserva las 144 mallas del modelo original', () => {
     const nombres = glb.nodes.filter((n) => n.mesh !== undefined).map((n) => n.name)
     expect(nombres).toHaveLength(144)
