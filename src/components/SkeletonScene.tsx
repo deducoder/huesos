@@ -55,9 +55,10 @@ function SkeletonHalf({ bones, selectedMesh, half, onPick }: HalfProps) {
   }
 
   return (
-    // biome-ignore lint/a11y/noStaticElementInteractions: `primitive` no es un elemento HTML,
-    // es un nodo de three.js; su `onClick` lo maneja el raycaster de la escena,
-    // no el DOM. La vía accesible equivalente es el navegador de huesos (ADR-002).
+    // `primitive` no es un elemento HTML sino un nodo de three.js: su `onClick` lo resuelve el
+    // raycaster de la escena, no el DOM, así que no existe un rol ni un tabindex que ponerle. La
+    // vía accesible equivalente es el navegador de huesos, que ADR-002 exige como primera clase.
+    // biome-ignore lint/a11y/noStaticElementInteractions: nodo de three.js, no elemento del DOM
     <primitive
       object={copia}
       scale={half === 'mirrored' ? [-1, 1, 1] : [1, 1, 1]}
