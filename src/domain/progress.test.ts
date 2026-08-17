@@ -55,6 +55,17 @@ describe('el registro de progreso', () => {
     expect(despues).not.toBe(antes)
   })
 
+  it('el estado inicial que devuelve no es un objeto compartido', () => {
+    // Devolver siempre la misma instancia para todo id ausente convierte
+    // cualquier mutación de un consumidor en corrupción global y permanente
+    // del estado inicial. El `as` simula a ese consumidor descuidado —o a
+    // JavaScript sin tipos— para comprobar que el daño no se propaga.
+    const leido = boneProgress(EMPTY_PROGRESS, 'frontal') as { correct: number }
+    leido.correct = 99
+
+    expect(boneProgress(EMPTY_PROGRESS, 'occipital')).toEqual({ correct: 0, incorrect: 0 })
+  })
+
   it('sobrevive a una ida y vuelta por JSON, con los ids reales del catálogo', () => {
     // Contra el catálogo real y no contra ids inventados: es el
     // almacenamiento de e5.2 quien va a serializar esto, y probar la ida y

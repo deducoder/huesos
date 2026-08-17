@@ -9,8 +9,8 @@
 
 /** Cuántas veces se acertó y se falló un hueso concreto. */
 export interface BoneProgress {
-  correct: number
-  incorrect: number
+  readonly correct: number
+  readonly incorrect: number
 }
 
 /**
@@ -25,16 +25,19 @@ export type ProgressRecord = Readonly<Record<string, BoneProgress>>
 /** Un estudiante que todavía no respondió nada. */
 export const EMPTY_PROGRESS: ProgressRecord = {}
 
-/** El estado inicial: nunca preguntado. */
-const NUNCA_PREGUNTADO: BoneProgress = { correct: 0, incorrect: 0 }
-
 /**
  * El progreso de un hueso. Un `id` ausente significa **nunca preguntado**, no
  * "no existe": quien lee no tiene que distinguir los dos casos, ni protegerse
  * de un `undefined`.
+ *
+ * El estado inicial se construye en cada llamada en vez de devolver una
+ * constante compartida: una sola instancia para todos los ids ausentes
+ * convierte la mutación de un consumidor en corrupción global y permanente.
+ * Los `readonly` de `BoneProgress` lo impiden en TypeScript; esto lo impide
+ * también donde los tipos no llegan.
  */
 export function boneProgress(record: ProgressRecord, boneId: string): BoneProgress {
-  return record[boneId] ?? NUNCA_PREGUNTADO
+  return record[boneId] ?? { correct: 0, incorrect: 0 }
 }
 
 /**
