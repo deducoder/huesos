@@ -53,12 +53,12 @@ artifacts land) is in **Conventions** below.
 | Path | What lives here |
 |------|-----------------|
 | `src/data/` | Catálogo de los 206 huesos y el SVG del esqueleto |
-| `src/domain/` | Validación de respuestas, elección de preguntas, progreso — TypeScript puro |
-| `src/state/` | Estado de la sesión y su persistencia en `localStorage` |
-| `src/features/` | Las tres experiencias: explorar, ficha de hueso, test |
-| `src/components/` | Piezas de presentación reutilizables |
+| `src/domain/` | Agrupación por región, estado de selección, resolución malla→hueso — TypeScript puro |
+| `src/features/explore/` | La vista de estudio: lista, escena y panel sobre un estado |
+| `public/draco/` | Decodificador Draco servido desde el propio origen |
+| `src/components/` | Navegador accesible, panel de identidad, escena 3D |
 | `tests/` | Setup de test y pruebas que cruzan módulos; el test unitario vive junto a su fuente |
-| `scripts/` | Gate entry points (see Development) |
+| `scripts/` | Gates y herramientas del activo 3D (inventario, poda de texturas) |
 | `governance/` | Vision, requirements, guardrails, architecture (see below) |
 | `work/` | Work in progress — one directory per epic / story / bug / spike |
 | `records/decisions/` | ADRs — the decisions and their rationale |

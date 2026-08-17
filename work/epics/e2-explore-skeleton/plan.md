@@ -29,7 +29,7 @@ la vía de teclado sea la nativa.
 - [x] **Core MVP** — + e2.4 — el esqueleto se ve en pantalla.
 - [x] **Feature complete** — + e2.5, e2.6 — clic sobre un hueso lo selecciona y
       lo resalta, sincronizado con la lista.
-- [ ] **Epic complete** — criterios de `scope.md` cumplidos, documentación y
+- [x] **Epic complete** — criterios de `scope.md` cumplidos, documentación y
       retrospectiva.
 
 No procede punto de control E2E: no hay cliente y servidor entre los que
