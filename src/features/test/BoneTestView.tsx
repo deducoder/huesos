@@ -1,5 +1,6 @@
 import { IsolatedBoneScene } from '../../components/IsolatedBoneScene'
 import { catalog } from '../../data/catalog'
+import { progressStore } from '../../storage/progress-store'
 import { TestQuestion } from './TestQuestion'
 
 /**
@@ -11,6 +12,7 @@ export function BoneTestView() {
   return (
     <TestQuestion
       bones={catalog}
+      store={progressStore}
       renderScene={(boneId) => (
         <IsolatedBoneScene
           bones={catalog}

@@ -2,10 +2,10 @@ import { OrbitControls, useGLTF } from '@react-three/drei'
 import { Canvas, type ThreeEvent } from '@react-three/fiber'
 import { Suspense, useLayoutEffect, useMemo } from 'react'
 import { Box3, Color, type Mesh, MeshStandardMaterial, type Object3D, Vector3 } from 'three'
-import { distanceToFit } from '../domain/framing'
 import type { Bone } from '../data/bone'
-import { boneIdForMesh, type SceneHalf } from '../domain/mesh-lookup'
 import skeletonUrl from '../data/skeleton.glb?url'
+import { distanceToFit } from '../domain/framing'
+import { boneIdForMesh, type SceneHalf } from '../domain/mesh-lookup'
 
 /**
  * El decodificador Draco, servido desde este mismo sitio.

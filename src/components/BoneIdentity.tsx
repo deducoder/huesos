@@ -1,4 +1,4 @@
-import { isUnpaired, type Bone } from '../data/bone'
+import { type Bone, isUnpaired } from '../data/bone'
 import { REGION_LABEL, SIDE_LABEL } from './labels'
 
 interface Props {
