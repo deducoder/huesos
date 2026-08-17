@@ -101,7 +101,7 @@ export function App() {
   const [selected, setSelected] = useState<SelectionId>(null)
 
   return (
-    <main className="flex h-screen flex-col bg-superficie text-tinta">
+    <main className="flex h-dvh flex-col bg-superficie text-tinta">
       <header className="border-tinta border-b-2 bg-panel px-4 py-3">
         <h1 className="font-semibold text-titulo">huesos-mono</h1>
       </header>

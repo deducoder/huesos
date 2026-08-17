@@ -31,3 +31,16 @@
 **Estado intermedio conocido:** entre T1 y T3 la aplicación tiene el shell claro
 y las vistas interiores con texto claro heredado, o sea ilegibles. Es el estado
 que T3 cierra; no llega a `main` porque la historia se cierra entera.
+
+## T2 · El alto con la unidad dinámica
+
+- **RED:** `tests/shell.test.ts` — `expect(fuente).not.toMatch(/h-screen/)` falló
+  sobre `src/App.tsx`. El it de control («se lee de verdad») pasó en el mismo
+  arranque, que es lo que separa un rojo real de un rojo por archivo vacío.
+- **GREEN:** `h-screen` → `h-dvh`, una clase.
+- **Gates:** `./scripts/check` verde, 204 tests (202 + los 2 nuevos).
+
+**Nada que el plan no anticipara.** La razón de que esto sea un test de fuente y
+no de navegador quedó escrita en el propio archivo: el viewport de Playwright no
+simula la barra de URL que aparece y desaparece al desplazar, así que la suite
+de navegador **no puede observar** este defecto.
