@@ -26,7 +26,7 @@ describe: se redacta mirando la aserción, no al revés.
 
 ## Milestones
 
-- [ ] **Condición comprobable** — e6.1 + e6.2 — existe una prueba que falla si
+- [x] **Condición comprobable** — e6.1 + e6.2 — existe una prueba que falla si
       una entrada queda sin geometría y sin razón, y ninguna vista presenta mal
       a los siete ausentes.
 - [ ] **Epic complete** — + e6.3 — `RF-08` y su prueba dicen lo mismo, leídos
@@ -42,7 +42,7 @@ gobernanza). El orden es de riesgo, no de bloqueo.
 | Story | Status | Est. | Actual |
 |-------|:------:|:----:|:------:|
 | e6.1 | done | S | S |
-| e6.2 | todo | S | — |
+| e6.2 | done | S | S |
 | e6.3 | todo | S | — |
 
 ## Sequencing risks
