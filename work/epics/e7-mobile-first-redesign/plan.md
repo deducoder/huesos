@@ -95,7 +95,7 @@ Updated by `story-close` as each story lands — the only cross-artifact write.
 | e7.3 | done | S | S |
 | e7.4 | done | L | L |
 | e7.5 | done | S | S |
-| e7.6 | todo | M | — |
+| e7.6 | done | M | M |
 | e7.7 | todo | S | — |
 | e7.8 | todo | M | — |
 | e7.9 | todo | M | — |
