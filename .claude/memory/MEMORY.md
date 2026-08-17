@@ -26,3 +26,5 @@
 - [Las filas del backlog envejecen como los planes](backlog-rows-age-like-plans.md) — E6 describía trabajo terminado en E1 y sobrevivió cuatro épicas; medir contra el código antes de arrancar.
 - [Los contratos van en gates, no en inventarios](contracts-belong-in-gates-not-inventories.md) — el conteo a mano dio 23, luego 35; el gate encontró 46 y siguió mirando.
 - [Los patrones de exclusión de grep son expresiones regulares](grep-exclusion-patterns-are-regexes.md) — `-v ".test."` se come el directorio `/test/` y devuelve menos sin avisar.
+- [Un servidor levantado a mano envenena la suite](a-hand-started-server-poisons-the-suite.md) — reutiliza el puerto y mide un build viejo; el artefacto sabe más que el navegador.
+- [Las filas automáticas de un grid reparten solo el sobrante](grid-auto-rows-distribute-only-the-leftover.md) — una fila con contenido enorme lo absorbe y la vecina cae a su tamaño intrínseco.
