@@ -3,11 +3,11 @@ import { Canvas } from '@react-three/fiber'
 import { Suspense, useCallback, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { Box3, type Group, type Mesh, type Object3D, Vector3 } from 'three'
 import type { Bone } from '../data/bone'
+import skeletonUrl from '../data/skeleton.glb?url'
 import { distanceToFit } from '../domain/framing'
 import { visibleForIsolation } from '../domain/isolation'
 import type { SceneHalf } from '../domain/mesh-lookup'
 import { findBone } from '../domain/selection'
-import skeletonUrl from '../data/skeleton.glb?url'
 
 const DRACO_PATH = '/draco/'
 const FOV = 45

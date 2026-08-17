@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { catalog } from '../data/catalog'
-import { findBone } from './selection'
 import { isCorrectAnswer, normalizeAnswer } from './answer-check'
+import { findBone } from './selection'
 
 const hueso = (id: string) => {
   const bone = findBone(catalog, id)

@@ -1,5 +1,6 @@
 import { SkeletonScene } from '../../components/SkeletonScene'
 import { catalog } from '../../data/catalog'
+import { progressStore } from '../../storage/progress-store'
 import { TestQuestion } from './TestQuestion'
 
 /**
@@ -12,6 +13,7 @@ export function SkeletonTestView() {
   return (
     <TestQuestion
       bones={catalog}
+      store={progressStore}
       renderScene={(boneId) => (
         <SkeletonScene
           bones={catalog}
