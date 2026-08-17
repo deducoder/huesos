@@ -1,4 +1,6 @@
 import { type Bone, isUnpaired } from '../data/bone'
+import { catalog } from '../data/catalog'
+import { isSideIrrelevant } from '../domain/side-pairing'
 import { REGION_LABEL, SIDE_LABEL } from './labels'
 
 interface Props {
@@ -29,6 +31,11 @@ export function BoneIdentity({ bone, onViewDetail }: Props) {
     )
   }
 
+  // Sin malla en ningún lado, elegir uno no distingue nada observable — el
+  // navegador tampoco lo ofrece desde e7.4 (`toNavigatorRows`). El panel no
+  // puede afirmar una elección que el estudiante nunca hizo.
+  const ocultarLado = bone.side !== null && isSideIrrelevant(bone, catalog)
+
   return (
     <section className="p-6" aria-labelledby="identidad-hueso">
       <h2 id="identidad-hueso" className="font-semibold text-2xl text-tinta">
@@ -41,7 +48,7 @@ export function BoneIdentity({ bone, onViewDetail }: Props) {
           <dt className="text-tinta-suave">Región</dt>
           <dd>{REGION_LABEL[bone.region]}</dd>
         </div>
-        {bone.side !== null && (
+        {bone.side !== null && !ocultarLado && (
           <div className="flex gap-2">
             <dt className="text-tinta-suave">Lado</dt>
             <dd>{SIDE_LABEL[bone.side]}</dd>
@@ -80,7 +87,7 @@ export function BoneIdentity({ bone, onViewDetail }: Props) {
       {/* Un lector de pantalla anuncia el cambio sin tener que ir a buscar el panel. */}
       <p role="status" aria-live="polite" className="sr-only">
         {bone.es}
-        {bone.side !== null ? ` ${SIDE_LABEL[bone.side]}` : ''}, {bone.la}
+        {bone.side !== null && !ocultarLado ? ` ${SIDE_LABEL[bone.side]}` : ''}, {bone.la}
       </p>
     </section>
   )
