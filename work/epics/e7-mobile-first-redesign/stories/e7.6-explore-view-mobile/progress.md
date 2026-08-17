@@ -78,3 +78,37 @@ desde antes de esta historia, sin que ningún test lo hubiera atrapado.
 
 **Gates:** `./scripts/check` verde · suite de navegador entera verde (13/13,
 dos corridas seguidas para descartar intermitencia).
+
+## T2 · La tarjeta flota al elegir, con el lenguaje visual del mockup
+
+El usuario trajo un mockup de Claude Design a mitad de esta tarea (proyecto
+"Rediseño aplicación anatomía ósea", `claude.ai/design`). Tocaba cuatro
+partes de la app; el delta completo está en `design.md`. Solo la tarjeta
+flotante entra en esta tarea — las otras tres (navbar, acordeón de Fichas,
+test con opciones múltiples) quedan aparcadas, ver «Cierre» más abajo.
+
+- **RED:** `ExploreView.test.tsx` — «la tarjeta tiene un botón para
+  cerrarla» fallaba: no existía ningún botón `/cerrar/i`.
+- **GREEN:** botón "✕" (`aria-label="Cerrar"`, `min-h-tactil`) que llama a
+  `onSelect(bone.id)` de nuevo — reutiliza `toggleSelection`, ya existente,
+  en vez de inventar una acción nueva. `Región` y `Lado` en `BoneIdentity`
+  pasan a `<dd>` con tratamiento de pill (`rounded-tarjeta border-2`), sin
+  tocar su semántica: siguen siendo `<dd>` dentro de la misma `<dl>`.
+- **Deliberadamente no adoptado del mockup:** la paleta de 10 colores por
+  región (`REGION_STYLES`) — es una decisión de sistema de diseño con su
+  propio costo de verificación de contraste, no algo para improvisar acá. Se
+  mantiene el único acento ya establecido.
+- **Gates:** `./scripts/check` verde · `BoneIdentity.test.tsx` (14),
+  `ExploreView.test.tsx` (10) y `BoneDetailView.test.tsx` verdes — este
+  último **sin tocarse**, prueba de que estilizar `BoneIdentity` no rompió su
+  otro consumidor. Suite de navegador entera verde (13/13).
+- **Verificado con captura:** coincide con la intención del mockup —pills,
+  botón de cerrar, tarjeta flotando sobre el lienzo completo.
+
+## T3 · Retirada
+
+Los dos textos que esta tarea iba a corregir («recorré la lista con el
+teclado», el `accessibleHint` del lienzo) **siguen siendo ciertos** desde la
+corrección de ADR-010: el navegador sigue montado, solo oculto. No hay nada
+que hacer acá — ya registrado como delta en `design.md` al detectarlo, antes
+de llegar a esta tarea.
