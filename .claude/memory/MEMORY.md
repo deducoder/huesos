@@ -10,3 +10,4 @@
 - [Las capas de dominio puras pagan después](pure-domain-layers-pay-off-later.md) — una función pura bien cortada se reutiliza en historias que nadie planeó cuando se escribió, no solo se prueba más fácil.
 - [Una verificación autoconsistente esconde bugs sistemáticos](self-consistent-checks-hide-systematic-bugs.md) — comparar datos normalizados contra sí mismos con la misma normalización prueba consistencia, no corrección; hace falta un criterio externo.
 - [La verificación manual sigue encontrando cosas reales](manual-verification-keeps-finding-real-things.md) — reutilizar un componente probado en un contexto nuevo filtra texto fijo que asumía el contexto original; ningún test unitario lo vería.
+- [Verificar antes de nombrar un bug sospechado](verify-before-naming-a-suspected-bug.md) — un caso de control (Math.random fijo, un valor grande y conocido) confirma o descarta una sospecha antes de escribirla como hallazgo.
