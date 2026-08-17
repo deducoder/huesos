@@ -33,3 +33,5 @@
 - [Que un dato sea par no implica que valga la pena distinguirlo](pairing-doesnt-imply-distinguishing.md) — si ambos lados son indistinguibles en lo observable, ofrecer la elección es ruido.
 - [Las cifras de un prototipo se reproducen en el componente real](prototype-numbers-need-reproducing-in-the-real-component.md) — una clase añadida por costumbre se come la ganancia proyectada.
 - [Una función simétrica necesita tests simétricos](symmetric-functions-need-symmetric-tests.md) — probarla solo de un lado es una promesa a medias, aunque el código funcione en la otra dirección.
+- [Un estilo en línea reafirmado necesita un vigilante, no una regla CSS](inline-styles-need-a-watchdog-not-a-css-rule.md) — si una librería lo reasigna en un momento impredecible, un MutationObserver propio es la única defensa robusta.
+- [`sr-only` se comporta distinto según la capa de prueba](sr-only-behaves-differently-per-test-layer.md) — jsdom lo ignora, Playwright lo trata como realmente invisible; `dispatchEvent` en vez de `.click()`.

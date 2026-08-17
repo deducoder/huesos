@@ -341,3 +341,49 @@ la épica, no historia por historia.
 
 **Destino:** el pulido visual de cierre de épica, mismo destino que la entrada
 anterior de esta fecha.
+
+## 2026-08-17 · Navbar flotante del mockup de Claude Design (e7.6)
+
+El mockup importado ("Rediseño aplicación anatomía ósea",
+`claude.ai/design`) muestra logo + pestañas + menú en una sola fila flotante
+sobre el contenido, distinto de la cabecera sólida separada de las pestañas
+que e7.1 ya cerró.
+
+**Por qué no se hizo ahora:** reabre e7.1, ya cerrada con retrospectiva y
+revisión de calidad. No es un ajuste dentro de e7.6, que solo toca
+`ExploreView`.
+
+**Destino:** historia propia, candidata `e7.11`, después de que termine el
+resto del plan actual de la épica.
+
+## 2026-08-17 · Acordeón de Fichas del mockup de Claude Design (e7.6)
+
+El mismo mockup propone un acordeón de 2 niveles (categorías → subgrupos →
+grilla de etiquetas) para el navegador de 206 huesos, en vez de la lista
+plana de 10 regiones con filas de pares que e7.4 construyó.
+
+**Por qué no se hizo ahora:** cruza a propósito el rabbit hole que el brief
+de E7 declaró explícito — "rehacer el navegador como arquitectura de
+información nueva es una épica distinta". Decisión del usuario: se cruza,
+pero como historia propia, no como tarea suelta de e7.6.
+
+**Destino:** historia propia, candidata `e7.12`, con su propio ADR que
+supersede la arquitectura de pares/pills de e7.4 (ADR-010 y
+`toNavigatorRows`). Antes de diseñarla, releer las retrospectivas de e7.4 y
+e7.5 — el aprendizaje sobre pares indistinguibles (`isSideIrrelevant`) sigue
+aplicando a cualquier arquitectura nueva.
+
+## 2026-08-17 · Test con opciones múltiples del mockup de Claude Design (e7.6)
+
+El mockup agrega un selector "Escribir / Opciones" en el modo test, con una
+grilla de 3 botones de respuesta múltiple — hoy `TestQuestion` solo acepta
+respuesta escrita.
+
+**Por qué no se hizo ahora:** es alcance nuevo, no un rediseño visual — toca
+la lógica de verificación de respuesta (`isCorrectAnswer` y el dominio del
+motor de test), no solo su presentación. No estaba en ninguna historia
+planificada de E7.
+
+**Destino:** historia propia, candidata `e7.13`, con su propio scope —
+incluye decidir cómo se generan las opciones incorrectas plausibles para 206
+huesos, que es una pregunta de dominio, no de estilo.
