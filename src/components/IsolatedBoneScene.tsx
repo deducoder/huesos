@@ -85,6 +85,15 @@ interface Props {
   bones: readonly Bone[]
   /** El `id` del hueso a aislar. Un `id` sin geometría en el modelo no muestra nada. */
   boneId: string
+  /**
+   * El `aria-label` del lienzo. Configurable porque el valor por defecto
+   * nombra el hueso —correcto en `BoneDetailView` (e3.2), donde ya se eligió
+   * a la vista— pero filtraría la respuesta en el modo test (e4.4, RF-05),
+   * donde nombrarlo antes de responder es justo lo que `must-data-003`
+   * prohíbe. Un `aria-label` no aparece en `textContent`: una prueba que
+   * solo mire el texto del documento no lo vería.
+   */
+  accessibleLabel?: string
 }
 
 /**
@@ -94,14 +103,15 @@ interface Props {
  * modelo por hueso, el brief de e3 lo excluye a propósito —, pero en vez de
  * resaltar por material, oculta toda malla que no sea la buscada.
  */
-export function IsolatedBoneScene({ bones, boneId }: Props) {
+export function IsolatedBoneScene({ bones, boneId, accessibleLabel }: Props) {
   const [framing, setFraming] = useState<Framing | null>(null)
   const onFramed = useCallback((f: Framing | null) => setFraming(f), [])
   const bone = findBone(bones, boneId)
+  const label = accessibleLabel ?? (bone ? `${bone.es}, aislado en 3D` : 'Hueso aislado en 3D')
 
   return (
     <div className="relative h-full w-full">
-      <Canvas aria-label={bone ? `${bone.es}, aislado en 3D` : 'Hueso aislado en 3D'}>
+      <Canvas aria-label={label}>
         <ambientLight intensity={0.8} />
         <directionalLight position={[2, 4, 3]} intensity={1.2} />
         <Suspense fallback={null}>
@@ -113,6 +123,12 @@ export function IsolatedBoneScene({ bones, boneId }: Props) {
             <PerspectiveCamera
               makeDefault
               fov={FOV}
+              // El plano cercano por defecto de three.js (0.1) recorta huesos
+              // diminutos: `distanceToFit` acerca la cámara por debajo de esa
+              // distancia para una falange, y el lienzo queda en blanco sin
+              // ningún error — verificado en e4.4 con "falange proximal del
+              // quinto dedo de la mano".
+              near={0.001}
               position={[framing.center.x, framing.center.y, framing.center.z + framing.distance]}
             />
           )}
