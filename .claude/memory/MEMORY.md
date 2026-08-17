@@ -6,3 +6,4 @@
 - [Probar el dato al otro lado de la librería](test-the-data-after-the-library.md) — b2.1: 80 tests en verde y solo 3 huesos seleccionables.
 - [El encuadre dinámico de cámara necesita un componente](dynamic-camera-framing-needs-a-component.md) — la prop `camera` de `Canvas` solo se lee al montar; usar `<PerspectiveCamera>` de drei cuando el encuadre se calcula después.
 - [La propiedad del estado sigue a la supervivencia, no a la prolijidad](state-ownership-follows-survival-not-cleanliness.md) — un componente deja de poder ser dueño de su estado en cuanto otra vista necesita que sobreviva a su desmontaje.
+- [El diseño de una épica es una hipótesis](epic-design-is-a-hypothesis.md) — el gemba de cada historia sigue siendo la autoridad, incluso sobre el propio `design.md` que la contiene.
