@@ -198,3 +198,46 @@ trabajar, desproporcionada para dos enteros.
 un tercer campo, la duplicación deja de ser teórica y ahí sí toca resolverla —
 esquema declarativo, o un test que compare las claves del tipo contra las que
 el validador exige.
+
+## 2026-08-17 · La suite de integración puede medir un build viejo (b2.3)
+
+`playwright.config.ts` declara `reuseExistingServer: !process.env.CI`. Si un
+`vite preview` quedó vivo de una corrida anterior, Playwright lo reutiliza y no
+reconstruye: la suite mide el bundle que ese servidor sirva, no el árbol de
+trabajo. Ocurrió en b2.3 — `check-integration` dio rojo con los números exactos
+de antes del arreglo porque medía un bundle de una hora antes. También quedaron
+servidores huérfanos escuchando en 4173, 4174 y 4175, que deja la suite cuando
+una corrida se interrumpe.
+
+**Por qué importa:** es un gate que puede mentir en las dos direcciones. En
+b2.3 dio un rojo falso, que solo cuesta tiempo; el caso peligroso es el verde
+falso, donde un arreglo que no funciona pasa porque se midió el build anterior.
+Cuarto precedente de gates que afirman lo que no comprueban (b2.1, b2.2, s1).
+
+**Qué haría falta:** que la suite construya siempre —unos 20 s por corrida— o
+que compare el servidor reusado contra el árbol antes de aceptarlo.
+
+**Destino:** aparcado. No bloquea nada hoy y arreglarlo desde b2.3 era trabajo
+fuera de alcance.
+
+## 2026-08-17 · b2.1 y b2.2 no tienen `triage.md` (b2.3)
+
+El paso de clasificación se saltó en los dos bugs anteriores del proyecto y
+nadie lo notó hasta que b2.3 lo ejecutó. No se corrige retroactivamente:
+clasificar hoy dos bugs cerrados produciría dos etiquetas inventadas, peor que
+la ausencia.
+
+**Destino:** aparcado como constancia. El valor de Origin es alimentar la
+prevención, y para bugs ya cerrados y con retrospectiva escrita esa función ya
+la cumplió otro artefacto.
+
+## 2026-08-17 · El `session-start` de este repositorio afirma algo falso sobre la caché (b2.3)
+
+Su sección «Executing cache vs repo» dice que en este repositorio no aplica
+porque las skills se ejecutan desde `.claude/skills/`. No es cierto: todas las
+skills de b2.3 se cargaron desde `~/.claude/plugins/cache/gemba/gemba/`, y el
+snapshot cambió a mitad del ciclo (`7fa676679abc` → `7f598d7f7a88`). La
+afirmación hizo saltar en la orientación de sesión una comprobación que sí
+correspondía.
+
+**Destino:** aparcado — es un defecto de la skill, no del producto.
