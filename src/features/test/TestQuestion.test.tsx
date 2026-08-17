@@ -49,6 +49,47 @@ describe('TestQuestion', () => {
     expect(screen.getByText(/^incorrecto$/i)).toBeInTheDocument()
   })
 
+  it('muestra el nombre correcto en ambas nomenclaturas al responder mal', async () => {
+    const user = userEvent.setup()
+    render(<TestQuestion bones={catalog} renderScene={renderScenaSustituida} />)
+
+    const boneId = screen.getByTestId('escena').dataset.hueso
+    const bone = findBone(catalog, boneId ?? null)
+    if (!bone) throw new Error('la pregunta no eligió un hueso válido')
+
+    await user.type(screen.getByRole('textbox'), 'esta respuesta no es ningún hueso real')
+    await user.click(screen.getByRole('button', { name: /responder/i }))
+
+    expect(screen.getByText(bone.es, { exact: false })).toBeInTheDocument()
+    expect(screen.getByText(bone.la, { exact: false })).toBeInTheDocument()
+  })
+
+  it('no muestra ninguna nomenclatura al responder bien — ya se sabía', async () => {
+    const user = userEvent.setup()
+    render(<TestQuestion bones={catalog} renderScene={renderScenaSustituida} />)
+
+    const boneId = screen.getByTestId('escena').dataset.hueso
+    const bone = findBone(catalog, boneId ?? null)
+    if (!bone) throw new Error('la pregunta no eligió un hueso válido')
+
+    await user.type(screen.getByRole('textbox'), bone.es)
+    await user.click(screen.getByRole('button', { name: /responder/i }))
+
+    expect(screen.queryByText(bone.la, { exact: false })).not.toBeInTheDocument()
+  })
+
+  it('el hueso preguntado sigue resaltado tras responder mal', async () => {
+    const user = userEvent.setup()
+    render(<TestQuestion bones={catalog} renderScene={renderScenaSustituida} />)
+
+    const antes = screen.getByTestId('escena').dataset.hueso
+    await user.type(screen.getByRole('textbox'), 'esta respuesta no es ningún hueso real')
+    await user.click(screen.getByRole('button', { name: /responder/i }))
+    const despues = screen.getByTestId('escena').dataset.hueso
+
+    expect(despues).toBe(antes)
+  })
+
   it('"Siguiente pregunta" nunca repite el hueso inmediatamente anterior', async () => {
     const user = userEvent.setup()
     render(<TestQuestion bones={catalog} renderScene={renderScenaSustituida} />)
