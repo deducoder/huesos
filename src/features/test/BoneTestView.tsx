@@ -11,7 +11,13 @@ export function BoneTestView() {
   return (
     <TestQuestion
       bones={catalog}
-      renderScene={(boneId) => <IsolatedBoneScene bones={catalog} boneId={boneId} />}
+      renderScene={(boneId) => (
+        <IsolatedBoneScene
+          bones={catalog}
+          boneId={boneId}
+          accessibleLabel="Un hueso está señalado, aislado del resto del esqueleto. Escribí su nombre en el campo de respuesta."
+        />
+      )}
     />
   )
 }
