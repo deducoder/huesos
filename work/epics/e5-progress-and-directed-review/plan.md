@@ -78,7 +78,7 @@ Updated by `story-close` as each story lands — the only cross-artifact write.
 | e5.2 | done | M | M |
 | e5.3 | done | M | S-M |
 | e5.4 | done | M | M |
-| e5.5 | todo | S | — |
+| e5.5 | done | S | S |
 
 ## Sequencing risks
 
