@@ -1,0 +1,1 @@
+- [Huesos que faltan en el modelo 3D](skeleton-model-missing-bones.md) — 199 de 206: los 6 osículos del oído y el hioides, y la decisión de asumir el riesgo.
