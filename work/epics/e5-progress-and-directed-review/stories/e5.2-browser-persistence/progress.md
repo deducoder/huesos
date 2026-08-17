@@ -50,4 +50,14 @@ cualquier entrada mala en vez de repararlo a medias.
 RED: 4 tests fallando — hoy cualquier JSON válido entraba al dominio tal cual,
 incluidos `"hola"`, `42`, `[1,2,3]`, contadores negativos y no enteros.
 
-Gate: `./scripts/check` verde — 166 tests. Desviación: ninguna.
+Gate: **rojo al primer intento y committeado igual** — una línea en blanco de
+más que dejó la inserción del validador, que el formateador rechazó. Tipos y
+tests estaban verdes; solo `format:check` falló.
+
+**Es una infracción de disciplina, no un detalle**: encadené el gate y el
+commit en la misma tanda y no me detuve a leer el resultado antes de
+commitear. El método dice que una tarea no está hecha hasta que el gate pasa,
+y aquí el commit se hizo primero. Se arregló con un commit propio
+(`style(storage): apply the formatter to the shape validator`) en vez de
+enmendar la historia, porque esconder un commit rojo es peor que mostrarlo.
+Gate verde tras el arreglo — 166 tests.
