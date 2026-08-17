@@ -1,7 +1,25 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { useState } from 'react'
 import { describe, expect, it, vi } from 'vitest'
+import { type SelectionId, toggleSelection } from '../../domain/selection'
 import { ExploreView } from './ExploreView'
+
+/**
+ * `ExploreView` es controlada desde e3.2: quien la monta posee la selección,
+ * porque al volver de la ficha completa tiene que sobrevivir. Este arnés
+ * hace exactamente lo que `App` hace de verdad, para que las pruebas de
+ * interacción existentes sigan probando lo mismo que antes.
+ */
+function ExploreViewConSuEstado() {
+  const [selected, setSelected] = useState<SelectionId>(null)
+  return (
+    <ExploreView
+      selected={selected}
+      onSelect={(id) => setSelected((actual) => toggleSelection(actual, id))}
+    />
+  )
+}
 
 /**
  * La escena se sustituye por un doble.
@@ -30,13 +48,13 @@ vi.mock('../../components/SkeletonScene', () => ({
 
 describe('la vista de exploración', () => {
   it('monta la escena junto a la lista y el panel', () => {
-    render(<ExploreView />)
+    render(<ExploreViewConSuEstado />)
     expect(screen.getByTestId('escena-sustituida')).toBeInTheDocument()
   })
 
   it('al elegir un hueso en la lista, el panel muestra su nombre latino', async () => {
     const user = userEvent.setup()
-    render(<ExploreView />)
+    render(<ExploreViewConSuEstado />)
 
     expect(screen.getByText(/elegí un hueso/i)).toBeInTheDocument()
 
@@ -48,7 +66,7 @@ describe('la vista de exploración', () => {
 
   it('mantiene sincronizados la lista y el panel al cambiar de hueso', async () => {
     const user = userEvent.setup()
-    render(<ExploreView />)
+    render(<ExploreViewConSuEstado />)
 
     await user.click(screen.getByRole('button', { name: /^fémur derecho$/i }))
     expect(screen.getByRole('button', { name: /^fémur derecho$/i })).toHaveAttribute(
@@ -68,7 +86,7 @@ describe('la vista de exploración', () => {
 
   it('se puede usar entera con el teclado', async () => {
     const user = userEvent.setup()
-    render(<ExploreView />)
+    render(<ExploreViewConSuEstado />)
     await user.tab()
     await user.keyboard('{Enter}')
     expect(screen.getByRole('status')).not.toBeEmptyDOMElement()
@@ -76,7 +94,7 @@ describe('la vista de exploración', () => {
 
   it('pasa a la escena el hueso elegido, no su malla', async () => {
     const user = userEvent.setup()
-    render(<ExploreView />)
+    render(<ExploreViewConSuEstado />)
     await user.click(screen.getByRole('button', { name: /^fémur izquierdo$/i }))
     // Corregido en b2.1: la escena recibe el `id`, no el `meshName`.
     // `femur-left` y `femur-right` comparten malla, así que pasarle la malla la
@@ -87,7 +105,7 @@ describe('la vista de exploración', () => {
 
   it('avisa cuando el hueso elegido no tiene geometría que resaltar', async () => {
     const user = userEvent.setup()
-    render(<ExploreView />)
+    render(<ExploreViewConSuEstado />)
     await user.click(screen.getByRole('button', { name: /^martillo izquierdo$/i }))
     // La escena recibe el id igual; no encontrará malla para él, que es lo
     // correcto, y el panel lo explica.
@@ -97,7 +115,7 @@ describe('la vista de exploración', () => {
 
   it('refleja en la lista un hueso elegido desde la escena', async () => {
     const user = userEvent.setup()
-    render(<ExploreView />)
+    render(<ExploreViewConSuEstado />)
     await user.click(screen.getByRole('button', { name: /simular clic en la escena/i }))
     expect(screen.getByRole('button', { name: /^tibia izquierdo$/i })).toHaveAttribute(
       'aria-pressed',
@@ -107,7 +125,7 @@ describe('la vista de exploración', () => {
 
   it('nunca marca más de un hueso a la vez', async () => {
     const user = userEvent.setup()
-    render(<ExploreView />)
+    render(<ExploreViewConSuEstado />)
     await user.click(screen.getByRole('button', { name: /^fémur izquierdo$/i }))
     await user.click(screen.getByRole('button', { name: /simular clic en la escena/i }))
     const marcados = screen
