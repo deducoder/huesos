@@ -38,7 +38,7 @@ export function BoneIdentity({ bone, onViewDetail }: Props) {
 
   return (
     <section className="p-6" aria-labelledby="identidad-hueso">
-      <h2 id="identidad-hueso" className="font-semibold text-2xl text-tinta">
+      <h2 id="identidad-hueso" className="font-display font-semibold text-2xl text-tinta">
         {bone.es}
       </h2>
       <p className="mt-1 text-acento text-lg italic">{bone.la}</p>
@@ -69,7 +69,7 @@ export function BoneIdentity({ bone, onViewDetail }: Props) {
       </dl>
 
       {bone.meshName === null && (
-        <p className="mt-4 rounded border border-aviso bg-aviso-fondo p-3 text-aviso-tinta text-sm">
+        <p className="mt-4 rounded-suave border-2 border-aviso bg-aviso-fondo p-3 text-aviso-tinta text-sm">
           No se puede señalar en el esqueleto. {bone.missingReason}
         </p>
       )}
@@ -78,7 +78,7 @@ export function BoneIdentity({ bone, onViewDetail }: Props) {
         <button
           type="button"
           onClick={() => onViewDetail(bone.id)}
-          className="mt-4 rounded border border-tinta px-3 py-1.5 text-tinta text-sm hover:bg-acento-suave"
+          className="mt-4 min-h-tactil rounded-suave border-2 border-tinta px-4 text-tinta text-sm hover:bg-acento-suave"
         >
           Ver ficha completa
         </button>
