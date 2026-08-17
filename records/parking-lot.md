@@ -327,3 +327,17 @@ vistas una detrás de otra, no cada una aislada.
 e7.9 (escritorio como ampliación) y antes de e7.10 (medición de
 `should-perf-007`), con las seis vistas ya completas y el recorrido entero
 disponible para juzgarlo junto.
+
+## 2026-08-17 · El marcador "▸" no aparece en filas de par colapsado (quality-review e7.4)
+
+Las filas `single` de verdad (huesos impares) muestran `▸ ` antes del nombre
+cuando están seleccionadas. La fila colapsada de un par sin geometría en
+ningún lado (martillo, yunque, estribo) no lo hace: `aria-pressed` es correcto,
+solo falta el glifo visual.
+
+**Por qué no se hizo ahora:** es cosmético, sin impacto de accesibilidad, y
+cae directo en la categoría que el usuario decidió revisar junta al cierre de
+la épica, no historia por historia.
+
+**Destino:** el pulido visual de cierre de épica, mismo destino que la entrada
+anterior de esta fecha.
