@@ -6,6 +6,7 @@ import type { Bone } from '../data/bone'
 import { distanceToFit } from '../domain/framing'
 import { visibleForIsolation } from '../domain/isolation'
 import type { SceneHalf } from '../domain/mesh-lookup'
+import { findBone } from '../domain/selection'
 import skeletonUrl from '../data/skeleton.glb?url'
 
 const DRACO_PATH = '/draco/'
@@ -96,10 +97,11 @@ interface Props {
 export function IsolatedBoneScene({ bones, boneId }: Props) {
   const [framing, setFraming] = useState<Framing | null>(null)
   const onFramed = useCallback((f: Framing | null) => setFraming(f), [])
+  const bone = findBone(bones, boneId)
 
   return (
     <div className="relative h-full w-full">
-      <Canvas aria-label="Hueso aislado en 3D">
+      <Canvas aria-label={bone ? `${bone.es}, aislado en 3D` : 'Hueso aislado en 3D'}>
         <ambientLight intensity={0.8} />
         <directionalLight position={[2, 4, 3]} intensity={1.2} />
         <Suspense fallback={null}>
