@@ -54,7 +54,7 @@ Updated by `story-close` as each story lands — the only cross-artifact write.
 |-------|:------:|:----:|:------:|
 | e1.1 | done | S | S · 4 commits |
 | e1.2 | done | S | S · 3 commits |
-| e1.3 | todo | M | — |
+| e1.3 | done | M | M · 3 commits |
 | e1.4 | done | S | S · 1 commit |
 | e1.5 | todo | M | — |
 | e1.6 | todo | L | — |
