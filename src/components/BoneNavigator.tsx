@@ -1,21 +1,6 @@
-import type { Bone, BoneRegion } from '../data/bone'
+import type { Bone } from '../data/bone'
 import { groupByRegion } from '../domain/regions'
-
-/** Cómo se llama cada región para quien estudia. El dominio guarda la clave; la vista, el nombre. */
-const REGION_LABEL: Record<BoneRegion, string> = {
-  cranium: 'Cráneo — neurocráneo',
-  face: 'Cráneo — cara',
-  ear: 'Oído medio',
-  hyoid: 'Hioides',
-  spine: 'Columna vertebral',
-  thorax: 'Tórax',
-  'shoulder-girdle': 'Cintura escapular',
-  'upper-limb': 'Miembro superior',
-  'pelvic-girdle': 'Cintura pélvica',
-  'lower-limb': 'Miembro inferior',
-}
-
-const SIDE_LABEL = { left: 'izquierdo', right: 'derecho' } as const
+import { REGION_LABEL, SIDE_LABEL } from './labels'
 
 /** El nombre que oye un lector de pantalla: el hueso y, si es par, su lado. */
 export function accessibleName(bone: Bone): string {
