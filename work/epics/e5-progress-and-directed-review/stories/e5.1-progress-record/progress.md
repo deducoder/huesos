@@ -13,3 +13,14 @@ Desviación: los campos se nombraron en inglés (`correct`/`incorrect`) y no en
 español como decía el ejemplo original del `scope.md`, para seguir el resto de
 la superficie exportada del proyecto (`Bone` usa `id`, `side`, `meshName`). El
 `scope.md` se corrigió antes de implementar, no después.
+
+## T2 · Anotar un veredicto sin mutar
+
+`recordAnswer(record, boneId, wasCorrect)` devuelve un registro nuevo con ese
+único hueso incrementado. Seis tests: acierto y fallo sobre registro vacío,
+acumulación de fallos sucesivos, un acierto que **no** borra los fallos
+previos, el resto del registro intacto, y la pureza comprobada de las dos
+formas (el recibido no cambia y el devuelto no es la misma referencia).
+
+RED: los seis fallaron con `recordAnswer is not a function` antes de escribirla.
+Gate: `./scripts/check` verde — 150 tests. Desviación: ninguna.
