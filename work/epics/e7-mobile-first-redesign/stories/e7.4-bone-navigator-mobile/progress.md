@@ -91,3 +91,39 @@ derecho por convención al tocarla.
 - **Gates:** `./scripts/check` verde, **219 tests** (217 + 2 nuevos) ·
   suite de navegador entera verde (11/11). Verificado con captura: martillo,
   yunque y estribo se ven como filas simples, igual que hioides.
+
+## T4 · Verificación manual
+
+Hecha por el usuario en el teléfono, por el túnel. Veredicto: **funciona** —
+recorrido de la lista, píldoras de lado distinto, impares sin píldoras, aviso
+de «no representable» intacto. Encontró en el camino el caso de los pares
+totalmente ausentes (T3.5), arreglado antes de este cierre.
+
+**Decisión del usuario, registrada:** el pulido visual fino del navegador —y
+de la interfaz en general— se deja para el cierre de la épica, no historia por
+historia.
+
+## Cierre
+
+**Chequeo de tests huérfanos:** ampliado por lo que encontró T3.5. Todos los
+consumidores de `BoneNavigator`, `martillo`/`malleus-*` y `toNavigatorRows`
+fueron revisados: `BoneNavigator.test.tsx` y `ExploreView.test.tsx` se
+actualizaron a propósito (T3.5); `selection.test.ts` y `BoneIdentity.test.tsx`
+se verificaron como no afectados y no se tocaron.
+
+**Criterios de aceptación:**
+
+| Criterio | Estado |
+|---|---|
+| Must 1 · toda píldora y fila simple ≥ 44×44 px | cumplido |
+| Must 2 · nombre más largo sin truncar | cumplido |
+| Must 3 · desplazamiento total no crece | cumplido — 5.832 px, −6% (no el −8% proyectado; ver T3) |
+| Must 4 · `BoneNavigator.test.tsx` verde sin editar | **roto a propósito en T3.5** — reescrito para un cambio de comportamiento real, no accidental |
+| Must 5 · ningún hueso se pierde sin fila | cumplido |
+| Should 1 · sombra solo en la seleccionada | cumplido |
+| Must NOT 1 · dominio intacto | respetado |
+| Must NOT 2 · lado desde `SIDE_LABEL` | respetado |
+| Must NOT 3 · nombre común siempre visible | respetado |
+
+**Gates finales:** `./scripts/check` verde (219 tests) ·
+`npx playwright test` verde (11/11).
