@@ -25,8 +25,20 @@ comprobación que se porta bien mientras no está mirando lo que cree. Y es
 especialmente traicionero en los gates de tipo "no debe haber X": su estado
 normal es la lista vacía, así que el fallo del andamiaje se disfraza de éxito.
 
+**En e7.1 el control cobró la apuesta, y contra el instrumento mismo.** El gate
+de colores literales llevaba su par —«el instrumento mira de verdad»— y falló en
+la primera ejecución: el patrón tenía la bandera `g`, y `RegExp.test` avanza
+`lastIndex` entre llamadas, así que la segunda comprobación daba `false` sobre
+un texto que sí contenía un color. No era el recorrido lo que estaba roto, era
+**el patrón**. Sin esa aserción el gate habría quedado verde dejando pasar
+literales, y el fallo se habría descubierto al encontrar un `bg-slate-800` vivo
+varias historias después. El par no solo verifica que se recorrió: verifica que
+se reconoce.
+
 **How to apply:** en toda aserción cuyo caso feliz sea "vacío", "cero" o
 "ninguno", añadir una segunda que demuestre que el instrumento funciona: que el
 recorrido encontró archivos, que el espía detecta, que el filtro deja pasar un
-caso conocido. Y ver el gate **ponerse rojo** con un defecto real antes de
-confiar en él ([[a-reintroduced-defect-must-actually-break]]).
+caso conocido — y que **reconoce** un positivo, no solo que recorre. Y ver el
+gate **ponerse rojo** con un defecto real antes de confiar en él
+([[a-reintroduced-defect-must-actually-break]]): en e7.1 eso fue inyectar
+`bg-[#ff0000]` en un componente de verdad y comprobar que lo reportaba.

@@ -72,3 +72,18 @@ mano. 206 tests unitarios y 5 de navegador en verde.
    `privacy.test.ts`). e7.1 lo usó dos veces más y extrajo su recorrido a
    `tests/sources.ts`, así que el siguiente guardrail de esta clase se escribe
    importando una función en vez de copiando un `readdirSync`.
+
+## Para el plan de e7.2
+
+Dos frases que tienen que aparecer en su `plan.md` al cortarlo, en vez de
+volver a descubrirse — el aprendizaje solo sirve si viaja al artefacto de
+planificación, no si se queda en este:
+
+1. **Si e7.2 enuncia un contrato negativo** —«el lienzo nunca se dibuja a su
+   altura intrínseca»— **ese gate es su tarea uno**, y su rojo inicial es el
+   inventario. En e7.1 el gate llegó en la tercera tarea y encontró un 30% más
+   de infracciones que el mejor conteo a mano.
+2. **e7.2 corre `explore.spec.ts` en cada tarea, no al final.** Toca el lienzo,
+   que es exactamente lo que esa suite mide en píxeles. En e7.1 bastó adelantarla
+   una tarea para no depurar con tres commits encima; en e7.2 el solapamiento es
+   total, así que no es una precaución sino el gate de la historia.
