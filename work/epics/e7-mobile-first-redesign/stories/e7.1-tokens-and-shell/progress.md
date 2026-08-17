@@ -82,3 +82,46 @@ de navegador **no puede observar** este defecto.
   cambiar el fondo del panel del lienzo (`bg-slate-900` → `bg-panel`) toca justo
   lo que `explore.spec.ts` mide en píxeles. Verde: el fondo del canvas lo pinta
   three.js, no el CSS.
+
+## T4 · Verificación manual
+
+Hecha por el usuario con la aplicación corriendo. Veredicto: **todo en orden**,
+sin ninguna pantalla ilegible tras invertir a tema claro — que era el riesgo
+que ningún test cubría y la razón de que las 46 sustituciones entraran en esta
+historia.
+
+**Hallazgo, con destino:** la aplicación **todavía no es responsiva**. Está
+dentro de lo previsto y fuera del alcance de e7.1, que solo declara los tokens y
+el shell. Le corresponde a tres historias ya planificadas: **e7.2** (el lienzo
+deja de medir su altura intrínseca), **e7.6** (cómo conviven lienzo, navegador e
+identidad en 390 px) y **e7.9** (el escritorio como ampliación). La causa está
+medida en el design de la épica: `grid-cols-1` apila y nadie da altura al
+lienzo. No va al parking lot porque ya tiene dueño en el plan.
+
+## Cierre
+
+**Chequeo de tests huérfanos: limpio.** Los seis archivos de prueba que importan
+los módulos tocados —`App`, `BoneNavigator`, `BoneIdentity`, `ExploreView`,
+`BoneDetailView`, `TestQuestion`— **no fueron modificados por esta historia** y
+pasan los seis. Eso no es un descuido: es el criterio de aceptación. Consultan
+roles y nombres accesibles, así que su verde es la prueba de que el rediseño no
+degradó `must-a11y-005`.
+
+**Criterios de aceptación, uno a uno:**
+
+| Criterio | Estado |
+|---|---|
+| Must 1 · el gate anti-literales pasa de rojo (46 utilidades) a verde | cumplido |
+| Must 2 · las tres pestañas ≥ 44×44 px en 390×844 | cumplido — `e2e/mobile-shell.spec.ts` |
+| Must 3 · el alto se calcula con `h-dvh` | cumplido — `tests/shell.test.ts` |
+| Must 4 · los 202 tests previos verdes sin reescribirse | cumplido — 206 en total |
+| Must 5 · todo par texto/fondo supera 4.5:1, con el cálculo registrado | cumplido — en `design.md` y `index.css` |
+| Should 1 · el `sticky` conserva fondo opaco | cumplido — `bg-panel` |
+| Should 2 · el escritorio no empeora | cumplido — verificado a ojo en T4 |
+| Must NOT 1 · ninguna vista rediseñada | respetado — solo cambió el origen del color |
+| Must NOT 2 · dominio, activo y escenas intactos | respetado — `SkeletonScene.test.tsx` verde |
+| Must NOT 3 · ninguna petición de red nueva | respetado — `privacy.test.ts` y la prueba de navegador verdes |
+| Must NOT 4 · sin `tailwind.config.js` | respetado |
+
+**Gates finales:** `./scripts/check` verde (206 tests, 30 archivos) ·
+`npx playwright test` verde (5/5).
