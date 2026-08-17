@@ -48,6 +48,27 @@ No apareció una sexta superficie. La búsqueda fue por archivos que renderizan
 huesos (`grep` de `catalog`/`bones` sobre `src/features` y `src/components`),
 no por memoria de dónde miré antes.
 
+## T3 · Prueba de integración manual
+
+En Chromium, contra el build servido, los tres casos del `scope.md`:
+
+| Ficha | Lienzos 3D | Etiquetas "aislado en 3D" | Qué se lee |
+|---|:---:|:---:|---|
+| martillo derecho | **0** | **0** | "Este hueso no está en el modelo 3D" + su ficha completa |
+| hioides | **0** | **0** | Ídem, más el panel ámbar con la razón, **una sola vez** |
+| fémur derecho | **1** | **1** | Sin cambios — la escena aislada de siempre |
+
+El hioides además confirmó que el motivo detallado sigue apareciendo exactamente
+una vez, en la ficha de identidad: "No articula con ningún otro hueso —queda
+suspendido en el cuello por músculos y ligamentos— y el modelo del esqueleto no
+lo incluye."
+
+**Dos tropiezos de la sonda, ninguno de la aplicación:** intentó volver a la
+pestaña "Fichas" sin pulsar antes "← Volver" (la aplicación oculta las pestañas
+mientras hay una ficha abierta, a propósito), y buscó el hioides por
+"hueso hioides", que es su **sinónimo** y no su nombre accesible. Las dos veces
+el instrumento estaba mal, no lo medido.
+
 ## Finalize
 
 - Full gate set: `./scripts/check` verde — **190 tests** (187 al empezar, 3
