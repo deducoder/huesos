@@ -103,7 +103,7 @@ export function App() {
   return (
     <main className="flex h-dvh flex-col bg-superficie text-tinta">
       <header className="border-tinta border-b-2 bg-panel px-4 py-3">
-        <h1 className="font-semibold text-titulo">huesos-mono</h1>
+        <h1 className="font-display font-semibold text-titulo">huesos-mono</h1>
       </header>
       {modo.tipo !== 'ficha' && <Pestanas modo={modo} onCambiar={(tipo) => setModo({ tipo })} />}
       <div className="min-h-0 flex-1">

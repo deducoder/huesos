@@ -91,3 +91,28 @@ test('el lienzo se queda con sus propios gestos táctiles', async ({ page }) => 
     .evaluate((c) => getComputedStyle(c).touchAction)
   expect(enLaFicha, 'touch-action del lienzo en la ficha').toBe('none')
 })
+
+test('el título usa la familia display empaquetada', async ({ page }) => {
+  await page.goto('/')
+  const titulo = page.getByRole('heading', { name: 'huesos-mono' })
+  await expect(titulo).toBeVisible()
+
+  // Se comprueba la familia computada y no el aspecto: si el `@font-face`
+  // apuntara a un archivo inexistente, la familia declarada seguiría siendo
+  // Fredoka pero el navegador dibujaría con la de reserva. Por eso además se
+  // pregunta al documento si la cargó de verdad.
+  const familia = await titulo.evaluate((h) => getComputedStyle(h).fontFamily)
+  expect(familia, 'familia del título').toContain('Fredoka')
+
+  const cargada = await page.evaluate(async () => {
+    await document.fonts.ready
+    return document.fonts.check('600 28px Fredoka')
+  })
+  expect(cargada, 'la fuente empaquetada llegó a cargarse').toBe(true)
+
+  // El cuerpo no la usa: la display es solo para títulos.
+  const cuerpo = await page
+    .getByRole('button', { name: 'fémur derecho', exact: true })
+    .evaluate((b) => getComputedStyle(b).fontFamily)
+  expect(cuerpo, 'el cuerpo conserva la pila del sistema').not.toContain('Fredoka')
+})
