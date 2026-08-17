@@ -14,13 +14,13 @@ import { ExploreView } from './ExploreView'
  */
 vi.mock('../../components/SkeletonScene', () => ({
   SkeletonScene: ({
-    selectedMesh,
+    selected,
     onPick,
   }: {
-    selectedMesh: string | null
+    selected: string | null
     onPick: (id: string) => void
   }) => (
-    <div data-testid="escena-sustituida" data-malla={selectedMesh ?? ''}>
+    <div data-testid="escena-sustituida" data-hueso={selected ?? ''}>
       <button type="button" onClick={() => onPick('tibia-left')}>
         simular clic en la escena
       </button>
