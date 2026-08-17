@@ -1,0 +1,7 @@
+# Bug b2.3: Mirroring duplicates bones the model already brings whole — Scope
+
+WHAT:      La escena dibuja dos veces los huesos que el modelo ya trae completos. En la calota se ve como parietales encimados —parches irregulares y simétricos peleando por el mismo píxel (z-fighting)— y el resaltado de "hueso parietal derecho" enciende los dos hemisferios en vez de uno.
+WHEN:      Siempre, desde que existe la escena. Visible al mirar el cráneo desde arriba; el resaltado erróneo se ve seleccionando cualquiera de los dos parietales desde el navegador de huesos o pulsándolos en la escena.
+WHERE:     `src/components/SkeletonScene.tsx:118-119` dibuja `SkeletonHalf` original y espejada bajo la premisa —escrita en su comentario— de que el modelo trae solo el hemicuerpo derecho. `src/data/skeleton.glb` la desmiente: de sus 144 mallas, `Parietal bone left` viene con lado propio (X de -0.0043 a +0.0742, hemisferio contrario al resto) y otras 20 son impares centradas en X=0. `src/domain/mesh-lookup.ts:44-52` solo desambigua el lado cuando dos entradas comparten `meshName`, cosa que los parietales no hacen.
+EXPECTED:  Cada hueso se dibuja una sola vez, en su hemisferio, y seleccionarlo resalta una sola superficie del lado anatómicamente correcto.
+DONE WHEN: Con "hueso parietal derecho" seleccionado, el conteo de píxeles encendidos por mitad de imagen es asimétrico en la misma proporción que ya cumple el fémur (medido hoy: fémur derecho 1842/61; parietal derecho 126/122), y la vista desde arriba no muestra parches en competencia sobre la calota.
