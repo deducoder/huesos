@@ -77,12 +77,15 @@ b2.1 o b2.2 pone el gate en rojo.
 
 ## Outstanding
 
-- **El criterio de aceptación 2 no se cumple como está escrito.** Dice
-  "se alcanzan decenas de huesos distintos, no dos"; la rejilla alcanza 6
-  dentro de la suite. La intención está cubierta y demostrada (b2.1 → 1,
-  b2.2 → 0, verde → 6), el número literal no. Requiere decisión: corregir el
-  criterio para que diga lo que el gate realmente prueba, o densificar la
-  rejilla hasta alcanzar decenas.
+- **El criterio de aceptación 2 decía "decenas de huesos distintos" y la
+  rejilla alcanza 6.** Resuelto en la review corrigiendo el criterio para que
+  diga lo que el gate prueba de verdad: al menos 6 huesos, muy por encima de
+  los 2 que deja la regresión. "Decenas" era lenguaje aspiracional escrito
+  antes de medir nada — el mismo defecto que el umbral inventado de 8, y la
+  tercera vez en esta historia que un número sin medición cuesta trabajo.
+  Se descartó densificar la rejilla: con 121 puntos la sonda aislada alcanzó
+  10, así que el techo parece estar en la resolución del esqueleto y no en la
+  de la rejilla, y la prueba pasaría de ~45s a ~2min sin garantía de llegar.
 - **La suite corre sobre renderizado por software aun en una máquina con GPU.**
   Chromium headless usa SwiftShader por defecto; `/dev/dxg` y las librerías
   NVIDIA de WSL están disponibles pero Playwright no las toma. No bloquea nada
