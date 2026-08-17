@@ -48,7 +48,23 @@ describe('el navegador de huesos', () => {
 
   it('avisa de que un hueso sin geometría no se puede mostrar, y por qué', () => {
     render(<BoneNavigator bones={catalog} selected={null} onSelect={() => {}} />)
-    const martillo = screen.getByRole('button', { name: /martillo.*izquierdo/i })
+    // e7.4: un par sin geometría en NINGÚN lado (martillo, yunque, estribo)
+    // colapsa a una sola fila — elegir lado no distingue nada observable, y
+    // `pickTestableBone` ya los excluye del modo test. El ejemplo pasa de
+    // "martillo izquierdo" a "martillo" a secas.
+    const martillo = screen.getByRole('button', { name: /^martillo$/i })
     expect(martillo).toHaveAccessibleDescription(/no.*visible|timpánica|temporal/i)
+  })
+
+  it('un par sin geometría en ningún lado no ofrece elegir lado', () => {
+    render(<BoneNavigator bones={catalog} selected={null} onSelect={() => {}} />)
+    expect(screen.queryByRole('button', { name: /martillo.*derecho/i })).not.toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: /martillo.*izquierdo/i })).not.toBeInTheDocument()
+  })
+
+  it('un par con geometría en ambos lados sí ofrece elegir', () => {
+    render(<BoneNavigator bones={catalog} selected={null} onSelect={() => {}} />)
+    expect(screen.getByRole('button', { name: /fémur.*derecho/i })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /fémur.*izquierdo/i })).toBeInTheDocument()
   })
 })

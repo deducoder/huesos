@@ -30,3 +30,5 @@
 - [Las filas automáticas de un grid reparten solo el sobrante](grid-auto-rows-distribute-only-the-leftover.md) — una fila con contenido enorme lo absorbe y la vecina cae a su tamaño intrínseco.
 - [Una webfont ya subseteada no necesita herramienta de subsetting](subsetted-webfonts-need-no-subsetting-tool.md) — el bloque `latin` de Google ya viene recortado; verificar cobertura, no instalar fontTools.
 - [Una muestra renderizada decide mejor que una tabla de características](rendered-samples-beat-feature-tables-for-visual-choices.md) — el texto real de la aplicación revela lo que un pangram no muestra.
+- [Que un dato sea par no implica que valga la pena distinguirlo](pairing-doesnt-imply-distinguishing.md) — si ambos lados son indistinguibles en lo observable, ofrecer la elección es ruido.
+- [Las cifras de un prototipo se reproducen en el componente real](prototype-numbers-need-reproducing-in-the-real-component.md) — una clase añadida por costumbre se come la ganancia proyectada.
