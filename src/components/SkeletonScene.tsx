@@ -1,7 +1,8 @@
 import { OrbitControls, useGLTF } from '@react-three/drei'
 import { Canvas, type ThreeEvent } from '@react-three/fiber'
 import { Suspense, useLayoutEffect, useMemo } from 'react'
-import { Color, type Mesh, MeshStandardMaterial, type Object3D } from 'three'
+import { Box3, Color, type Mesh, MeshStandardMaterial, type Object3D, Vector3 } from 'three'
+import { distanceToFit } from '../domain/framing'
 import type { Bone } from '../data/bone'
 import { boneIdForMesh, type SceneHalf } from '../domain/mesh-lookup'
 import skeletonUrl from '../data/skeleton.glb?url'
@@ -78,6 +79,57 @@ function SkeletonHalf({ bones, selected, half, onPick }: HalfProps) {
   )
 }
 
+/** Campo de visión de la cámara, en grados. */
+const FOV = 45
+
+/**
+ * Altura a la que se normaliza el esqueleto, en unidades de escena.
+ *
+ * El modelo se **escala** a esta altura en vez de mover la cámara hacia él. Es
+ * deliberado: `<Canvas camera={...}>` solo lee esos valores al montar, así que
+ * calcular la distancia después no reencuadra nada — comprobado en navegador
+ * durante b2.2, donde una versión anterior de este arreglo aparentaba ajustarse
+ * y no lo hacía. Normalizando el modelo, la cámara es una constante y el
+ * encuadre no depende de la escala del activo.
+ */
+const TARGET_HEIGHT = 1.7
+
+/**
+ * El esqueleto completo: el hemicuerpo derecho del modelo y su espejo, centrados
+ * en el origen.
+ *
+ * El modelo viene **apoyado en el origen** —los pies en `Y ≈ 0`, la cabeza en
+ * `Y ≈ 1.7`— y desplazado en X por ser medio cuerpo. Se mide con `Box3` en vez
+ * de descontar valores fijos, para que cambiar el activo no vuelva a romper el
+ * encuadre (b2.2).
+ */
+function CenteredSkeleton({ bones, selected, onPick }: CenteredProps) {
+  const { scene } = useGLTF(skeletonUrl, DRACO_PATH)
+
+  const { offset, scale } = useMemo(() => {
+    const caja = new Box3().setFromObject(scene)
+    const tamano = caja.getSize(new Vector3())
+    const centro = caja.getCenter(new Vector3())
+    const escala = TARGET_HEIGHT / Math.max(tamano.y, 0.001)
+    // En X no se centra: el conjunto ya queda centrado porque el espejo
+    // compensa el medio cuerpo que trae el modelo.
+    return { offset: new Vector3(0, -centro.y * escala, -centro.z * escala), scale: escala }
+  }, [scene])
+
+  return (
+    <group position={offset} scale={scale}>
+      <SkeletonHalf bones={bones} selected={selected} half="original" onPick={onPick} />
+      <SkeletonHalf bones={bones} selected={selected} half="mirrored" onPick={onPick} />
+    </group>
+  )
+}
+
+interface CenteredProps {
+  bones: readonly Bone[]
+  selected: string | null
+  onPick: (id: string) => void
+}
+
 /** Lo que se dibuja mientras el modelo llega: nada visible, sin romper la escena. */
 function LoadingNotice() {
   return (
@@ -98,14 +150,16 @@ interface Props {
 export function SkeletonScene({ bones, selected, onPick }: Props) {
   return (
     <div className="relative h-full w-full">
-      <Canvas camera={{ position: [0, 0.2, 3], fov: 45 }} aria-label="Esqueleto humano en 3D">
+      <Canvas
+        camera={{ position: [0, 0, distanceToFit(TARGET_HEIGHT, FOV)], fov: FOV }}
+        aria-label="Esqueleto humano en 3D"
+      >
         <ambientLight intensity={0.8} />
         <directionalLight position={[2, 4, 3]} intensity={1.2} />
         <Suspense fallback={<LoadingNotice />}>
-          <SkeletonHalf bones={bones} selected={selected} half="original" onPick={onPick} />
-          <SkeletonHalf bones={bones} selected={selected} half="mirrored" onPick={onPick} />
+          <CenteredSkeleton bones={bones} selected={selected} onPick={onPick} />
         </Suspense>
-        <OrbitControls enablePan enableZoom makeDefault />
+        <OrbitControls enablePan enableZoom makeDefault target={[0, 0, 0]} />
       </Canvas>
       <p className="sr-only">
         Vista tridimensional del esqueleto. Para elegir un hueso sin usar el ratón, usá la lista de
