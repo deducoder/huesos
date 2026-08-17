@@ -1,6 +1,36 @@
 @import "tailwindcss";
 
 /*
+ * La familia display, servida desde este mismo repositorio.
+ *
+ * No es una preferencia: `must-privacy-006` prohíbe cualquier petición de red
+ * en tiempo de ejecución y hay dos gates vigilándolo, así que un `<link>` a
+ * Google Fonts está descartado por construcción — el mismo motivo por el que
+ * `public/draco/` sirve el decodificador desde acá.
+ *
+ * El archivo es el subset `latin` que Google ya distribuye partido, 16 KB. No
+ * hace falta recortarlo a mano: los 72 caracteres del catálogo caen dentro de
+ * este `unicode-range`, y `tests/typography.test.ts` lo comprueba contra los
+ * 206 huesos. La descarga ocurrió una vez, en desarrollo; lo que el guardrail
+ * prohíbe es la petición en tiempo de ejecución.
+ *
+ * `swap`: antes que la fuente llegue, el texto se lee con la del sistema. En
+ * una conexión lenta —la que esta épica quiere servir— eso es preferible a
+ * texto invisible.
+ */
+@font-face {
+  font-family: "Fredoka";
+  src: url("/fonts/fredoka-latin-600.woff2") format("woff2");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
+    U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+2074, U+20AC, U+2122, U+2191,
+    U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+/*
  * La única fuente del aspecto de la aplicación (ADR-007).
  *
  * Tailwind 4 configura en CSS, no en un archivo JS: `@theme` es su mecanismo,
@@ -45,7 +75,9 @@
   /* El mínimo táctil, como token: 44 px es la decisión, no un valor suelto. */
   --spacing-tactil: 44px;
 
-  /* La familia sigue siendo la del sistema hasta e7.3; acá solo la escala. */
+  /* La display va solo en títulos; el cuerpo conserva la pila del sistema,
+     que no cuesta ninguna descarga. */
+  --font-display: "Fredoka", ui-sans-serif, system-ui, sans-serif;
   --text-titulo: 1.75rem;
 }
 
