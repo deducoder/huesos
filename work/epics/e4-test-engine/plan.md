@@ -46,7 +46,7 @@ Updated by `story-close` as each story lands — the only cross-artifact write.
 | Story | Status | Est. | Actual |
 |-------|:------:|:----:|:------:|
 | e4.1 | done | S | S (3 tareas + 1 corrección de calidad) |
-| e4.2 | todo | M | — |
+| e4.2 | done | M | M (3 tareas + 1 corrección de calidad) |
 | e4.3 | todo | S | — |
 | e4.4 | todo | S | — |
 | e4.5 | todo | S | — |
