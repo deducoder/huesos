@@ -116,3 +116,21 @@ test('el título usa la familia display empaquetada', async ({ page }) => {
     .evaluate((b) => getComputedStyle(b).fontFamily)
   expect(cuerpo, 'el cuerpo conserva la pila del sistema').not.toContain('Fredoka')
 })
+
+test('las filas del navegador de huesos alcanzan el mínimo táctil', async ({ page }) => {
+  await page.goto('/')
+  await page.getByRole('button', { name: /^fichas$/i }).click()
+
+  // Un par: la píldora "Derecho" de fémur.
+  const pildoraDerecha = page.getByRole('button', { name: /fémur.*derecho/i })
+  await expect(pildoraDerecha).toBeVisible()
+  const cajaPildora = await pildoraDerecha.boundingBox()
+  expect(cajaPildora?.height ?? 0, 'alto de la píldora "fémur derecho"').toBeGreaterThanOrEqual(44)
+  expect(cajaPildora?.width ?? 0, 'ancho de la píldora "fémur derecho"').toBeGreaterThanOrEqual(44)
+
+  // Un impar: esfenoides, sin píldoras de lado.
+  const impar = page.getByRole('button', { name: /^esfenoides$/i })
+  await expect(impar).toBeVisible()
+  const cajaImpar = await impar.boundingBox()
+  expect(cajaImpar?.height ?? 0, 'alto de "esfenoides"').toBeGreaterThanOrEqual(44)
+})

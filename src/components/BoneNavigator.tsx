@@ -1,10 +1,18 @@
 import type { Bone } from '../data/bone'
+import { toNavigatorRows } from '../domain/navigator-rows'
 import { groupByRegion } from '../domain/regions'
 import { REGION_LABEL, SIDE_LABEL } from './labels'
 
 /** El nombre que oye un lector de pantalla: el hueso y, si es par, su lado. */
 function accessibleName(bone: Bone): string {
   return bone.side === null ? bone.es : `${bone.es} ${SIDE_LABEL[bone.side]}`
+}
+
+/** Las clases de una píldora o de una fila simple, según su selección. */
+function claseObjetivo(elegido: boolean): string {
+  return elegido
+    ? 'bg-acento font-semibold text-panel shadow-dura'
+    : 'bg-panel text-tinta hover:bg-acento-suave'
 }
 
 interface Props {
@@ -16,6 +24,12 @@ interface Props {
 /**
  * La vía de acceso por teclado al esqueleto, equivalente a la escena y no
  * subordinada a ella (ADR-002). Funciona sin que exista una sola línea de WebGL.
+ *
+ * Cada hueso par comparte fila con su opuesto (e7.4): el nombre común más dos
+ * píldoras de lado, `min-h-tactil` cada una. El alto de la fila lo fija la
+ * píldora, no el nombre — un nombre largo envuelve a dos líneas **dentro**
+ * de esos 44 px en vez de agrandar la fila, así que el navegador entero
+ * recorre más corto que antes de e7.4, no más largo, pese al mínimo táctil.
  */
 export function BoneNavigator({ bones, selected, onSelect }: Props) {
   return (
@@ -34,30 +48,68 @@ export function BoneNavigator({ bones, selected, onSelect }: Props) {
             {/* La lista lleva el nombre accesible: un lector anuncia «lista, N elementos»
                 con el nombre de la región, que es más informativo que un grupo genérico. */}
             <ul aria-labelledby={titleId} className="px-2">
-              {grupo.bones.map((bone) => {
-                const descriptionId = bone.meshName === null ? `${bone.id}-missing` : undefined
+              {toNavigatorRows(grupo.bones).map((fila) => {
+                if (fila.kind === 'single') {
+                  const bone = fila.bone
+                  const descriptionId = bone.meshName === null ? `${bone.id}-missing` : undefined
+                  return (
+                    <li key={bone.id}>
+                      <button
+                        type="button"
+                        aria-pressed={selected === bone.id}
+                        aria-describedby={descriptionId}
+                        onClick={() => onSelect(bone.id)}
+                        className={`min-h-tactil w-full rounded-suave px-2 text-left text-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-acento ${claseObjetivo(selected === bone.id)}`}
+                      >
+                        {selected === bone.id && <span aria-hidden="true">▸ </span>}
+                        {accessibleName(bone)}
+                        {bone.meshName === null && <span aria-hidden="true"> ·</span>}
+                      </button>
+                      {descriptionId && (
+                        <span id={descriptionId} className="sr-only">
+                          {bone.missingReason}
+                        </span>
+                      )}
+                    </li>
+                  )
+                }
+                const nombreId = `${fila.right.id}-nombre`
                 return (
-                  <li key={bone.id}>
-                    <button
-                      type="button"
-                      aria-pressed={selected === bone.id}
-                      aria-describedby={descriptionId}
-                      onClick={() => onSelect(bone.id)}
-                      className={`w-full rounded px-2 py-1 text-left text-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-acento ${
-                        selected === bone.id
-                          ? 'bg-acento font-semibold text-panel'
-                          : 'text-tinta hover:bg-acento-suave'
-                      }`}
-                    >
-                      {selected === bone.id && <span aria-hidden="true">▸ </span>}
-                      {accessibleName(bone)}
-                      {bone.meshName === null && <span aria-hidden="true"> ·</span>}
-                    </button>
-                    {descriptionId && (
-                      <span id={descriptionId} className="sr-only">
-                        {bone.missingReason}
-                      </span>
-                    )}
+                  <li
+                    key={fila.right.id}
+                    className="flex flex-wrap items-center gap-x-2 gap-y-1 py-0.5"
+                  >
+                    <span id={nombreId} className="min-w-20 flex-1">
+                      {fila.name}
+                    </span>
+                    {[fila.right, fila.left].map((bone) => {
+                      if (bone.side === null) return null
+                      const ladoId = `${bone.id}-lado`
+                      const descriptionId =
+                        bone.meshName === null ? `${bone.id}-missing` : undefined
+                      return (
+                        <span key={bone.id}>
+                          <button
+                            type="button"
+                            aria-pressed={selected === bone.id}
+                            aria-labelledby={`${nombreId} ${ladoId}`}
+                            aria-describedby={descriptionId}
+                            onClick={() => onSelect(bone.id)}
+                            className={`min-h-tactil min-w-16 rounded-tarjeta border-2 border-tinta px-3 text-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-acento ${claseObjetivo(selected === bone.id)}`}
+                          >
+                            <span id={ladoId}>
+                              {SIDE_LABEL[bone.side]}
+                              {bone.meshName === null && <span aria-hidden="true"> ·</span>}
+                            </span>
+                          </button>
+                          {descriptionId && (
+                            <span id={descriptionId} className="sr-only">
+                              {bone.missingReason}
+                            </span>
+                          )}
+                        </span>
+                      )
+                    })}
                   </li>
                 )
               })}
