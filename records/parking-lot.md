@@ -38,3 +38,11 @@ atributos correctos» y «se entiende al oírla» hay una distancia que el epic 
 cubre.
 
 **Destino:** aparcado, pendiente de una sesión de prueba manual con lector.
+
+## 2026-08-16 · La lista no se desplaza al hueso elegido en la escena (e2.6)
+
+Con 206 entradas, seleccionar un hueso en la escena lo marca en la lista pero no
+la desplaza: el hueso marcado puede quedar fuera de la vista. Pulido de UX real,
+no requisito del epic.
+
+**Destino:** aparcado.
