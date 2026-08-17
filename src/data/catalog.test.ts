@@ -38,14 +38,11 @@ describe('la integridad del catálogo', () => {
     }
   })
 
-  it('exige una razón a toda entrada sin geometría', () => {
-    for (const hueso of catalog) {
-      if (hueso.meshName === null) {
-        expect(hueso.missingReason?.trim(), `${hueso.id} sin malla y sin razón`).toBeTruthy()
-      }
-    }
-  })
-
+  // "Toda entrada sin geometría trae una razón" lo afirma la prueba de la
+  // condición de lanzamiento en `catalog.coverage.test.ts`, y con más
+  // exigencia: allí la razón tiene que explicar, no solo existir. Repetirlo
+  // aquí sería la misma afirmación en dos archivos. La conversa, en cambio,
+  // dice algo que ninguna otra prueba dice, y se queda.
   it('no deja razón de ausencia a una entrada que sí tiene geometría', () => {
     for (const hueso of catalog) {
       if (hueso.meshName !== null) {

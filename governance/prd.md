@@ -57,12 +57,28 @@ ambos a la vista sin ninguna acción adicional del usuario.
 
 El catálogo cubre los 206 huesos del esqueleto humano adulto, cada uno con
 nombre en español, término en Terminologia Anatomica, sinónimos aceptados,
-región anatómica y la región gráfica que le corresponde en el esqueleto.
+región anatómica y, **o bien** la región gráfica que le corresponde en el
+esqueleto, **o bien** una razón documentada de por qué el modelo 3D no lo
+incluye.
+
+*Completo* se refiere a la cobertura del **catálogo**, no a la del modelo: el
+esqueleto adulto tiene 206 huesos y el catálogo los tiene todos; el modelo 3D
+dibuja 199 de ellos, y las siete entradas restantes —los seis huesecillos del
+oído medio y el hioides— dicen por qué no. La geometría es un atributo del
+activo 3D, no de la entrada. Ver
+[ADR-006](../records/decisions/adr-006-what-complete-catalog-means.md), que
+recoge las cuatro opciones consideradas y por qué se rechazaron las otras tres.
+
 Observable: una prueba automática cuenta 206 entradas, verifica que no hay
-nombres ni identificadores duplicados, y verifica que toda entrada tiene una
-región gráfica existente en el esqueleto. **Este requisito es la condición de
-lanzamiento del producto** (decisión explícita del proyecto, agosto 2026): no se
-publica una versión con el catálogo incompleto.
+identificadores duplicados ni dos entradas del mismo hueso y lado —los huesos
+pares comparten nombre por diseño, y los distingue la lateralidad—, y verifica
+que **ninguna entrada queda sin región gráfica y sin razón de ausencia** —
+`src/data/catalog.coverage.test.ts`, prueba *"cumple la condición de
+lanzamiento: geometría o razón, nunca ninguna"*.
+
+**Este requisito es la condición de lanzamiento del producto** (decisión
+explícita del proyecto, agosto 2026): no se publica una versión con el catálogo
+incompleto.
 
 ### RF-09: Progreso persistente por hueso
 
