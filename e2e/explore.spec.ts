@@ -191,6 +191,33 @@ test('un hueso par se resalta de un solo lado, y del anatómicamente correcto', 
   expect(izquierdo.izquierda, 'y no a la izquierda').toBeLessThan(izquierdo.derecha / 5)
   expect(derecho.izquierda, 'el fémur derecho se enciende a la izquierda').toBeGreaterThan(200)
   expect(derecho.derecha, 'y no a la derecha').toBeLessThan(derecho.izquierda / 5)
+
+  // b2.3: los parietales son el único par que el modelo trae con malla propia
+  // por lado. El fémur no bastaba para vigilar la lateralidad — su malla es una
+  // sola y el espejo la coloca bien—, así que el defecto vivía justo donde
+  // ninguna prueba miraba: la escena espejaba también lo que ya venía completo,
+  // y seleccionar un parietal encendía los dos hemisferios (medido: 126/122,
+  // contra el 1842/61 del fémur en la misma escena).
+  //
+  // El umbral es más bajo que el del fémur porque el parietal ocupa mucho menos
+  // en pantalla a la distancia por defecto; lo que se vigila es la PROPORCIÓN
+  // entre mitades, y el mínimo solo está para que la prueba no pase en verde
+  // sobre una selección que no encendió nada.
+  const parietalDerecho = diferenciaPorMitad(base, await seleccionar('hueso parietal derecho'))
+  const parietalIzquierdo = diferenciaPorMitad(base, await seleccionar('hueso parietal izquierdo'))
+
+  expect(
+    parietalDerecho.izquierda,
+    'el parietal derecho se enciende a la izquierda',
+  ).toBeGreaterThan(40)
+  expect(parietalDerecho.derecha, 'y no a la derecha').toBeLessThan(parietalDerecho.izquierda / 5)
+  expect(
+    parietalIzquierdo.derecha,
+    'el parietal izquierdo se enciende a la derecha',
+  ).toBeGreaterThan(40)
+  expect(parietalIzquierdo.izquierda, 'y no a la izquierda').toBeLessThan(
+    parietalIzquierdo.derecha / 5,
+  )
 })
 
 test('no se pide nada a ningún tercero, como exige must-privacy-006', async ({ page }) => {
