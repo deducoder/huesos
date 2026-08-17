@@ -45,7 +45,7 @@ no bloquea nada.
       recargar la página, y ver que el registro de ese hueso conserva el
       resultado. Verificado **en navegador real**, que es el único sitio donde
       "recargar" significa algo.
-- [ ] **Core MVP** — + e5.4 — con un registro donde un hueso acumula fallos y
+- [x] **Core MVP** — + e5.4 — con un registro donde un hueso acumula fallos y
       otro solo aciertos, la selección elige el fallado con mayor frecuencia.
       Afirmado con prueba determinista sobre dominio puro, sorteo inyectado.
 - [ ] **Epic complete** — + e5.5 — `./scripts/check` falla ante cualquier
@@ -77,7 +77,7 @@ Updated by `story-close` as each story lands — the only cross-artifact write.
 | e5.1 | done | S | S |
 | e5.2 | done | M | M |
 | e5.3 | done | M | S-M |
-| e5.4 | todo | M | — |
+| e5.4 | done | M | M |
 | e5.5 | todo | S | — |
 
 ## Sequencing risks
