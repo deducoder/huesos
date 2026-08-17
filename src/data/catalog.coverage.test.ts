@@ -51,6 +51,24 @@ describe('la cobertura del catálogo', () => {
     expect(ausentes.filter((r) => r === 'hyoid')).toHaveLength(1)
   })
 
+  it('cumple la condición de lanzamiento: geometría o razón, nunca ninguna', () => {
+    // El criterio de ADR-006: una entrada está completa cuando tiene malla en
+    // el modelo **o** una razón documentada de por qué no la tiene. El
+    // catálogo cubre los 206 huesos del esqueleto adulto; el modelo 3D cubre
+    // 199 de ellos, y el catálogo lo dice.
+    //
+    // El tipo `Bone` ya hace imposible el estado incoherente al escribir el
+    // catálogo. Esta aserción existe para quien lee `RF-08`: la condición de
+    // lanzamiento tiene que poder encontrarse como una prueba con nombre, no
+    // reconstruirse desde una unión de tipos.
+    const incompletas = catalog
+      .filter((bone) => bone.meshName === null && !bone.missingReason)
+      .map((bone) => bone.id)
+
+    expect(incompletas, 'entradas sin geometría y sin razón de ausencia').toEqual([])
+    expect(catalog).toHaveLength(206)
+  })
+
   it('da a cada hueso par sus dos lados', () => {
     const porNombre = new Map<string, Set<string>>()
     for (const hueso of catalog) {
