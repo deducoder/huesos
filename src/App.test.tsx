@@ -84,4 +84,38 @@ describe('la aplicación, de punta a punta', () => {
     expect(screen.getByRole('button', { name: /^fémur derecho$/i })).toBeInTheDocument()
     expect(screen.queryByTestId('escena-sustituida')).not.toBeInTheDocument()
   })
+
+  it('la pestaña "Test" ofrece elegir entre esqueleto completo y hueso aislado', async () => {
+    const user = userEvent.setup()
+    render(<App />)
+
+    await user.click(screen.getByRole('button', { name: /^test$/i }))
+
+    expect(screen.getByRole('button', { name: /esqueleto completo/i })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /hueso aislado/i })).toBeInTheDocument()
+    expect(screen.queryByTestId('escena-sustituida')).not.toBeInTheDocument()
+    expect(screen.queryByTestId('escena-aislada-sustituida')).not.toBeInTheDocument()
+  })
+
+  it('elegir "Esqueleto completo" monta el modo test sobre la escena completa', async () => {
+    const user = userEvent.setup()
+    render(<App />)
+
+    await user.click(screen.getByRole('button', { name: /^test$/i }))
+    await user.click(screen.getByRole('button', { name: /esqueleto completo/i }))
+
+    expect(screen.getByTestId('escena-sustituida')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /responder/i })).toBeInTheDocument()
+  })
+
+  it('elegir "Hueso aislado" monta el modo test sobre el hueso aislado', async () => {
+    const user = userEvent.setup()
+    render(<App />)
+
+    await user.click(screen.getByRole('button', { name: /^test$/i }))
+    await user.click(screen.getByRole('button', { name: /hueso aislado/i }))
+
+    expect(screen.getByTestId('escena-aislada-sustituida')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /responder/i })).toBeInTheDocument()
+  })
 })
