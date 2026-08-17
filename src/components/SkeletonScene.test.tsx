@@ -37,4 +37,11 @@ describe('la escena del esqueleto', () => {
   it('da a cada copia su propio material, para no resaltar los dos lados a la vez', () => {
     expect(fuente).toMatch(/ownMaterial/)
   })
+
+  it('resalta comparando el hueso resuelto por mitad, no el nombre de la malla', () => {
+    // b2.1: comparar nombres de malla encendía los dos lados de un hueso par,
+    // y además nunca casaba porque el cargador sanea los nombres.
+    expect(fuente).toMatch(/const esteHueso = boneIdForMesh\(bones, malla\.name, half\)/)
+    expect(fuente).not.toMatch(/malla\.name === selected/)
+  })
 })

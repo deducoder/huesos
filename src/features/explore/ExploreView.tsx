@@ -25,7 +25,7 @@ export function ExploreView() {
       <div className="min-h-0 bg-slate-900">
         <SkeletonScene
           bones={catalog}
-          selectedMesh={findBone(catalog, selected)?.meshName ?? null}
+          selected={selected}
           onPick={(id) => setSelected((actual) => toggleSelection(actual, id))}
         />
       </div>
