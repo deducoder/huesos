@@ -46,3 +46,23 @@ la desplaza: el hueso marcado puede quedar fuera de la vista. Pulido de UX real,
 no requisito del epic.
 
 **Destino:** aparcado.
+
+## 2026-08-16 · La documentación de e2 describe el contrato anterior a b2.1
+
+`work/epics/e2-explore-skeleton/docs.md` documenta que la escena recibe
+`selectedMesh`. Tras b2.1 recibe `selected` (el `id`), porque una malla son dos
+huesos y solo la escena conoce la mitad pulsada. Afecta al ejemplo trazado, al
+diagrama de flujo y a la invariante I2.
+
+**Destino:** aparcado. `docs.md` es artefacto de `epic-close` y un cierre de bug
+no lo edita.
+
+## 2026-08-16 · No hay forma de probar el modelo tal como lo carga la aplicación
+
+b2.1 existió porque las pruebas comparaban el catálogo contra el **archivo**, y
+entre el archivo y la escena hay un cargador que transforma los nombres. La
+prueba que lo habría atrapado exige ejecutar `GLTFLoader` con Draco en un
+navegador: una suite `./scripts/check-integration` que el proyecto no tiene.
+
+**Destino:** aparcado — es la carencia estructural más seria que el proyecto
+tiene hoy.
