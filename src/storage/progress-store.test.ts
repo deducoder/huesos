@@ -1,6 +1,22 @@
 import { describe, expect, it } from 'vitest'
-import { recordAnswer } from '../domain/progress'
+import { catalog } from '../data/catalog'
+import { EMPTY_PROGRESS, recordAnswer } from '../domain/progress'
 import { createProgressStore, type KeyValueStorage } from './progress-store'
+
+/**
+ * Un almacén que se porta bien. **Comparte** el objeto en vez de copiarlo: así
+ * dos almacenes sobre los mismos datos se ven el uno al otro, que es lo que
+ * hace falta para comprobar que algo se escribió de verdad y no solo se
+ * recordó en memoria.
+ */
+function almacenEnMemoria(datos: Record<string, string> = {}): KeyValueStorage {
+  return {
+    getItem: (clave) => datos[clave] ?? null,
+    setItem: (clave, valor) => {
+      datos[clave] = valor
+    },
+  }
+}
 
 /** Modo privado, cuota agotada, almacenamiento bloqueado: `setItem` lanza. */
 function almacenQueLanzaAlEscribir(): KeyValueStorage {
@@ -47,5 +63,40 @@ describe('el almacén de progreso cuando el navegador falla', () => {
     store.write(recordAnswer(store.read(), 'frontal', false))
 
     expect(store.read()).toEqual({ frontal: { correct: 0, incorrect: 2 } })
+  })
+})
+
+describe('el almacén de progreso en su camino normal', () => {
+  it('devuelve el registro vacío en la primera visita', () => {
+    expect(createProgressStore(almacenEnMemoria()).read()).toEqual({})
+  })
+
+  it('devuelve lo guardado tras guardarlo', () => {
+    const store = createProgressStore(almacenEnMemoria())
+    store.write(recordAnswer({}, 'frontal', false))
+
+    expect(store.read()).toEqual({ frontal: { correct: 0, incorrect: 1 } })
+  })
+
+  it('escribe de verdad en el almacén, no solo en memoria', () => {
+    // Un almacén nuevo sobre los MISMOS datos: si solo se hubiera recordado en
+    // memoria, este segundo no vería nada.
+    const datos: Record<string, string> = {}
+    createProgressStore(almacenEnMemoria(datos)).write(recordAnswer({}, 'sacrum', true))
+
+    expect(createProgressStore(almacenEnMemoria(datos)).read()).toEqual({
+      sacrum: { correct: 1, incorrect: 0 },
+    })
+  })
+
+  it('sobrevive a los 206 huesos del catálogo real', () => {
+    const datos: Record<string, string> = {}
+    let registro = EMPTY_PROGRESS
+    for (const bone of catalog) registro = recordAnswer(registro, bone.id, false)
+    createProgressStore(almacenEnMemoria(datos)).write(registro)
+
+    const leido = createProgressStore(almacenEnMemoria(datos)).read()
+    expect(Object.keys(leido)).toHaveLength(catalog.length)
+    for (const bone of catalog) expect(leido[bone.id]).toEqual({ correct: 0, incorrect: 1 })
   })
 })
