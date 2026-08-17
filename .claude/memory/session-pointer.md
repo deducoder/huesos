@@ -7,22 +7,26 @@ metadata:
   modified: 2026-08-17
 ---
 
-Last session: **2026-08-17** — de repositorio vacío a esqueleto explorable: E1
-(catálogo de 206 huesos anclado a geometría) y E2 (escena 3D + navegador
-accesible) completos y etiquetados, dos bugs arreglados y verificados en
-navegador real, y gemba copiado al repositorio para funcionar sin plugin. Todo
-publicado en `github.com/deducoder/huesos`.
+Last session: **2026-08-17** — diagnóstico gemba de `./scripts/check-integration`
+en `story/s1/browser-integration-suite`: nunca se había corrido; se
+encontraron y arreglaron dos causas reales (favicon 404, trace carísimo bajo
+renderizado por software) y se recalibró un umbral no verificado. Commits
+`d9f8d2c` y `c608709` pusheados a la rama.
 
-Full handoff: `work/sessions/2026-08-17-skeleton-catalog-and-explore.md` (read it
-in full via `session-start`).
+Full handoff: `work/sessions/2026-08-17-integration-suite-diagnosis.md` (read
+it in full via `session-start`).
 
-Next action: **verificar la suite de integración** — correr
-`./scripts/check-integration` en la rama `story/s1/browser-integration-suite` y,
-si pasa, cerrarla con `story-close`.
+Next action: **volver a correr `./scripts/check-integration`** en
+`story/s1/browser-integration-suite` — si la prueba de la rejilla de clics
+vuelve a fallar por timeout, subir `test.setTimeout` antes de seguir
+investigando, no bajar más el umbral de huesos. Si queda verde, `story-close`
+y recién ahí empezar `epic-start` para E3 (Ficha del hueso), que el usuario
+pidió y no llegó a arrancarse.
 
-La suite se reescribió al final de la sesión para observar las selecciones desde
-dentro de la página, y **esa versión no se ha ejecutado nunca**. Es lo único
-inacabado; `main` está verde, etiquetado y publicado.
+La prueba de la rejilla es intermitente en este entorno (rendimiento por
+software ruidoso, sin GPU): corrió en 20s, 1.1m y >2m en corridas
+consecutivas sin cambios de código entre la mayoría de ellas. El gate no
+quedó verde de forma estable al cerrar la sesión.
 
 Overwritten on every `session-close`; this is a pointer, the handoff is the
 source of truth.
