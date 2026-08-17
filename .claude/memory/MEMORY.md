@@ -4,3 +4,4 @@
 - [El activo 3D es irregular por naturaleza](model-mesh-names-are-irregular.md) — ningún nombre de malla se puede derivar por regla; hay que leer la lista real.
 - [Lo intestable va al final, sobre algo que funcione](untestable-layers-go-last.md) — ordenar el epic convierte un riesgo en un extra.
 - [Probar el dato al otro lado de la librería](test-the-data-after-the-library.md) — b2.1: 80 tests en verde y solo 3 huesos seleccionables.
+- [El encuadre dinámico de cámara necesita un componente](dynamic-camera-framing-needs-a-component.md) — la prop `camera` de `Canvas` solo se lee al montar; usar `<PerspectiveCamera>` de drei cuando el encuadre se calcula después.
