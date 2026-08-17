@@ -123,6 +123,12 @@ export function IsolatedBoneScene({ bones, boneId, accessibleLabel }: Props) {
             <PerspectiveCamera
               makeDefault
               fov={FOV}
+              // El plano cercano por defecto de three.js (0.1) recorta huesos
+              // diminutos: `distanceToFit` acerca la cámara por debajo de esa
+              // distancia para una falange, y el lienzo queda en blanco sin
+              // ningún error — verificado en e4.4 con "falange proximal del
+              // quinto dedo de la mano".
+              near={0.001}
               position={[framing.center.x, framing.center.y, framing.center.z + framing.distance]}
             />
           )}
