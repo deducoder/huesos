@@ -26,6 +26,15 @@ describe('la escena del esqueleto', () => {
   })
 
   it('espeja el hemicuerpo, porque el modelo solo trae el derecho', () => {
-    expect(fuente).toMatch(/scale=\{\[-1, 1, 1\]\}|MIRROR/)
+    expect(fuente).toMatch(/\[-1, 1, 1\]/)
+    expect(fuente).toMatch(/half="mirrored"/)
+  })
+
+  it('resuelve el lado por la mitad de la escena, no por el nombre de la malla', () => {
+    expect(fuente).toMatch(/boneIdForMesh\(bones, evento\.object\.name, half\)/)
+  })
+
+  it('da a cada copia su propio material, para no resaltar los dos lados a la vez', () => {
+    expect(fuente).toMatch(/ownMaterial/)
   })
 })
