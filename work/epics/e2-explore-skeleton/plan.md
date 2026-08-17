@@ -26,7 +26,7 @@ la vía de teclado sea la nativa.
 
 - [x] **Walking skeleton** — e2.1, e2.2, e2.3 — se recorre el catálogo por
       teclado y seleccionar un hueso muestra su nombre en ambas nomenclaturas.
-- [ ] **Core MVP** — + e2.4 — el esqueleto se ve en pantalla.
+- [x] **Core MVP** — + e2.4 — el esqueleto se ve en pantalla.
 - [ ] **Feature complete** — + e2.5, e2.6 — clic sobre un hueso lo selecciona y
       lo resalta, sincronizado con la lista.
 - [ ] **Epic complete** — criterios de `scope.md` cumplidos, documentación y
@@ -49,7 +49,7 @@ dependencia.
 | e2.1 | done | S | S · 2 commits |
 | e2.2 | done | M | M · 3 commits |
 | e2.3 | done | S | S · 3 commits |
-| e2.4 | todo | M | — |
+| e2.4 | done | M | M · 3 commits |
 | e2.5 | todo | M | — |
 | e2.6 | todo | S | — |
 
