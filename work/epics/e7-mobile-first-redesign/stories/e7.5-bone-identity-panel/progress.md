@@ -65,5 +65,5 @@ y siguen verdes.
 | Must NOT 2 · `missingReason` sin cambios | respetado |
 | Must NOT 3 · nunca oculta ante la duda | respetado — probado explícitamente |
 
-**Gates finales:** `./scripts/check` verde (225 tests) ·
+**Gates finales:** `./scripts/check` verde (231 tests) ·
 `npx playwright test` verde (12/12).
