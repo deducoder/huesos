@@ -74,7 +74,7 @@ Updated by `story-close` as each story lands — the only cross-artifact write.
 
 | Story | Status | Est. | Actual |
 |-------|:------:|:----:|:------:|
-| e5.1 | todo | S | — |
+| e5.1 | done | S | S |
 | e5.2 | todo | M | — |
 | e5.3 | todo | M | — |
 | e5.4 | todo | M | — |
