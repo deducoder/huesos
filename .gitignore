@@ -4,3 +4,7 @@ coverage/
 *.local
 .env
 .DS_Store
+
+# salida de la suite de integración en navegador
+test-results/
+playwright-report/
