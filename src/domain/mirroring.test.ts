@@ -1,3 +1,5 @@
+import { readFileSync } from 'node:fs'
+import { resolve } from 'node:path'
 import { BoxGeometry, Group, Mesh, MeshBasicMaterial, Object3D, Raycaster, Vector3 } from 'three'
 import { describe, expect, it } from 'vitest'
 import { MIDLINE_GROUP } from '../data/skeleton-groups'
@@ -64,5 +66,25 @@ describe('la preparación de la mitad espejada', () => {
   it('no falla si el grupo no está, para no atarse a un activo concreto', () => {
     const suelta = new Object3D()
     expect(() => stripMidline(suelta)).not.toThrow()
+  })
+})
+
+describe('las dos escenas preparan su mitad espejada igual', () => {
+  /**
+   * Prueba de implementación, y se declara como tal: lo que de verdad hay que
+   * observar —cuántas copias del hueso se dibujan— vive en un canvas WebGL que
+   * jsdom no tiene. Esto solo vigila que ninguna de las dos escenas se quede
+   * atrás si la regla cambia; verlo de verdad es la verificación manual.
+   */
+  const fuente = (ruta: string) => readFileSync(resolve(ruta), 'utf8')
+
+  it('la escena del esqueleto la usa', () => {
+    expect(fuente('src/components/SkeletonScene.tsx')).toMatch(/stripMidline\(/)
+  })
+
+  it('la ficha del hueso aislado también', () => {
+    // b2.3: aislar el frontal o un parietal mostraba dos copias, la del modelo
+    // y su espejo, y el encuadre abarcaba las dos.
+    expect(fuente('src/components/IsolatedBoneScene.tsx')).toMatch(/stripMidline\(/)
   })
 })

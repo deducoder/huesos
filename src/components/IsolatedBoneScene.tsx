@@ -6,6 +6,7 @@ import type { Bone } from '../data/bone'
 import skeletonUrl from '../data/skeleton.glb?url'
 import { distanceToFit } from '../domain/framing'
 import { visibleForIsolation } from '../domain/isolation'
+import { stripMidline } from '../domain/mirroring'
 import type { SceneHalf } from '../domain/mesh-lookup'
 import { findBone } from '../domain/selection'
 
@@ -32,11 +33,17 @@ interface GroupProps {
  * El encuadre se recalcula tras aplicar la visibilidad, a partir de la caja
  * de **las mallas visibles únicamente**: `Box3` no excluye objetos ocultos
  * por sí sola, así que se filtra a mano en el propio recorrido.
+ *
+ * La mitad espejada se prepara con `stripMidline`: lo que el modelo ya trae en
+ * su sitio no se espeja, o el hueso aislado aparecería dos veces.
  */
 function IsolatedGroup({ bones, boneId, onFramed }: GroupProps) {
   const { scene } = useGLTF(skeletonUrl, DRACO_PATH)
   const original = useMemo(() => scene.clone(true), [scene])
-  const mirrored = useMemo(() => scene.clone(true), [scene])
+  // Misma preparación que `SkeletonScene` y por la misma razón (b2.3): sin
+  // esto, aislar un hueso de línea media —o un parietal— mostraba DOS copias,
+  // la del modelo y su espejo, y el encuadre se calculaba sobre las dos.
+  const mirrored = useMemo(() => stripMidline(scene.clone(true)), [scene])
   const groupRef = useRef<Group>(null)
 
   useLayoutEffect(() => {

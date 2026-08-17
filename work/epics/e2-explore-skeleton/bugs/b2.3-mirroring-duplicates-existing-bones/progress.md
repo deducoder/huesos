@@ -153,3 +153,41 @@ alcanza. Sin ese caso, un rayo mal apuntado daría verde sin haber mirado nada.
 
 **Gates:** `./scripts/check` verde (199 unitarias) y `./scripts/check-integration`
 verde (4 de 4).
+
+## T6 · La misma causa estaba en la ficha del hueso (RED → GREEN)
+
+Al revisar si algo más espejaba bajo la premisa falsa, apareció que sí:
+`IsolatedBoneScene` clona las dos mitades igual que la escena grande. Medido
+con una sonda sobre `visibleForIsolation`, contando en cuántas mitades queda
+visible cada malla al aislar un hueso:
+
+```
+frontal        -> 2 copia(s): original+mirrored
+parietal-right -> 2 copia(s): original+mirrored
+parietal-left  -> 2 copia(s): original+mirrored
+femur-right    -> 1 copia(s): original
+femur-left     -> 1 copia(s): mirrored
+```
+
+Aislar cualquiera de los 36 huesos de línea media —las 26 vértebras, esternón,
+mandíbula, frontal, occipital, esfenoides, etmoides, vómer— o cualquiera de los
+dos parietales mostraba **dos copias**, y el encuadre se calculaba sobre las
+dos, así que además el hueso salía mal dimensionado en su propia ficha.
+
+Arreglado con la misma `stripMidline` y una línea. Dos casos nuevos vigilan que
+ninguna de las dos escenas se quede atrás si la regla cambia.
+
+**La debilidad de esos dos casos se declara en el propio archivo:** son pruebas
+de *implementación* —leen el fuente— porque lo que de verdad habría que
+observar, cuántas copias se dibujan, vive en un canvas WebGL que jsdom no
+tiene. Verificado que pueden fallar: revertir la línea de `IsolatedBoneScene`
+pone en rojo `la ficha del hueso aislado también`.
+
+**Ensanchamiento de alcance, declarado:** el `WHERE` del scope nombra
+`SkeletonScene`, no esta segunda escena. Se incluye igualmente porque la causa
+raíz es la misma y el `EXPECTED` —«cada hueso se dibuja una sola vez»— no
+distingue entre vistas. Cerrar el bug sabiendo que la misma raíz sigue
+produciendo el defecto en la ficha habría sido arreglar el síntoma.
+
+**Gates:** `./scripts/check` verde (201 unitarias) y `./scripts/check-integration`
+verde (4 de 4).
