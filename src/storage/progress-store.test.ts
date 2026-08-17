@@ -121,9 +121,9 @@ describe('el almacén de progreso ante un valor guardado que no vale', () => {
   })
 
   it('descarta contadores negativos o no enteros', () => {
-    expect(createProgressStore(guardado('{"frontal":{"correct":-1,"incorrect":0}}')).read()).toEqual(
-      {},
-    )
+    expect(
+      createProgressStore(guardado('{"frontal":{"correct":-1,"incorrect":0}}')).read(),
+    ).toEqual({})
     expect(
       createProgressStore(guardado('{"frontal":{"correct":1.5,"incorrect":0}}')).read(),
     ).toEqual({})

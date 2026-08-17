@@ -42,7 +42,6 @@ function almacenamientoDelNavegador(): KeyValueStorage | null {
   }
 }
 
-
 /** Un contador válido: entero y no negativo. */
 function esContador(valor: unknown): valor is number {
   return typeof valor === 'number' && Number.isInteger(valor) && valor >= 0
