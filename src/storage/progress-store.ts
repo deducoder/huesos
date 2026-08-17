@@ -42,6 +42,35 @@ function almacenamientoDelNavegador(): KeyValueStorage | null {
   }
 }
 
+
+/** Un contador válido: entero y no negativo. */
+function esContador(valor: unknown): valor is number {
+  return typeof valor === 'number' && Number.isInteger(valor) && valor >= 0
+}
+
+/**
+ * Si lo que volvió del almacén es un registro de progreso.
+ *
+ * Lo guardado es texto que escribió cualquiera: una versión anterior de la
+ * aplicación, otra pestaña, o el propio usuario desde la consola. Lo que entra
+ * al dominio se valida aquí o el dominio deja de poder confiar en sus tipos.
+ *
+ * Si una entrada no vale, se descarta el **registro entero** en vez de
+ * repararlo a medias: si un texto trae basura, no hay razón para confiar en el
+ * resto de ese mismo texto, y un registro reparado a medias es un dato
+ * inventado con aspecto de dato real.
+ */
+function esRegistroDeProgreso(valor: unknown): valor is ProgressRecord {
+  if (typeof valor !== 'object' || valor === null || Array.isArray(valor)) return false
+  return Object.values(valor).every(
+    (entrada) =>
+      typeof entrada === 'object' &&
+      entrada !== null &&
+      esContador((entrada as Record<string, unknown>).correct) &&
+      esContador((entrada as Record<string, unknown>).incorrect),
+  )
+}
+
 /**
  * Un almacén de progreso sobre el almacenamiento dado, o sobre el del
  * navegador si no se pasa ninguno.
@@ -69,7 +98,9 @@ export function createProgressStore(storage?: KeyValueStorage): ProgressStore {
     if (almacen === null) return EMPTY_PROGRESS
     try {
       const crudo = almacen.getItem(CLAVE)
-      return crudo === null ? EMPTY_PROGRESS : (JSON.parse(crudo) as ProgressRecord)
+      if (crudo === null) return EMPTY_PROGRESS
+      const analizado: unknown = JSON.parse(crudo)
+      return esRegistroDeProgreso(analizado) ? analizado : EMPTY_PROGRESS
     } catch {
       return EMPTY_PROGRESS
     }

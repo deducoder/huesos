@@ -100,3 +100,46 @@ describe('el almacén de progreso en su camino normal', () => {
     for (const bone of catalog) expect(leido[bone.id]).toEqual({ correct: 0, incorrect: 1 })
   })
 })
+
+describe('el almacén de progreso ante un valor guardado que no vale', () => {
+  const guardado = (valor: string) => almacenEnMemoria({ 'huesos-mono:progress': valor })
+
+  it('descarta un valor que no es JSON', () => {
+    expect(createProgressStore(guardado('no-soy-json{')).read()).toEqual({})
+  })
+
+  it('descarta un JSON válido que no es un objeto', () => {
+    expect(createProgressStore(guardado('"hola"')).read()).toEqual({})
+    expect(createProgressStore(guardado('42')).read()).toEqual({})
+    expect(createProgressStore(guardado('null')).read()).toEqual({})
+    expect(createProgressStore(guardado('[1,2,3]')).read()).toEqual({})
+  })
+
+  it('descarta un registro cuyas entradas no son contadores', () => {
+    expect(createProgressStore(guardado('{"frontal":"hola"}')).read()).toEqual({})
+    expect(createProgressStore(guardado('{"frontal":{"correct":1}}')).read()).toEqual({})
+  })
+
+  it('descarta contadores negativos o no enteros', () => {
+    expect(createProgressStore(guardado('{"frontal":{"correct":-1,"incorrect":0}}')).read()).toEqual(
+      {},
+    )
+    expect(
+      createProgressStore(guardado('{"frontal":{"correct":1.5,"incorrect":0}}')).read(),
+    ).toEqual({})
+  })
+
+  it('descarta el registro entero, no solo la entrada mala', () => {
+    // Reparar a medias es cómo se cuela un dato inventado: si una entrada no
+    // vale, no hay razón para confiar en las demás del mismo texto.
+    const mezclado = '{"frontal":{"correct":1,"incorrect":2},"sacrum":"basura"}'
+    expect(createProgressStore(guardado(mezclado)).read()).toEqual({})
+  })
+
+  it('acepta un registro bien formado', () => {
+    const bueno = '{"frontal":{"correct":1,"incorrect":2}}'
+    expect(createProgressStore(guardado(bueno)).read()).toEqual({
+      frontal: { correct: 1, incorrect: 2 },
+    })
+  })
+})
