@@ -33,7 +33,7 @@ type Resultado = 'pendiente' | 'correcto' | 'incorrecto'
  * comparten este mismo flujo sin duplicarlo.
  */
 export function TestQuestion({ bones, store, renderScene }: Props) {
-  const [bone, setBone] = useState<Bone>(() => pickTestableBone(bones))
+  const [bone, setBone] = useState<Bone>(() => pickTestableBone(bones, { progress: store.read() }))
   const [respuesta, setRespuesta] = useState('')
   const [resultado, setResultado] = useState<Resultado>('pendiente')
 
@@ -47,7 +47,7 @@ export function TestQuestion({ bones, store, renderScene }: Props) {
   }
 
   const siguiente = () => {
-    setBone(pickTestableBone(bones, bone.id))
+    setBone(pickTestableBone(bones, { excluirId: bone.id, progress: store.read() }))
     setRespuesta('')
     setResultado('pendiente')
   }
