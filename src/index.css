@@ -22,6 +22,7 @@
   --color-tinta-suave: #5a554a; /* texto secundario — 6.94 sobre superficie */
   --color-acento: #2f5fe0; /* selección — 5.48 con texto panel encima */
   --color-acento-suave: #dce6ff; /* fondo del estado activo — 14.61 con tinta */
+  --color-acento-fuerte: #1f41a8; /* el acento bajo el puntero — 8.82 con panel */
   --color-aviso: #b4560a; /* borde de lo que el modelo no representa */
   --color-aviso-fondo: #fff1dc;
   --color-aviso-tinta: #5c3200; /* 9.87 sobre aviso-fondo */

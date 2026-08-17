@@ -44,3 +44,41 @@ que T3 cierra; no llega a `main` porque la historia se cierra entera.
 no de navegador quedó escrita en el propio archivo: el viewport de Playwright no
 simula la barra de URL que aparece y desaparece al desplazar, así que la suite
 de navegador **no puede observar** este defecto.
+
+## T3 · Las utilidades de color literal, sustituidas por tokens
+
+- **RED:** `tests/design-tokens.test.ts` falló listando **46 utilidades** en 6
+  archivos, con archivo y línea. El design contaba 35 *líneas*; el gate cuenta
+  *utilidades*, y varias líneas llevan más de una.
+- **GREEN:** las 46 sustituidas en `App.tsx`, `BoneNavigator`, `BoneIdentity`,
+  `ExploreView`, `BoneDetailView` y `TestQuestion`. Solo cambió el origen del
+  color: ni un padding, ni un tamaño, ni un grosor de borde.
+- **REFACTOR:** el `sticky top-0` de los encabezados de región conserva fondo
+  opaco (`bg-panel`, blanco sólido), que es de lo que depende para no dejar ver
+  el texto por debajo al desplazar.
+- **Gates:** `./scripts/check` verde con **206 tests**, y la suite de navegador
+  entera verde (5/5, 1.5 min).
+
+**Lo que el plan no anticipó:**
+
+- **La aserción de control encontró un defecto en el propio instrumento.** El
+  patrón lleva la bandera `g`, y `RegExp.test` avanza `lastIndex` entre
+  llamadas: la segunda comprobación daba `false` sobre un texto que sí contenía
+  un color. Con `.test` en vez de `.match`, el gate habría dado **falsos
+  negativos** y dejado pasar colores literales. Lo encontró exactamente la
+  prueba que existe para eso — es la segunda vez en el proyecto que el
+  aprendizaje `a-check-needs-a-check-that-it-looked` se paga solo.
+- **`text-white` en `BoneIdentity.tsx:34` no estaba en ningún inventario.** Ni
+  el del scope ni el del design lo listaban: los dos greps buscaban
+  `slate|sky|amber`. El gate, que es más ancho que la búsqueda que lo inspiró,
+  lo encontró al primer intento.
+- **Hizo falta un token más, `--color-acento-fuerte`.** El botón "Responder"
+  tenía `hover:bg-sky-600` sobre `bg-sky-700`: sin un acento más oscuro, el
+  hover se perdía. 8.82 de contraste con el texto encima.
+- **Un par de color se descartó por medición, no por gusto:** `text-acento`
+  sobre `bg-acento-suave` da 4.38, por debajo del 4.5 de WCAG. Los botones
+  secundarios usan `text-tinta` de base, que sobre ese mismo fondo da 14.61.
+- **La suite de navegador se corrió acá y no en T4**, como el plan preveía:
+  cambiar el fondo del panel del lienzo (`bg-slate-900` → `bg-panel`) toca justo
+  lo que `explore.spec.ts` mide en píxeles. Verde: el fondo del canvas lo pinta
+  three.js, no el CSS.

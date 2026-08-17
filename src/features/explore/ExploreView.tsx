@@ -23,13 +23,13 @@ interface Props {
 export function ExploreView({ selected, onSelect, onViewDetail }: Props) {
   return (
     <div className="grid h-full min-h-0 grid-cols-1 md:grid-cols-[20rem_1fr_22rem]">
-      <div className="min-h-0 overflow-y-auto border-slate-800 border-r py-2">
+      <div className="min-h-0 overflow-y-auto border-tinta border-r py-2">
         <BoneNavigator bones={catalog} selected={selected} onSelect={onSelect} />
       </div>
-      <div className="min-h-0 bg-slate-900">
+      <div className="min-h-0 bg-panel">
         <SkeletonScene bones={catalog} selected={selected} onPick={onSelect} />
       </div>
-      <div className="min-h-0 overflow-y-auto border-slate-800 border-l">
+      <div className="min-h-0 overflow-y-auto border-tinta border-l">
         <BoneIdentity bone={findBone(catalog, selected)} onViewDetail={onViewDetail} />
       </div>
     </div>

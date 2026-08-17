@@ -18,10 +18,10 @@ export function BoneIdentity({ bone, onViewDetail }: Props) {
   if (!bone) {
     return (
       <section className="p-6" aria-labelledby="identidad-vacia">
-        <h2 id="identidad-vacia" className="text-slate-400">
+        <h2 id="identidad-vacia" className="text-tinta-suave">
           Elegí un hueso para ver su nombre
         </h2>
-        <p className="mt-2 text-slate-500 text-sm">
+        <p className="mt-2 text-tinta-suave text-sm">
           Podés recorrer la lista con el teclado o girar el esqueleto y hacer clic.
         </p>
         <p role="status" aria-live="polite" className="sr-only" />
@@ -31,38 +31,38 @@ export function BoneIdentity({ bone, onViewDetail }: Props) {
 
   return (
     <section className="p-6" aria-labelledby="identidad-hueso">
-      <h2 id="identidad-hueso" className="font-semibold text-2xl text-white">
+      <h2 id="identidad-hueso" className="font-semibold text-2xl text-tinta">
         {bone.es}
       </h2>
-      <p className="mt-1 text-lg text-sky-300 italic">{bone.la}</p>
+      <p className="mt-1 text-acento text-lg italic">{bone.la}</p>
 
       <dl className="mt-4 space-y-1 text-sm">
         <div className="flex gap-2">
-          <dt className="text-slate-400">Región</dt>
+          <dt className="text-tinta-suave">Región</dt>
           <dd>{REGION_LABEL[bone.region]}</dd>
         </div>
         {bone.side !== null && (
           <div className="flex gap-2">
-            <dt className="text-slate-400">Lado</dt>
+            <dt className="text-tinta-suave">Lado</dt>
             <dd>{SIDE_LABEL[bone.side]}</dd>
           </div>
         )}
         {isUnpaired(bone) && (
           <div className="flex gap-2">
-            <dt className="text-slate-400">Lateralidad</dt>
+            <dt className="text-tinta-suave">Lateralidad</dt>
             <dd>impar</dd>
           </div>
         )}
         {bone.synonyms.length > 0 && (
           <div className="flex gap-2">
-            <dt className="text-slate-400">También</dt>
+            <dt className="text-tinta-suave">También</dt>
             <dd>{bone.synonyms.join(' · ')}</dd>
           </div>
         )}
       </dl>
 
       {bone.meshName === null && (
-        <p className="mt-4 rounded border border-amber-700 bg-amber-950 p-3 text-amber-200 text-sm">
+        <p className="mt-4 rounded border border-aviso bg-aviso-fondo p-3 text-aviso-tinta text-sm">
           No se puede señalar en el esqueleto. {bone.missingReason}
         </p>
       )}
@@ -71,7 +71,7 @@ export function BoneIdentity({ bone, onViewDetail }: Props) {
         <button
           type="button"
           onClick={() => onViewDetail(bone.id)}
-          className="mt-4 rounded border border-sky-700 px-3 py-1.5 text-sky-300 text-sm hover:bg-sky-950"
+          className="mt-4 rounded border border-tinta px-3 py-1.5 text-tinta text-sm hover:bg-acento-suave"
         >
           Ver ficha completa
         </button>

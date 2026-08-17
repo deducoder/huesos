@@ -24,11 +24,11 @@ export function BoneNavigator({ bones, selected, onSelect }: Props) {
         const titleId = `region-${grupo.region}`
         return (
           <section key={grupo.region} className="mb-4">
-            <h2 id={titleId} className="sticky top-0 bg-slate-900 px-3 py-1 text-sm font-semibold">
+            <h2 id={titleId} className="sticky top-0 bg-panel px-3 py-1 text-sm font-semibold">
               {REGION_LABEL[grupo.region]}
-              <span className="ml-2 font-normal text-slate-400">{grupo.bones.length}</span>
+              <span className="ml-2 font-normal text-tinta-suave">{grupo.bones.length}</span>
               {!grupo.representable && (
-                <span className="ml-2 font-normal text-amber-300">· no representable</span>
+                <span className="ml-2 font-normal text-aviso">· no representable</span>
               )}
             </h2>
             {/* La lista lleva el nombre accesible: un lector anuncia «lista, N elementos»
@@ -43,10 +43,10 @@ export function BoneNavigator({ bones, selected, onSelect }: Props) {
                       aria-pressed={selected === bone.id}
                       aria-describedby={descriptionId}
                       onClick={() => onSelect(bone.id)}
-                      className={`w-full rounded px-2 py-1 text-left text-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-sky-400 ${
+                      className={`w-full rounded px-2 py-1 text-left text-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-acento ${
                         selected === bone.id
-                          ? 'bg-sky-700 font-semibold text-white'
-                          : 'text-slate-200 hover:bg-slate-800'
+                          ? 'bg-acento font-semibold text-panel'
+                          : 'text-tinta hover:bg-acento-suave'
                       }`}
                     >
                       {selected === bone.id && <span aria-hidden="true">▸ </span>}

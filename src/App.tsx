@@ -72,19 +72,19 @@ function ElegirVarianteDeTest({
 }) {
   return (
     <div className="flex h-full flex-col items-center justify-center gap-4">
-      <p className="text-slate-300">¿Sobre qué querés que te pregunte?</p>
+      <p className="text-tinta-suave">¿Sobre qué querés que te pregunte?</p>
       <div className="flex gap-3">
         <button
           type="button"
           onClick={() => onElegir('test-esqueleto')}
-          className="rounded border border-slate-700 px-4 py-2 hover:bg-slate-800"
+          className="rounded border border-tinta px-4 py-2 hover:bg-acento-suave"
         >
           Esqueleto completo
         </button>
         <button
           type="button"
           onClick={() => onElegir('test-hueso')}
-          className="rounded border border-slate-700 px-4 py-2 hover:bg-slate-800"
+          className="rounded border border-tinta px-4 py-2 hover:bg-acento-suave"
         >
           Hueso aislado
         </button>

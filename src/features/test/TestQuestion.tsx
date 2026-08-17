@@ -55,7 +55,7 @@ export function TestQuestion({ bones, store, renderScene }: Props) {
   return (
     <div className="flex h-full flex-col">
       <div className="min-h-0 flex-1">{renderScene(bone.id)}</div>
-      <div className="border-slate-800 border-t p-4">
+      <div className="border-tinta border-t p-4">
         {resultado === 'pendiente' ? (
           <form onSubmit={responder} className="flex gap-2">
             <label className="flex-1">
@@ -65,12 +65,12 @@ export function TestQuestion({ bones, store, renderScene }: Props) {
                 value={respuesta}
                 onChange={(evento) => setRespuesta(evento.target.value)}
                 placeholder="¿Qué hueso es?"
-                className="w-full rounded border border-slate-700 bg-slate-900 px-3 py-2 text-sm"
+                className="w-full rounded border border-tinta bg-panel px-3 py-2 text-sm"
               />
             </label>
             <button
               type="submit"
-              className="rounded bg-sky-700 px-4 py-2 text-sm text-white hover:bg-sky-600"
+              className="rounded bg-acento px-4 py-2 text-panel text-sm hover:bg-acento-fuerte"
             >
               Responder
             </button>
@@ -82,7 +82,7 @@ export function TestQuestion({ bones, store, renderScene }: Props) {
                 {resultado === 'correcto' ? 'Correcto' : 'Incorrecto'}
               </p>
               {resultado === 'incorrecto' && (
-                <p className="text-slate-300 text-sm">
+                <p className="text-tinta-suave text-sm">
                   {bone.es} / {bone.la}
                 </p>
               )}
@@ -90,7 +90,7 @@ export function TestQuestion({ bones, store, renderScene }: Props) {
             <button
               type="button"
               onClick={siguiente}
-              className="rounded border border-slate-700 px-3 py-1.5 text-sm hover:bg-slate-800"
+              className="rounded border border-tinta px-3 py-1.5 text-sm hover:bg-acento-suave"
             >
               Siguiente pregunta
             </button>
