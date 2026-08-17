@@ -34,7 +34,10 @@ export function ExploreView({ selected, onSelect, onViewDetail }: Props) {
         <SkeletonScene bones={catalog} selected={selected} onPick={onSelect} />
       </div>
       {bone && (
-        <div className="absolute inset-x-4 bottom-4 max-h-[45vh] overflow-y-auto rounded-tarjeta border-2 border-tinta bg-panel shadow-dura">
+        <div
+          data-testid="tarjeta-identidad"
+          className="absolute inset-x-4 bottom-4 max-h-[45vh] overflow-y-auto rounded-tarjeta border-2 border-tinta bg-panel shadow-dura"
+        >
           <BoneIdentity bone={bone} onViewDetail={onViewDetail} />
         </div>
       )}

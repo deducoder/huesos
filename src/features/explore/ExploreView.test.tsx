@@ -52,11 +52,16 @@ describe('la vista de exploración', () => {
     expect(screen.getByTestId('escena-sustituida')).toBeInTheDocument()
   })
 
-  it('al elegir un hueso en la lista, el panel muestra su nombre latino', async () => {
+  it('sin selección, no hay tarjeta de identidad flotando', () => {
+    // e7.6: antes de elegir, la vista es solo el lienzo — ni siquiera se
+    // monta el estado vacío de BoneIdentity, porque no hay nada que flote.
+    render(<ExploreViewConSuEstado />)
+    expect(screen.queryByText(/elegí un hueso/i)).not.toBeInTheDocument()
+  })
+
+  it('al elegir un hueso en la lista, la tarjeta muestra su nombre latino', async () => {
     const user = userEvent.setup()
     render(<ExploreViewConSuEstado />)
-
-    expect(screen.getByText(/elegí un hueso/i)).toBeInTheDocument()
 
     await user.click(screen.getByRole('button', { name: /^fémur derecho$/i }))
 
