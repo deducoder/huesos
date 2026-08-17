@@ -36,6 +36,12 @@ describe('isSideIrrelevant', () => {
     expect(isSideIrrelevant(derecho, [derecho, izquierdo])).toBe(true)
   })
 
+  it('funciona igual si se llama con el lado izquierdo como primario', () => {
+    const derecho = hueso({ id: 'malleus-right', side: 'right', meshName: null })
+    const izquierdo = hueso({ id: 'malleus-left', side: 'left', meshName: null })
+    expect(isSideIrrelevant(izquierdo, [derecho, izquierdo])).toBe(true)
+  })
+
   it('un par con malla en ambos lados: el lado sí distingue', () => {
     const derecho = hueso({ id: 'femur-right', side: 'right', meshName: 'Femur.r' })
     const izquierdo = hueso({ id: 'femur-left', side: 'left', meshName: 'Femur.r' })
