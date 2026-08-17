@@ -7,19 +7,22 @@ metadata:
   modified: 2026-08-17
 ---
 
-Last session: **2026-08-17** — E3 (Ficha del hueso) y E4 (Motor de test)
-completas, cerradas y enviadas a `main`; `RF-01` a `RF-07` implementados.
+Last session: **2026-08-17** — s1 cerrada tras encontrar la causa real del gate
+rojo, y E5 (`RF-09`) y E6 (condición de lanzamiento) completas y publicadas. Las
+seis épicas cerradas y etiquetadas; el producto es publicable.
 
-Full handoff: `work/sessions/2026-08-17-e3-e4-complete.md` (read it in full
+Full handoff: `work/sessions/2026-08-17-e5-e6-and-launch.md` (read it in full
 via `session-start`).
 
-Next action: **cerrar `story/s1/browser-integration-suite`** si el usuario
-la verificó en su propia máquina con GPU real, y arrancar **E5 — Progreso y
-repaso dirigido** (`RF-09`), siguiente en el backlog.
+Next action: **decidir qué se hace ahora que el producto es publicable** — o se
+publica (no hay épica de despliegue declarada), o se abre la siguiente del
+parking lot; la candidata con más valor es la auditoría de contenido del
+catálogo, porque los sinónimos nunca se validaron contra cómo escriben los
+estudiantes y el modo test los da por válidos desde E4.
 
-Los tags `epic/e3-bone-detail-complete` y `epic/e4-test-engine-complete`
-quedaron solo locales — el proxy de este sandbox bloquea el push de tags
-(403 en `git-receive-pack`), aunque el push de `main` funciona normal.
+`RF-08` ya no es la condición imposible que era: ADR-006 decidió que una entrada
+con razón documentada cuenta como completa, y `./scripts/check` lo afirma con
+una prueba que el propio requisito cita por su nombre.
 
 Overwritten on every `session-close`; this is a pointer, the handoff is the
 source of truth.
