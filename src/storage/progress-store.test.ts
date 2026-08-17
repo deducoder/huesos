@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { catalog } from '../data/catalog'
 import { EMPTY_PROGRESS, recordAnswer } from '../domain/progress'
-import { createProgressStore, type KeyValueStorage } from './progress-store'
+import { createProgressStore, type KeyValueStorage, progressStore } from './progress-store'
 
 /**
  * Un almacén que se porta bien. **Comparte** el objeto en vez de copiarlo: así
@@ -141,5 +141,16 @@ describe('el almacén de progreso ante un valor guardado que no vale', () => {
     expect(createProgressStore(guardado(bueno)).read()).toEqual({
       frontal: { correct: 1, incorrect: 2 },
     })
+  })
+})
+
+describe('la instancia compartida', () => {
+  it('es una sola para toda la aplicación', () => {
+    // La degradación a memoria es estado de la instancia: un almacén por
+    // render estrenaría una caché vacía y dejaría de degradar justo cuando
+    // hace falta. Por eso hay exactamente uno.
+    expect(progressStore).toBe(progressStore)
+    expect(typeof progressStore.read).toBe('function')
+    expect(typeof progressStore.write).toBe('function')
   })
 })

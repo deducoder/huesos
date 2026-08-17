@@ -120,3 +120,17 @@ export function createProgressStore(storage?: KeyValueStorage): ProgressStore {
 
   return { read, write }
 }
+
+/**
+ * El almacén de progreso de la aplicación. **Uno solo, creado una vez.**
+ *
+ * No es una comodidad: la degradación a memoria de `createProgressStore` es
+ * estado de la instancia devuelta. Un almacén por render estrenaría una caché
+ * vacía en cada uno y dejaría de degradar exactamente cuando hace falta —
+ * cuando el navegador rechaza las escrituras.
+ *
+ * Fluye por props como ya fluye `catalog`: las vistas concretas lo pasan y
+ * `TestQuestion` lo recibe, así que las pruebas inyectan un doble sin tocar
+ * esta instancia.
+ */
+export const progressStore: ProgressStore = createProgressStore()
