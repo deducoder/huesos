@@ -54,8 +54,7 @@ const huesosElegidos = (page: Page) => page.evaluate(() => window.__huesosElegid
  * renderizado por software — de ahí que esta prueba corra sin trace.
  */
 async function pulsarRejilla(page: Page, pasos: number) {
-  const caja = await page.locator('canvas').first().boundingBox()
-  if (!caja) throw new Error('no hay lienzo')
+  const caja = await esperarLienzoDimensionado(page)
   for (let fila = 1; fila < pasos; fila++) {
     for (let col = 1; col < pasos; col++) {
       await page.mouse.click(
@@ -66,6 +65,38 @@ async function pulsarRejilla(page: Page, pasos: number) {
   }
 }
 
+/**
+ * Espera a que el lienzo tenga su tamaño real, no el intrínseco del elemento.
+ *
+ * Un `<canvas>` sin atributos de tamaño mide 300x150 hasta que
+ * react-three-fiber lo ajusta al contenedor. La lista de huesos, en cambio,
+ * se pinta del catálogo al instante. Medir la caja en cuanto aparece la lista
+ * devolvía 300x150 y situaba el "centro del lienzo" en (470,128): una esquina
+ * vacía, fuera del esqueleto — y como la caja no se volvía a medir, la suite
+ * pulsaba ese punto muerto durante los 60s del poll.
+ *
+ * Es una carrera, y **la pierde la máquina rápida**: donde el renderizado es
+ * lento, el lienzo alcanza a redimensionarse antes de la medición y la prueba
+ * pasa por accidente. De ahí la intermitencia observada en el sandbox.
+ */
+async function esperarLienzoDimensionado(page: Page) {
+  const lienzo = page.locator('canvas').first()
+  // Las dimensiones intrínsecas de un <canvas>, según HTML: 300x150.
+  await expect
+    .poll(
+      async () => {
+        const c = await lienzo.boundingBox()
+        return c && c.width > 300 && c.height > 150
+      },
+      { timeout: 30_000, intervals: [100] },
+    )
+    .toBe(true)
+
+  const caja = await lienzo.boundingBox()
+  if (!caja) throw new Error('no hay lienzo')
+  return caja
+}
+
 /** Espera a que el modelo esté cargado y sea pulsable, no a que pase un tiempo fijo. */
 async function esperarEscena(page: Page) {
   await page.goto('/')
@@ -73,8 +104,7 @@ async function esperarEscena(page: Page) {
   await expect(page.getByRole('button', { name: 'fémur derecho', exact: true })).toBeVisible()
   await observarSelecciones(page)
 
-  const caja = await page.locator('canvas').first().boundingBox()
-  if (!caja) throw new Error('no hay lienzo')
+  const caja = await esperarLienzoDimensionado(page)
   // El modelo llega comprimido con Draco: se pulsa el centro hasta que responda.
   await expect
     .poll(
@@ -120,19 +150,21 @@ test('el esqueleto se carga y se ve, sin errores en consola', async ({ page }) =
   expect(errores, 'errores en la consola del navegador').toEqual([])
 })
 
-// PAUSADA — 2026-08-17: intermitente en el sandbox remoto (renderizado por
-// software sin GPU, ~20s a >2min entre corridas idénticas). Verificado a mano
-// en navegador real por el usuario: se alcanzan bastantes más de 6 huesos, muy
-// por encima del valor de regresión conocido (2, con b2.1 o b2.2). No se
-// borra ni se debilita el umbral más: se retoma cuando el usuario pueda
-// correrla en su propia máquina, con GPU real, para confirmar si la
-// intermitencia es del entorno o de la prueba.
-test.fixme('se alcanzan muchos huesos distintos pulsando sobre la escena', async ({ page }) => {
+// Estuvo pausada por intermitente: la causa no era el entorno sino
+// `esperarEscena`, que medía el lienzo antes de que se dimensionara y pulsaba
+// un punto muerto durante los 60s del poll. Con eso arreglado deja de ser
+// intermitente y corre en ~45s.
+test('se alcanzan muchos huesos distintos pulsando sobre la escena', async ({ page }) => {
   test.setTimeout(120_000)
   await esperarEscena(page)
 
   // Regresión de b2.1 y b2.2: con cualquiera de los dos defectos, esta cifra
   // caía a 2 — el resto de la escena no respondía o quedaba fuera de cuadro.
+  // El umbral es 6, y se quedó en 6 a propósito: una sonda aislada alcanza 10
+  // de forma reproducible, pero dentro de la suite —con las otras tres pruebas
+  // compitiendo por la máquina— alcanza 6, y los 4 que se pierden son siempre
+  // los pares laterales. Subirlo a 8 se probó y puso la suite en rojo. 6 sigue
+  // muy por encima del 2 de la regresión, que es lo que esta prueba vigila.
   await pulsarRejilla(page, 12)
   const alcanzados = await huesosElegidos(page)
   expect(alcanzados.length, `huesos alcanzados: ${alcanzados.join(', ')}`).toBeGreaterThanOrEqual(6)
