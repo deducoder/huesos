@@ -1,9 +1,27 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import { ExploreView } from './ExploreView'
 
+/**
+ * La escena se sustituye por un doble.
+ *
+ * No es para esquivar un fallo: **WebGL no existe en jsdom**, así que renderizar
+ * el canvas aquí no probaría nada aunque montara. Lo que esta prueba verifica es
+ * la sincronía entre la lista y el panel — la vía accesible de ADR-002 —, y para
+ * eso la escena es ruido. Que la escena se vea de verdad se comprueba a mano, y
+ * el scope de e2.4 lo declara así.
+ */
+vi.mock('../../components/SkeletonScene', () => ({
+  SkeletonScene: () => <div data-testid="escena-sustituida" />,
+}))
+
 describe('la vista de exploración', () => {
+  it('monta la escena junto a la lista y el panel', () => {
+    render(<ExploreView />)
+    expect(screen.getByTestId('escena-sustituida')).toBeInTheDocument()
+  })
+
   it('al elegir un hueso en la lista, el panel muestra su nombre latino', async () => {
     const user = userEvent.setup()
     render(<ExploreView />)
