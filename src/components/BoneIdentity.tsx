@@ -1,4 +1,6 @@
 import { type Bone, isUnpaired } from '../data/bone'
+import { catalog } from '../data/catalog'
+import { isSideIrrelevant } from '../domain/side-pairing'
 import { REGION_LABEL, SIDE_LABEL } from './labels'
 
 interface Props {
@@ -29,9 +31,14 @@ export function BoneIdentity({ bone, onViewDetail }: Props) {
     )
   }
 
+  // Sin malla en ningún lado, elegir uno no distingue nada observable — el
+  // navegador tampoco lo ofrece desde e7.4 (`toNavigatorRows`). El panel no
+  // puede afirmar una elección que el estudiante nunca hizo.
+  const ocultarLado = bone.side !== null && isSideIrrelevant(bone, catalog)
+
   return (
     <section className="p-6" aria-labelledby="identidad-hueso">
-      <h2 id="identidad-hueso" className="font-semibold text-2xl text-tinta">
+      <h2 id="identidad-hueso" className="font-display font-semibold text-2xl text-tinta">
         {bone.es}
       </h2>
       <p className="mt-1 text-acento text-lg italic">{bone.la}</p>
@@ -41,7 +48,7 @@ export function BoneIdentity({ bone, onViewDetail }: Props) {
           <dt className="text-tinta-suave">Región</dt>
           <dd>{REGION_LABEL[bone.region]}</dd>
         </div>
-        {bone.side !== null && (
+        {bone.side !== null && !ocultarLado && (
           <div className="flex gap-2">
             <dt className="text-tinta-suave">Lado</dt>
             <dd>{SIDE_LABEL[bone.side]}</dd>
@@ -62,7 +69,7 @@ export function BoneIdentity({ bone, onViewDetail }: Props) {
       </dl>
 
       {bone.meshName === null && (
-        <p className="mt-4 rounded border border-aviso bg-aviso-fondo p-3 text-aviso-tinta text-sm">
+        <p className="mt-4 rounded-suave border-2 border-aviso bg-aviso-fondo p-3 text-aviso-tinta text-sm">
           No se puede señalar en el esqueleto. {bone.missingReason}
         </p>
       )}
@@ -71,7 +78,7 @@ export function BoneIdentity({ bone, onViewDetail }: Props) {
         <button
           type="button"
           onClick={() => onViewDetail(bone.id)}
-          className="mt-4 rounded border border-tinta px-3 py-1.5 text-tinta text-sm hover:bg-acento-suave"
+          className="mt-4 min-h-tactil rounded-suave border-2 border-tinta px-4 text-tinta text-sm hover:bg-acento-suave"
         >
           Ver ficha completa
         </button>
@@ -80,7 +87,7 @@ export function BoneIdentity({ bone, onViewDetail }: Props) {
       {/* Un lector de pantalla anuncia el cambio sin tener que ir a buscar el panel. */}
       <p role="status" aria-live="polite" className="sr-only">
         {bone.es}
-        {bone.side !== null ? ` ${SIDE_LABEL[bone.side]}` : ''}, {bone.la}
+        {bone.side !== null && !ocultarLado ? ` ${SIDE_LABEL[bone.side]}` : ''}, {bone.la}
       </p>
     </section>
   )

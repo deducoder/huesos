@@ -32,3 +32,4 @@
 - [Una muestra renderizada decide mejor que una tabla de características](rendered-samples-beat-feature-tables-for-visual-choices.md) — el texto real de la aplicación revela lo que un pangram no muestra.
 - [Que un dato sea par no implica que valga la pena distinguirlo](pairing-doesnt-imply-distinguishing.md) — si ambos lados son indistinguibles en lo observable, ofrecer la elección es ruido.
 - [Las cifras de un prototipo se reproducen en el componente real](prototype-numbers-need-reproducing-in-the-real-component.md) — una clase añadida por costumbre se come la ganancia proyectada.
+- [Una función simétrica necesita tests simétricos](symmetric-functions-need-symmetric-tests.md) — probarla solo de un lado es una promesa a medias, aunque el código funcione en la otra dirección.

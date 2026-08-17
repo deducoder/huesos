@@ -157,3 +157,18 @@ test('el nombre más largo se lee completo, y el navegador entero recorre más c
   const alto = await nav.evaluate((n) => n.scrollHeight)
   expect(alto, 'alto total del navegador con los 206 huesos').toBeLessThanOrEqual(6208)
 })
+
+test('el panel de identidad usa el mínimo táctil y la tipografía display', async ({ page }) => {
+  await page.goto('/')
+  await page.getByRole('button', { name: 'fémur derecho', exact: true }).click()
+
+  const boton = page.getByRole('button', { name: /ver ficha completa/i })
+  const caja = await boton.boundingBox()
+  expect(caja?.height ?? 0, 'alto del botón "ver ficha completa"').toBeGreaterThanOrEqual(44)
+  expect(caja?.width ?? 0, 'ancho del botón "ver ficha completa"').toBeGreaterThanOrEqual(44)
+
+  const familia = await page
+    .getByRole('heading', { name: /^fémur$/i })
+    .evaluate((h) => getComputedStyle(h).fontFamily)
+  expect(familia, 'familia del título del hueso').toContain('Fredoka')
+})

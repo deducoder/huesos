@@ -74,4 +74,25 @@ describe('el panel de identidad del hueso', () => {
     render(<BoneIdentity bone={undefined} onViewDetail={vi.fn()} />)
     expect(screen.queryByRole('button', { name: /ver ficha completa/i })).not.toBeInTheDocument()
   })
+
+  it('un par sin geometría en ningún lado no muestra "Lado"', () => {
+    // e7.5: martillo no tiene malla en ningún lado, y desde e7.4 el navegador
+    // tampoco ofrece elegir el suyo — el panel no puede afirmar una elección
+    // que el estudiante nunca hizo.
+    render(<BoneIdentity bone={hueso('malleus-right')} />)
+    const datos = screen.getAllByRole('definition').map((d) => d.textContent)
+    expect(datos).not.toContain('derecho')
+    expect(datos).not.toContain('izquierdo')
+  })
+
+  it('un par sin geometría en ningún lado tampoco lo anuncia en el estado vivo', () => {
+    render(<BoneIdentity bone={hueso('malleus-right')} />)
+    expect(screen.getByRole('status')).not.toHaveTextContent(/derecho|izquierdo/i)
+  })
+
+  it('un par con geometría en al menos un lado sigue mostrando "Lado"', () => {
+    render(<BoneIdentity bone={hueso('femur-right')} />)
+    const datos = screen.getAllByRole('definition').map((d) => d.textContent)
+    expect(datos).toContain('derecho')
+  })
 })
