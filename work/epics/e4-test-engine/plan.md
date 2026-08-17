@@ -49,7 +49,7 @@ Updated by `story-close` as each story lands — the only cross-artifact write.
 | e4.2 | done | M | M (3 tareas + 1 corrección de calidad) |
 | e4.3 | done | S | S (2 tareas) |
 | e4.4 | done | S | XS (1 tarea + 2 correcciones de calidad) |
-| e4.5 | todo | S | — |
+| e4.5 | done | S | S (3 tareas) |
 
 ## Sequencing risks
 
