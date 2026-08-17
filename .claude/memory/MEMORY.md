@@ -11,3 +11,4 @@
 - [Una verificación autoconsistente esconde bugs sistemáticos](self-consistent-checks-hide-systematic-bugs.md) — comparar datos normalizados contra sí mismos con la misma normalización prueba consistencia, no corrección; hace falta un criterio externo.
 - [La verificación manual sigue encontrando cosas reales](manual-verification-keeps-finding-real-things.md) — reutilizar un componente probado en un contexto nuevo filtra texto fijo que asumía el contexto original; ningún test unitario lo vería.
 - [Verificar antes de nombrar un bug sospechado](verify-before-naming-a-suspected-bug.md) — un caso de control (Math.random fijo, un valor grande y conocido) confirma o descarta una sospecha antes de escribirla como hallazgo.
+- [Verificar tamaños extremos, no solo típicos](verify-extreme-sizes-not-just-typical-ones.md) — un componente con encuadre/layout dinámico necesita probarse contra el elemento más chico y el más grande del rango real, no un ejemplo cómodo de elegir.
