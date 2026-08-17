@@ -54,7 +54,7 @@ export function BoneDetailView({ boneId, onBack }: Props) {
           <button
             type="button"
             onClick={onBack}
-            className="rounded border border-tinta px-3 py-1.5 text-tinta text-sm hover:bg-acento-suave"
+            className="min-h-tactil rounded-suave border-2 border-tinta px-4 text-tinta text-sm hover:bg-acento-suave"
           >
             ← Volver
           </button>
