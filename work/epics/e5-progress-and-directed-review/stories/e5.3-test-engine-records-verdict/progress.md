@@ -36,3 +36,44 @@ Lo que landó:
 
 RED: 4 tests fallando antes del cambio; después, dos `TS2741` de las vistas.
 Gate: `./scripts/check` verde — 172 tests.
+
+## T4 · Prueba de integración manual — responder y recargar
+
+En Chromium, contra el build servido. **El hito del esqueleto andante de la
+épica**, y el observable de `RF-09` al pie de la letra:
+
+```
+registro antes de responder : null
+registro tras responder mal : {"metacarpal-2-left":{"correct":0,"incorrect":1}}
+registro TRAS RECARGAR      : {"metacarpal-2-left":{"correct":0,"incorrect":1}}
+¿sobrevivió?                : SÍ
+registro final (ambas variantes): 2 huesos —
+  {"metacarpal-2-left":{...},"lumbar-3":{"correct":0,"incorrect":1}}
+```
+
+- **Sobrevive a la recarga.** El camino completo —responder → registrar →
+  serializar → `localStorage` → recargar → releer— existe de punta a punta por
+  primera vez.
+- **Las dos variantes alimentan el mismo registro**: el primer hueso se
+  respondió en "Hueso aislado" (`RF-05`) y el segundo en "Esqueleto completo"
+  (`RF-04`), y los dos están en el mismo objeto.
+- **Nada del progreso llega a la pantalla.** La sonda marcó un positivo que
+  resultó ser suyo: su propio regex casaba "Incorrect" dentro de "Incorrecto".
+  Se comprobó imprimiendo el texto completo de la pantalla — no aparece **ni un
+  solo número**.
+
+## Finalize
+
+- Full gate set: `./scripts/check` verde — **172 tests** (166 al empezar la
+  historia, 6 nuevos).
+- Orphaned-test check: limpio, y **verificado en vez de supuesto**. Los tres
+  archivos de test que importan lo que esta historia cambió
+  (`BoneTestView.test.tsx`, `SkeletonTestView.test.tsx`,
+  `progress-store.test.ts`) siguen en verde sin tocarlos. El riesgo que el plan
+  anticipaba —que usaran la instancia compartida real y se pisaran en el
+  `localStorage` de jsdom— **no se materializó**: ninguno responde una pregunta,
+  así que ninguno escribe. Tres corridas completas seguidas dieron 172/172,
+  descartando dependencia del orden.
+- Acceptance criteria: los seis escenarios del `scope.md` y el delta del
+  `design.md`, cumplidos. Los cinco `Done when` cumplidos, incluido el que
+  exigía navegador real.
