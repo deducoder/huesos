@@ -41,7 +41,7 @@ gobernanza). El orden es de riesgo, no de bloqueo.
 
 | Story | Status | Est. | Actual |
 |-------|:------:|:----:|:------:|
-| e6.1 | todo | S | — |
+| e6.1 | done | S | S |
 | e6.2 | todo | S | — |
 | e6.3 | todo | S | — |
 
