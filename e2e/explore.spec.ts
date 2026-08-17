@@ -101,7 +101,10 @@ async function esperarLienzoDimensionado(page: Page) {
 async function esperarEscena(page: Page) {
   await page.goto('/')
   await expect(page.locator('canvas')).toBeVisible()
-  await expect(page.getByRole('button', { name: 'fémur derecho', exact: true })).toBeVisible()
+  // No se espera la visibilidad del navegador: desde e7.6/ADR-010 sigue
+  // montado dentro de Explorar, pero `sr-only` — invisible a propósito para
+  // quien ve la pantalla. El lienzo visible ya es la señal de que la vista
+  // cargó; el poll de más abajo prueba además que responde a clics.
   await observarSelecciones(page)
 
   const caja = await esperarLienzoDimensionado(page)
@@ -176,9 +179,32 @@ test('un hueso par se resalta de un solo lado, y del anatómicamente correcto', 
   const lienzo = page.locator('canvas').first()
 
   const seleccionar = async (nombre: string) => {
-    await page.getByRole('button', { name: nombre, exact: true }).click()
+    // `dispatchEvent`, no `.click()`: el navegador está `sr-only`
+    // (e7.6/ADR-010) — recorta visualmente pero no comprime el layout
+    // interno, así que cada botón conserva su posición real, a menudo fuera
+    // del viewport. Un `.click({ force: true })` clickea esa coordenada real
+    // y no dispara nada; `dispatchEvent` activa el handler sin depender de
+    // dónde quedó el elemento en la página.
+    await page.getByRole('button', { name: nombre, exact: true }).dispatchEvent('click')
     await page.waitForTimeout(600)
-    return lienzo.screenshot()
+    // La tarjeta de identidad flotante (e7.6) se solapa con el lienzo y su
+    // contenido cambia con cada selección — capturarla contaminaría la
+    // diferencia de píxeles con texto, no con el resaltado 3D que esta
+    // prueba mide. Se oculta solo para la captura, sin tocar el layout real.
+    await page.evaluate(() => {
+      const tarjeta = document.querySelector(
+        '[data-testid="tarjeta-identidad"]',
+      ) as HTMLElement | null
+      if (tarjeta) tarjeta.style.visibility = 'hidden'
+    })
+    const captura = await lienzo.screenshot()
+    await page.evaluate(() => {
+      const tarjeta = document.querySelector(
+        '[data-testid="tarjeta-identidad"]',
+      ) as HTMLElement | null
+      if (tarjeta) tarjeta.style.visibility = ''
+    })
+    return captura
   }
 
   // La base es el hioides a propósito: es uno de los siete huesos del catálogo
@@ -235,7 +261,8 @@ test('no se pide nada a ningún tercero, como exige must-privacy-006', async ({ 
   })
 
   await esperarEscena(page)
-  await page.getByRole('button', { name: 'fémur derecho', exact: true }).click()
+  // `dispatchEvent`: ver el comentario en `seleccionar`, más arriba.
+  await page.getByRole('button', { name: 'fémur derecho', exact: true }).dispatchEvent('click')
 
   expect(externas, 'peticiones a dominios de terceros').toEqual([])
 })
