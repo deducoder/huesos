@@ -63,3 +63,42 @@ La prueba no da verde sobre una lista vacía, que era el riesgo real.
   declaraba como `unknown[]`. Sin eso no se puede leer una caja desde TypeScript.
 
 **Gate:** `./scripts/check` verde, 194 unitarias (190 + 4).
+
+## T3 · Fix (GREEN)
+
+`SkeletonScene` oculta el grupo `MIDLINE_GROUP` en la copia espejada: el clon se
+hace en el `useMemo` que ya existía y la mitad espejada pasa de dibujar 144
+mallas a 108. Se corrigieron además los tres comentarios que declaraban la
+premisa falsa —«el modelo trae un solo hemicuerpo», «desplazado en X por ser
+medio cuerpo»—, porque dejarlos en pie es lo que reintroduce el bug.
+
+**Gates:** `./scripts/check` verde (194 unitarias) y `./scripts/check-integration`
+verde (4 de 4, 1,6 min).
+
+**Mutación forzada:** desactivar la condición del ocultamiento devuelve la
+prueba de T1 a rojo —`Expected: < 14.4, Received: 65`—, así que el verde lo
+produce el arreglo y no el azar.
+
+### Dos cosas que el plan no anticipó
+
+**1. El primer rojo tras el arreglo era falso.** `check-integration` seguía en
+rojo con los mismos números exactos que antes del cambio. No era el arreglo: un
+`vite preview` huérfano de las 10:15 seguía vivo y `reuseExistingServer` lo
+reutilizó, así que la suite midió un bundle de las 11:01 —anterior al cambio— en
+vez de reconstruir. Con los procesos muertos y `dist/` borrado, la misma suite
+midió 141/61 contra los 126/122 de antes. Queda en `findings.md`: es un gate que
+puede mentir en las dos direcciones.
+
+**2. La prueba de T1 tenía un instrumento con demasiado ruido.** Ya arreglado el
+bug, seguía roja: 141 en la mitad correcta contra 61 en la equivocada, lejos del
+5:1 exigido. La causa no era el arreglo sino la base de comparación: la captura
+base tenía el **esfenoides** resaltado, y cada medición arrastraba el *apagado*
+de ese hueso como ruido en las dos mitades. Con el fémur —1842 px de señal— el
+ruido era despreciable; con el parietal —del orden de 80— no lo era.
+
+Se corrigió la base, no el umbral: ahora es el **hioides**, uno de los siete
+huesos sin geometría (ADR-006), así que seleccionarlo no enciende nada y lo que
+se mide es solo el resaltado del hueso bajo prueba. Bajar el umbral habría hecho
+pasar la prueba dejando el instrumento roto, y con él la incapacidad de medir
+cualquier hueso pequeño. Verificado que sigue detectando el defecto: con el
+arreglo desactivado da 72/65, un 1,1:1 que la prueba rechaza.

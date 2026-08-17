@@ -181,7 +181,13 @@ test('un hueso par se resalta de un solo lado, y del anatómicamente correcto', 
     return lienzo.screenshot()
   }
 
-  const base = await seleccionar('esfenoides')
+  // La base es el hioides a propósito: es uno de los siete huesos del catálogo
+  // sin geometría en el modelo (ADR-006), así que seleccionarlo no enciende
+  // nada. Con un hueso resaltado de base, cada medición arrastraba el APAGADO
+  // de ese hueso como ruido —61 px medidos con el esfenoides—, comparable a la
+  // señal de un hueso pequeño como el parietal. Sin nada encendido, lo que se
+  // mide es solo el resaltado del hueso bajo prueba.
+  const base = await seleccionar('hioides')
   const izquierdo = diferenciaPorMitad(base, await seleccionar('fémur izquierdo'))
   const derecho = diferenciaPorMitad(base, await seleccionar('fémur derecho'))
 

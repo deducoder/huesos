@@ -4,6 +4,7 @@ import { Suspense, useLayoutEffect, useMemo } from 'react'
 import { Box3, Color, type Mesh, MeshStandardMaterial, type Object3D, Vector3 } from 'three'
 import type { Bone } from '../data/bone'
 import skeletonUrl from '../data/skeleton.glb?url'
+import { MIDLINE_GROUP } from '../data/skeleton-groups'
 import { distanceToFit } from '../domain/framing'
 import { boneIdForMesh, type SceneHalf } from '../domain/mesh-lookup'
 
@@ -22,9 +23,9 @@ interface HalfProps {
   /**
    * El **hueso** seleccionado, no su malla.
    *
-   * Una malla es dos huesos cuando el hueso es par —el modelo trae un solo
-   * hemicuerpo—, así que comparar por nombre de malla encendería los dos lados.
-   * Cada mitad resuelve qué hueso le corresponde a cada malla y compara ids.
+   * Una malla es dos huesos cuando el modelo la trae una sola vez para un par,
+   * así que comparar por nombre de malla encendería los dos lados. Cada mitad
+   * resuelve qué hueso le corresponde a cada malla y compara ids.
    */
   selected: string | null
   half: SceneHalf
@@ -32,12 +33,25 @@ interface HalfProps {
 }
 
 /**
- * Una de las dos copias del esqueleto. La original es el hemicuerpo derecho tal
- * como viene el modelo; la espejada completa el izquierdo.
+ * Una de las dos copias del esqueleto. La original dibuja el modelo entero tal
+ * como viene; la espejada completa el hemicuerpo izquierdo.
+ *
+ * La espejada **no** dibuja el modelo entero: omite el grupo de línea media
+ * (b2.3). El modelo no es medio cuerpo —esa premisa costó 36 mallas duplicadas—
+ * sino un hemicuerpo derecho *más* las piezas que viven sobre el eje y el único
+ * par que ya trae completo. Espejar eso no lo mueve al otro lado: lo copia
+ * encima de sí mismo.
  */
 function SkeletonHalf({ bones, selected, half, onPick }: HalfProps) {
   const { scene } = useGLTF(skeletonUrl, DRACO_PATH)
-  const copia = useMemo(() => scene.clone(true), [scene])
+  const copia = useMemo(() => {
+    const clon = scene.clone(true)
+    if (half === 'mirrored') {
+      const lineaMedia = clon.getObjectByName(MIDLINE_GROUP)
+      if (lineaMedia) lineaMedia.visible = false
+    }
+    return clon
+  }, [scene, half])
 
   useLayoutEffect(() => {
     copia.traverse((objeto: Object3D) => {
@@ -95,13 +109,13 @@ const FOV = 45
 const TARGET_HEIGHT = 1.7
 
 /**
- * El esqueleto completo: el hemicuerpo derecho del modelo y su espejo, centrados
+ * El esqueleto completo: el modelo y el espejo de su parte lateral, centrados
  * en el origen.
  *
  * El modelo viene **apoyado en el origen** —los pies en `Y ≈ 0`, la cabeza en
- * `Y ≈ 1.7`— y desplazado en X por ser medio cuerpo. Se mide con `Box3` en vez
- * de descontar valores fijos, para que cambiar el activo no vuelva a romper el
- * encuadre (b2.2).
+ * `Y ≈ 1.7`— y desplazado en X porque su parte lateral es un solo hemicuerpo.
+ * Se mide con `Box3` en vez de descontar valores fijos, para que cambiar el
+ * activo no vuelva a romper el encuadre (b2.2).
  */
 function CenteredSkeleton({ bones, selected, onPick }: CenteredProps) {
   const { scene } = useGLTF(skeletonUrl, DRACO_PATH)
@@ -112,7 +126,7 @@ function CenteredSkeleton({ bones, selected, onPick }: CenteredProps) {
     const centro = caja.getCenter(new Vector3())
     const escala = TARGET_HEIGHT / Math.max(tamano.y, 0.001)
     // En X no se centra: el conjunto ya queda centrado porque el espejo
-    // compensa el medio cuerpo que trae el modelo.
+    // compensa el hemicuerpo lateral que trae el modelo.
     return { offset: new Vector3(0, -centro.y * escala, -centro.z * escala), scale: escala }
   }, [scene])
 
