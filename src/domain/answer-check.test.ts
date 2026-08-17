@@ -39,6 +39,14 @@ describe('normalizeAnswer', () => {
     expect(normalizeAnswer('')).toBe('')
     expect(normalizeAnswer('   ')).toBe('')
   })
+
+  it('conserva la "ñ": no es una tilde, es una letra distinta', () => {
+    // "cuña" (hueso) y "cuna" (cama de bebé) son palabras distintas — quitar
+    // la tilde de "á" es tolerancia; convertir "ñ" en "n" cambia el
+    // significado, y eso RF-06 no lo pide.
+    expect(normalizeAnswer('cuña')).toBe('cuña')
+    expect(normalizeAnswer('CUÑA')).toBe('cuña')
+  })
 })
 
 describe('isCorrectAnswer', () => {
@@ -71,5 +79,10 @@ describe('isCorrectAnswer', () => {
   it('rechaza una respuesta vacía o solo espacios', () => {
     expect(isCorrectAnswer('', hueso('femur-right'))).toBe(false)
     expect(isCorrectAnswer('   ', hueso('femur-right'))).toBe(false)
+  })
+
+  it('no confunde "cuña" con "cuna": la ñ no es una tilde que tolerar', () => {
+    expect(isCorrectAnswer('cuna medial', hueso('medial-cuneiform-right'))).toBe(false)
+    expect(isCorrectAnswer('cuña medial', hueso('medial-cuneiform-right'))).toBe(true)
   })
 })

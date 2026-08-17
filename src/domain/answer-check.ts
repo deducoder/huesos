@@ -3,8 +3,24 @@ import type { Bone } from '../data/bone'
 const ARTICULO_INICIAL = /^(el|la|los|las)\s+/
 
 /**
+ * Reemplazos explícitos de vocales acentuadas del español, no
+ * `normalize('NFD')` + strip de diacríticos: esa vía descompondría también la
+ * "ñ" en "n" + tilde combinante, y la "ñ" no es una vocal acentuada — es una
+ * letra distinta ("cuña" ≠ "cuna"). Reemplazar solo lo que RF-06 pide tolerar
+ * deja la "ñ" intacta por construcción, sin necesitar un marcador aparte.
+ */
+const VOCALES_ACENTUADAS: ReadonlyArray<readonly [RegExp, string]> = [
+  [/[áàäâ]/g, 'a'],
+  [/[éèëê]/g, 'e'],
+  [/[íìïî]/g, 'i'],
+  [/[óòöô]/g, 'o'],
+  [/[úùüû]/g, 'u'],
+]
+
+/**
  * Normaliza una respuesta escrita para compararla sin distinguir mayúsculas,
- * tildes, espacios sobrantes ni un artículo inicial (`RF-06`).
+ * tildes, espacios sobrantes ni un artículo inicial (`RF-06`) — conservando
+ * la "ñ", que no es una tilde.
  *
  * Se aplica igual a lo que escribe el estudiante y a los nombres del
  * catálogo, para que la comparación sea siempre entre formas normalizadas —
@@ -12,11 +28,11 @@ const ARTICULO_INICIAL = /^(el|la|los|las)\s+/
  * declaraba para la validación de respuestas.
  */
 export function normalizeAnswer(texto: string): string {
-  const sinEspaciosSobrantes = texto.trim().replace(/\s+/g, ' ')
-  const sinTildes = sinEspaciosSobrantes
-    .toLocaleLowerCase('es')
-    .normalize('NFD')
-    .replace(/\p{Diacritic}/gu, '')
+  const sinEspaciosSobrantes = texto.trim().replace(/\s+/g, ' ').toLocaleLowerCase('es')
+  const sinTildes = VOCALES_ACENTUADAS.reduce(
+    (acumulado, [patron, reemplazo]) => acumulado.replace(patron, reemplazo),
+    sinEspaciosSobrantes,
+  )
   return sinTildes.replace(ARTICULO_INICIAL, '')
 }
 
