@@ -17,7 +17,8 @@ Then abre el build de producción en un navegador real
 
 Given el esqueleto cargado
 When se pulsa una rejilla de puntos sobre el lienzo
-Then se alcanzan decenas de huesos distintos, no dos
+Then se alcanzan al menos 6 huesos distintos — muy por encima de los 2 que
+     deja la regresión de b2.1 o b2.2
 
 Given un hueso par seleccionado desde la lista
 When se comparan las capturas
