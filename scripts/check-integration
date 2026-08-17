@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+# Integration gates — the push gate.
+#
+# Runs the real application in a real browser. Slower than ./scripts/check by an
+# order of magnitude, so it does not run per commit: it runs before pushing.
+#
+# Exists because of b2.1 and b2.2, two defects that made the 3D scene unusable
+# and that no unit test could see.
+#
+# Contract: exit 0 = green, non-zero = red.
+#
+# Usage: ./scripts/check-integration
+
+set -uo pipefail
+cd "$(dirname "$0")/.." || exit 1
+
+if ! command -v node >/dev/null 2>&1 && [ -s "$HOME/.nvm/nvm.sh" ]; then
+  # shellcheck disable=SC1091
+  . "$HOME/.nvm/nvm.sh" >/dev/null 2>&1
+fi
+
+printf '\n· suite de integración en navegador\n'
+if npx playwright test; then
+  printf '\n✓ integration gates passed\n'
+  exit 0
+fi
+printf '\n✗ integration gates failed\n'
+exit 1
