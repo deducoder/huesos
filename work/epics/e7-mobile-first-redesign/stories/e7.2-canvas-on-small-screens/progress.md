@@ -125,3 +125,22 @@ selecciona un hueso junto con el desplazamiento de la lista superior.**
   reprobó en limpio —quitando la regla CSS, poniendo la clase, reconstruyendo—
   y el canvas sigue con `class=""` y `touch-action: auto`. La conclusión se
   sostiene; la primera evidencia no valía.
+
+## T5 · Verificación manual en dispositivo
+
+Hecha por el usuario sobre la aplicación real, servida por túnel de Cloudflare
+desde el build de producción — no el servidor de desarrollo.
+
+**Confirmado en el teléfono:** la lista superior se desplaza sola sin arrastrar
+la página; los botones responden al dedo; el esqueleto gira en horizontal. Tras
+el arreglo del gesto vertical, el usuario dio el visto bueno para cerrar.
+
+**Lo que la verificación en dispositivo produjo y ninguna prueba automática vio:**
+el conflicto del gesto vertical (arreglado en T4) y dos propuestas de producto
+que no entran acá, ya aterrizadas en `records/parking-lot.md` con dueño —la
+tarjeta flotante hacia e7.6, con `~/refs/cards.jpg` como referencia y un aviso
+para e7.4; el bloqueo de orientación hacia e7.9, junto con la limitación de que
+una web normal no puede bloquear la orientación.
+
+Es la tercera vez en el proyecto que la prueba humana en hardware encuentra lo
+que dos gates verdes no vieron — b2.3, e7.1 y ahora e7.2.
