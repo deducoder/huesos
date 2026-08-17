@@ -43,7 +43,7 @@ gobernanza). El orden es de riesgo, no de bloqueo.
 |-------|:------:|:----:|:------:|
 | e6.1 | done | S | S |
 | e6.2 | done | S | S |
-| e6.3 | todo | S | — |
+| e6.3 | done | S | S |
 
 ## Sequencing risks
 
