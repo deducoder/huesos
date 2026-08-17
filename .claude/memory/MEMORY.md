@@ -19,3 +19,4 @@
 - [El estado inicial no puede ser un objeto compartido](initial-state-must-not-be-a-shared-object.md) — devolverlo desde una constante de módulo hace global y permanente la mutación de cualquier consumidor; `Readonly<Record<K,V>>` no protege a `V`.
 - [El orden por riesgo puede invertir dependencias](risk-first-ordering-can-invert-dependencies.md) — una tarea sin RED es la señal de que el corte del plan estaba mal, no de que fue fácil.
 - [Preguntar si algo lo dibuja antes de ubicar un estado](ask-if-anything-draws-it-before-placing-state.md) — un dato que no se renderiza no es estado de interfaz, es una dependencia; la pregunta borra la plomería entera.
+- [Un objeto de opciones opcional no protege a los llamadores](optional-options-objects-dont-protect-callers.md) — el compilador avisa al hacer una firma más estricta, no al aflojarla; ahí el chequeo de huérfanos es la única red.
