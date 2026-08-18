@@ -56,3 +56,24 @@ error de tipos con `as number` — que viola `must-type-004` («prohibido `any` 
 `as` para silenciar el compilador») — y se reescribió sin destructuring ni
 casteo: `canal(1)`, `canal(3)`, `canal(5)` en vez de indexar un array. El gate
 del tipo hizo su trabajo: avisó de un atajo antes de que quedara commiteado.
+
+## T3 · Verificación manual de integración
+
+**Hecho desde el escritorio, en 390 px, con capturas y mediciones — pendiente
+la confirmación del humano en su teléfono real.**
+
+- **Fémur (hueso grande, alto):** suma 282, azul inconfundible. Coincide con
+  el color del botón «Ver ficha completa».
+- **Clavícula (hueso chico, sobre la caja torácica):** suma 244 sobre 342 px
+  —área proporcional al tamaño del hueso—, igual de clara a simple vista.
+- **Deselección:** al pasar de fémur a tibia, el fémur midió
+  `rgb(171,165,157)` — contra `rgb(168,161,154)` sin seleccionar nunca y
+  `rgb(174,173,197)` seleccionado. Prácticamente el mismo beige original, muy
+  lejos del lila que tenía activo: el color se restaura de verdad, no se
+  aproxima.
+- Sin acceso a "costilla derecha" por nombre accesible exacto en esta pasada
+  —el localizador con regex no encontró coincidencia—; no bloquea, cubierto
+  por el fémur (grande) y la clavícula (chico) en tamaños opuestos.
+
+**Falta:** el mismo recorrido en el teléfono del humano, y el modo test de
+esqueleto completo, que reutiliza el mismo componente.
