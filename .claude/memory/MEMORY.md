@@ -38,3 +38,4 @@
 - [El boundingBox de un span flex-1 esconde el vacío visual](flex-item-boundingbox-hides-visual-gaps.md) — el texto queda alineado a un extremo de una caja ya crecida; hay que medir el ancestro real.
 - [Medir por la vía accesible, no la obvia](measure-via-the-accessible-path-not-the-obvious-one.md) — clic directo en WebGL mide el entorno, no la app; el navegador de huesos mide lo mismo sin ese ruido.
 - [Un guardrail puede describir la opción descartada de un ADR](guardrail-text-can-carry-a-rejected-option.md) — should-perf-007 seguía hablando del SVG que ADR-001 rechazó, no del glTF que aceptó.
+- [epic-review atrapa lo que ninguna historia toca a la vez](epic-review-catches-what-no-single-story-touches.md) — un color 3D quedó fuera del sistema de tokens nueve historias enteras hasta la relectura del scope contra el código real.
