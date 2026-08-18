@@ -9,7 +9,7 @@ import { TestQuestion } from './TestQuestion'
  * `ExploreView`. El clic en la escena no hace nada: la respuesta se escribe,
  * no se señala.
  */
-export function SkeletonTestView({ onCambiarModo }: { onCambiarModo?: () => void }) {
+export function SkeletonTestView({ onCambiarModo }: { onCambiarModo: () => void }) {
   return (
     <TestQuestion
       bones={catalog}

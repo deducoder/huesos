@@ -45,8 +45,13 @@ interface Props {
    * (`must-data-003`).
    */
   answerFormat?: 'open' | 'choice'
-  /** Si se pasa, ofrece volver a elegir la variante de test sin salir de la pestaña. */
-  onCambiarModo?: () => void
+  /**
+   * Vuelve a elegir la variante de test sin salir de la pestaña.
+   *
+   * Requerida: los dos llamadores de producción (`BoneTestView`,
+   * `SkeletonTestView`, forwardeados desde `App.tsx`) siempre la pasan.
+   */
+  onCambiarModo: () => void
 }
 
 type Resultado = 'pendiente' | 'correcto' | 'incorrecto'
@@ -123,15 +128,13 @@ export function TestQuestion({
   return (
     <div className="relative h-full md:mx-auto md:max-w-3xl">
       <div className="absolute inset-0 bg-lienzo">{renderScene(bone.id)}</div>
-      {onCambiarModo && (
-        <button
-          type="button"
-          onClick={onCambiarModo}
-          className="absolute top-4 left-4 min-h-tactil rounded-full border-2 border-tinta bg-panel px-4 font-semibold text-sm shadow-dura hover:bg-acento-suave"
-        >
-          ← cambiar modo
-        </button>
-      )}
+      <button
+        type="button"
+        onClick={onCambiarModo}
+        className="absolute top-4 left-4 min-h-tactil rounded-full border-2 border-tinta bg-panel px-4 font-semibold text-sm shadow-dura hover:bg-acento-suave"
+      >
+        ← cambiar modo
+      </button>
       <div
         className="absolute inset-x-4 bottom-4 rounded-tarjeta border-2 border-tinta bg-panel p-4 shadow-dura"
         data-testid="barra-respuesta"

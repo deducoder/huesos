@@ -7,8 +7,15 @@ import { REGION_ACCENT } from './region-accent'
 
 interface Props {
   bone: Bone | undefined
-  /** Si se pasa, ofrece abrir la ficha completa del hueso elegido (RF-03). */
-  onViewDetail?: (id: string) => void
+  /**
+   * Abre la ficha completa del hueso elegido (RF-03).
+   *
+   * Requerida: el único llamador de producción (`ExploreView`, forwardeado
+   * desde `App.tsx`) siempre la pasa. Opcional era una deuda acumulada
+   * desde E8 (epic-review) — un llamador futuro que la olvidara se habría
+   * quedado sin el botón en silencio, sin que ningún test lo notara.
+   */
+  onViewDetail: (id: string) => void
 }
 
 /**
@@ -86,15 +93,13 @@ export function BoneIdentity({ bone, onViewDetail }: Props) {
         </p>
       )}
 
-      {onViewDetail && (
-        <button
-          type="button"
-          onClick={() => onViewDetail(bone.id)}
-          className="mt-4 min-h-tactil w-full rounded-full border-2 border-tinta bg-acento font-semibold text-panel shadow-dura hover:bg-acento-fuerte"
-        >
-          Ver ficha completa
-        </button>
-      )}
+      <button
+        type="button"
+        onClick={() => onViewDetail(bone.id)}
+        className="mt-4 min-h-tactil w-full rounded-full border-2 border-tinta bg-acento font-semibold text-panel shadow-dura hover:bg-acento-fuerte"
+      >
+        Ver ficha completa
+      </button>
 
       {/* Un lector de pantalla anuncia el cambio sin tener que ir a buscar el panel. */}
       <p role="status" aria-live="polite" className="sr-only">

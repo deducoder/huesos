@@ -33,7 +33,7 @@ vi.mock('../../components/IsolatedBoneScene', () => ({
 
 describe('BoneTestView', () => {
   it('must-data-010: ninguna de las 3 opciones llega marcada como correcta antes de responder', () => {
-    render(<BoneTestView />)
+    render(<BoneTestView onCambiarModo={vi.fn()} />)
     const grupo = screen.getByRole('group', { name: /qué hueso es/i })
     const opciones = within(grupo).getAllByRole('button')
     expect(opciones).toHaveLength(3)
@@ -43,7 +43,7 @@ describe('BoneTestView', () => {
   })
 
   it('must-data-003: tampoco en ningún aria-label — un lector de pantalla no debe anunciarlo', () => {
-    render(<BoneTestView />)
+    render(<BoneTestView onCambiarModo={vi.fn()} />)
     const conAriaLabel = document.querySelectorAll('[aria-label]')
     for (const elemento of conAriaLabel) {
       const label = elemento.getAttribute('aria-label') ?? ''
@@ -55,19 +55,19 @@ describe('BoneTestView', () => {
   })
 
   it('la pista accesible no dice "escribí" — el formato por defecto es opción múltiple', () => {
-    render(<BoneTestView />)
+    render(<BoneTestView onCambiarModo={vi.fn()} />)
     const escena = screen.getByTestId('escena-aislada-sustituida')
     expect(escena.getAttribute('aria-label') ?? '').not.toMatch(/escrib/i)
   })
 
   it('monta la escena aislada con un hueso señalado', () => {
-    render(<BoneTestView />)
+    render(<BoneTestView onCambiarModo={vi.fn()} />)
     const escena = screen.getByTestId('escena-aislada-sustituida')
     expect(escena.dataset.hueso).toBeTruthy()
   })
 
   it('no monta ninguna vía con nombre visible', () => {
-    render(<BoneTestView />)
+    render(<BoneTestView onCambiarModo={vi.fn()} />)
     expect(screen.queryByRole('navigation')).not.toBeInTheDocument()
     expect(screen.queryByRole('heading')).not.toBeInTheDocument()
   })

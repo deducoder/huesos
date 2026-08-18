@@ -38,9 +38,33 @@ alterna entre «Responder»/«Siguiente pregunta» según `resultado`.
   indicador de acierto/error no depende solo del color (`must-a11y-005`).
 - **Gate:** `./scripts/check` verde — 320 tests.
 
-**Lo que el plan no anticipó:** el propio plan había previsto que un test
-podía dar un falso verde por depender de una referencia stale — el riesgo
-está documentado en la memoria del proyecto desde e9.1 (test-doubles y
-test-can-defend-the-bug) — pero no anticipó que **el propio T1** lo
-produciría al escribir sus RED. Se detectó al revisar por qué solo 2 de 4
-tests fallaban cuando el diseño predecía 4, no por sospecha previa.
+## T2 · `onViewDetail` y `onCambiarModo` pasan a requeridas
+
+**Done.** Las cinco firmas (`BoneIdentity`, `ExploreView`, `TestQuestion`,
+`BoneTestView`, `SkeletonTestView`) perdieron el `?`; las dos condiciones
+muertas (`{onViewDetail && …}`, `{onCambiarModo && …}`) se retiraron, sus
+botones se renderizan siempre.
+
+- **El rojo fue el compilador, como el plan preveía**: 14 errores en
+  `BoneIdentity.test.tsx` al endurecer esa firma sola, y **30 más**
+  repartidos en `TestQuestion.test.tsx` (21), `BoneTestView.test.tsx` (5) y
+  `SkeletonTestView.test.tsx` (4) al endurecer las otras cuatro — más de lo
+  estimado, porque `TestQuestion.test.tsx` había crecido a 21 renders
+  contando los cuatro tests nuevos de T1.
+- **Un test se borró** —`'no muestra el botón de ficha completa sin el
+  callback'`— porque ya no hay ningún valor de tipo válido que deje
+  `onViewDetail` en `undefined`. Ninguna prueba de `TestQuestion.test.tsx`
+  dependía de la ausencia de «cambiar modo» (verificado por grep antes de
+  tocar nada, como el plan pedía), así que no hubo equivalente que borrar
+  ahí.
+- **Mutación forzada:** devolver el `?` a `onCambiarModo` en
+  `TestQuestion.tsx` **no produce ningún error de tipos** — confirmado con
+  `tsc --noEmit` antes y después del cambio, sin diferencia. Es exactamente
+  la protección que esta tarea instala: hoy, omitir la prop en un llamador
+  futuro sería un error de tipos; ayer, habría sido un silencio.
+- **Gate:** `./scripts/check` verde — 319 tests (320 − 1 por el test
+  retirado).
+
+**Lo que el plan no anticipó:** el volumen exacto de renders a actualizar en
+`TestQuestion.test.tsx` — el plan estimaba 17 basado en un conteo hecho
+durante el gemba de `story-start`, antes de que T1 agregara 4 tests más.

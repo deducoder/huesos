@@ -10,6 +10,9 @@ import { TestQuestion } from './TestQuestion'
 
 const renderScenaSustituida = (boneId: string) => <div data-testid="escena" data-hueso={boneId} />
 
+/** `onCambiarModo` es requerida (e9.2); ningún test de este archivo la ejercita. */
+const cambiarModoNoop = () => {}
+
 /** Un almacén doble: sin `localStorage`, ni el de jsdom. */
 function almacenFalso(inicial: ProgressRecord = {}): ProgressStore & { escrituras: number } {
   let registro = inicial
@@ -31,6 +34,7 @@ describe('TestQuestion', () => {
         store={almacenFalso()}
         renderScene={renderScenaSustituida}
         answerFormat="open"
+        onCambiarModo={cambiarModoNoop}
       />,
     )
     const texto = document.body.textContent ?? ''
@@ -50,6 +54,7 @@ describe('TestQuestion', () => {
         store={almacenFalso()}
         renderScene={renderScenaSustituida}
         answerFormat="open"
+        onCambiarModo={cambiarModoNoop}
       />,
     )
     expect(screen.getAllByTestId('escena')).toHaveLength(1)
@@ -63,6 +68,7 @@ describe('TestQuestion', () => {
         store={almacenFalso()}
         renderScene={renderScenaSustituida}
         answerFormat="open"
+        onCambiarModo={cambiarModoNoop}
       />,
     )
 
@@ -84,6 +90,7 @@ describe('TestQuestion', () => {
         store={almacenFalso()}
         renderScene={renderScenaSustituida}
         answerFormat="open"
+        onCambiarModo={cambiarModoNoop}
       />,
     )
 
@@ -101,6 +108,7 @@ describe('TestQuestion', () => {
         store={almacenFalso()}
         renderScene={renderScenaSustituida}
         answerFormat="open"
+        onCambiarModo={cambiarModoNoop}
       />,
     )
 
@@ -123,6 +131,7 @@ describe('TestQuestion', () => {
         store={almacenFalso()}
         renderScene={renderScenaSustituida}
         answerFormat="open"
+        onCambiarModo={cambiarModoNoop}
       />,
     )
 
@@ -144,6 +153,7 @@ describe('TestQuestion', () => {
         store={almacenFalso()}
         renderScene={renderScenaSustituida}
         answerFormat="open"
+        onCambiarModo={cambiarModoNoop}
       />,
     )
 
@@ -163,6 +173,7 @@ describe('TestQuestion', () => {
         store={almacenFalso()}
         renderScene={renderScenaSustituida}
         answerFormat="open"
+        onCambiarModo={cambiarModoNoop}
       />,
     )
 
@@ -179,14 +190,24 @@ describe('TestQuestion', () => {
 describe('TestQuestion — modo opción múltiple (formato por defecto)', () => {
   it('no hay ningún campo de texto en el formato por defecto', () => {
     render(
-      <TestQuestion bones={catalog} store={almacenFalso()} renderScene={renderScenaSustituida} />,
+      <TestQuestion
+        bones={catalog}
+        store={almacenFalso()}
+        renderScene={renderScenaSustituida}
+        onCambiarModo={cambiarModoNoop}
+      />,
     )
     expect(screen.queryByRole('textbox')).not.toBeInTheDocument()
   })
 
   it('muestra exactamente 3 opciones, ninguna marcada como correcta', () => {
     render(
-      <TestQuestion bones={catalog} store={almacenFalso()} renderScene={renderScenaSustituida} />,
+      <TestQuestion
+        bones={catalog}
+        store={almacenFalso()}
+        renderScene={renderScenaSustituida}
+        onCambiarModo={cambiarModoNoop}
+      />,
     )
     const grupo = screen.getByRole('group', { name: /qué hueso es/i })
     const opciones = within(grupo).getAllByRole('button')
@@ -198,7 +219,12 @@ describe('TestQuestion — modo opción múltiple (formato por defecto)', () => 
 
   it('una de las 3 opciones es el hueso preguntado', () => {
     render(
-      <TestQuestion bones={catalog} store={almacenFalso()} renderScene={renderScenaSustituida} />,
+      <TestQuestion
+        bones={catalog}
+        store={almacenFalso()}
+        renderScene={renderScenaSustituida}
+        onCambiarModo={cambiarModoNoop}
+      />,
     )
     const boneId = screen.getByTestId('escena').dataset.hueso
     const bone = findBone(catalog, boneId ?? null)
@@ -211,7 +237,12 @@ describe('TestQuestion — modo opción múltiple (formato por defecto)', () => 
   it('"Responder" está deshabilitado hasta elegir una opción', async () => {
     const user = userEvent.setup()
     render(
-      <TestQuestion bones={catalog} store={almacenFalso()} renderScene={renderScenaSustituida} />,
+      <TestQuestion
+        bones={catalog}
+        store={almacenFalso()}
+        renderScene={renderScenaSustituida}
+        onCambiarModo={cambiarModoNoop}
+      />,
     )
     const responderBtn = screen.getByRole('button', { name: /^responder$/i })
     expect(responderBtn).toBeDisabled()
@@ -227,7 +258,14 @@ describe('TestQuestion — modo opción múltiple (formato por defecto)', () => 
   it('elegir la opción correcta y responder registra un acierto', async () => {
     const user = userEvent.setup()
     const store = almacenFalso()
-    render(<TestQuestion bones={catalog} store={store} renderScene={renderScenaSustituida} />)
+    render(
+      <TestQuestion
+        bones={catalog}
+        store={store}
+        renderScene={renderScenaSustituida}
+        onCambiarModo={cambiarModoNoop}
+      />,
+    )
 
     const boneId = screen.getByTestId('escena').dataset.hueso
     const bone = findBone(catalog, boneId ?? null)
@@ -244,7 +282,14 @@ describe('TestQuestion — modo opción múltiple (formato por defecto)', () => 
   it('elegir una opción incorrecta y responder registra un fallo, y muestra el nombre correcto', async () => {
     const user = userEvent.setup()
     const store = almacenFalso()
-    render(<TestQuestion bones={catalog} store={store} renderScene={renderScenaSustituida} />)
+    render(
+      <TestQuestion
+        bones={catalog}
+        store={store}
+        renderScene={renderScenaSustituida}
+        onCambiarModo={cambiarModoNoop}
+      />,
+    )
 
     const boneId = screen.getByTestId('escena').dataset.hueso
     const bone = findBone(catalog, boneId ?? null)
@@ -268,7 +313,12 @@ describe('TestQuestion — modo opción múltiple (formato por defecto)', () => 
   it('tras responder mal, las tres opciones se quedan en pantalla', async () => {
     const user = userEvent.setup()
     render(
-      <TestQuestion bones={catalog} store={almacenFalso()} renderScene={renderScenaSustituida} />,
+      <TestQuestion
+        bones={catalog}
+        store={almacenFalso()}
+        renderScene={renderScenaSustituida}
+        onCambiarModo={cambiarModoNoop}
+      />,
     )
     const boneId = screen.getByTestId('escena').dataset.hueso
     const bone = findBone(catalog, boneId ?? null)
@@ -292,7 +342,12 @@ describe('TestQuestion — modo opción múltiple (formato por defecto)', () => 
   it('marca la opción correcta como acierto aunque el estudiante haya fallado', async () => {
     const user = userEvent.setup()
     render(
-      <TestQuestion bones={catalog} store={almacenFalso()} renderScene={renderScenaSustituida} />,
+      <TestQuestion
+        bones={catalog}
+        store={almacenFalso()}
+        renderScene={renderScenaSustituida}
+        onCambiarModo={cambiarModoNoop}
+      />,
     )
     const boneId = screen.getByTestId('escena').dataset.hueso
     const bone = findBone(catalog, boneId ?? null)
@@ -317,7 +372,12 @@ describe('TestQuestion — modo opción múltiple (formato por defecto)', () => 
   it('marca la opción elegida como error cuando el estudiante falló', async () => {
     const user = userEvent.setup()
     render(
-      <TestQuestion bones={catalog} store={almacenFalso()} renderScene={renderScenaSustituida} />,
+      <TestQuestion
+        bones={catalog}
+        store={almacenFalso()}
+        renderScene={renderScenaSustituida}
+        onCambiarModo={cambiarModoNoop}
+      />,
     )
     const boneId = screen.getByTestId('escena').dataset.hueso
     const bone = findBone(catalog, boneId ?? null)
@@ -341,7 +401,12 @@ describe('TestQuestion — modo opción múltiple (formato por defecto)', () => 
   it('nunca hay dos botones de acción a la vez, ni antes ni después de responder', async () => {
     const user = userEvent.setup()
     render(
-      <TestQuestion bones={catalog} store={almacenFalso()} renderScene={renderScenaSustituida} />,
+      <TestQuestion
+        bones={catalog}
+        store={almacenFalso()}
+        renderScene={renderScenaSustituida}
+        onCambiarModo={cambiarModoNoop}
+      />,
     )
     expect(
       screen.getAllByRole('button', { name: /^(responder|siguiente pregunta)$/i }),
@@ -370,6 +435,7 @@ describe('TestQuestion y el registro de progreso', () => {
         store={store}
         renderScene={renderScenaSustituida}
         answerFormat="open"
+        onCambiarModo={cambiarModoNoop}
       />,
     )
 
@@ -420,7 +486,12 @@ describe('TestQuestion y el registro de progreso', () => {
 
   it('muestra el nombre corto en las tres opciones, no el del catálogo', () => {
     render(
-      <TestQuestion bones={catalog} store={almacenFalso()} renderScene={renderScenaSustituida} />,
+      <TestQuestion
+        bones={catalog}
+        store={almacenFalso()}
+        renderScene={renderScenaSustituida}
+        onCambiarModo={cambiarModoNoop}
+      />,
     )
     // Cualquiera que sea el hueso sorteado: cada opción tiene que ser un
     // nombre corto. Mostrar el `es` del catálogo falla siempre, aunque la
@@ -440,6 +511,7 @@ describe('TestQuestion y el registro de progreso', () => {
         store={almacenFalso()}
         renderScene={renderScenaSustituida}
         answerFormat="open"
+        onCambiarModo={cambiarModoNoop}
       />,
     )
     const boneId = screen.getByTestId('escena').dataset.hueso
