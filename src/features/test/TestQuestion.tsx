@@ -65,12 +65,12 @@ export function TestQuestion({ bones, store, renderScene }: Props) {
                 value={respuesta}
                 onChange={(evento) => setRespuesta(evento.target.value)}
                 placeholder="¿Qué hueso es?"
-                className="w-full rounded border border-tinta bg-panel px-3 py-2 text-sm"
+                className="min-h-tactil w-full rounded-suave border-2 border-tinta bg-panel px-3 text-sm"
               />
             </label>
             <button
               type="submit"
-              className="rounded bg-acento px-4 py-2 text-panel text-sm hover:bg-acento-fuerte"
+              className="min-h-tactil rounded-suave border-2 border-tinta bg-acento px-4 text-panel text-sm hover:bg-acento-fuerte"
             >
               Responder
             </button>
@@ -90,7 +90,7 @@ export function TestQuestion({ bones, store, renderScene }: Props) {
             <button
               type="button"
               onClick={siguiente}
-              className="rounded border border-tinta px-3 py-1.5 text-sm hover:bg-acento-suave"
+              className="min-h-tactil rounded-suave border-2 border-tinta px-4 text-sm hover:bg-acento-suave"
             >
               Siguiente pregunta
             </button>
