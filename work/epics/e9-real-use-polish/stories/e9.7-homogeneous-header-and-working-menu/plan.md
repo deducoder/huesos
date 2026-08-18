@@ -100,6 +100,54 @@
   como una pantalla nueva; ninguna apertura/cierre del panel deja un
   «atrás» extra ni se salta uno real.
 
+### T6 · El «atrás» del sistema cierra el panel, no solo cambia la vista de fondo
+
+- **Files:** modify `src/App.tsx`, `src/App.test.tsx`.
+- **Origin:** hallazgo de la verificación manual en el teléfono (T5): con
+  el panel abierto, el gesto de "atrás" del sistema navega la vista de
+  fondo (`popstate` cambia `modo`) pero el panel —estado local, ajeno al
+  historial por diseño— se queda montado encima, ahora sobre una vista que
+  no es la que estaba cuando se abrió. Viola el propio "Done when" del
+  scope: *"'atrás' del sistema sigue comportándose como antes de esta
+  historia"*.
+- **TDD:** RED — una prueba que navega a una vista real (`navegar`, entrada
+  en el historial), abre el panel, dispara `window.history.back()`, y
+  afirma que el panel desaparece (`queryByRole('dialog')` ausente) sobre
+  la vista a la que `popstate` volvió. → GREEN — el handler `alRetroceder`
+  de `App` también cierra el panel (`setMenuAbierto(false)`) además de
+  fijar el `modo`. → REFACTOR.
+- **Satisfies:** el "Done when" del scope sobre el comportamiento de
+  "atrás"; ningún Must del design lo pedía explícito porque el design no
+  contempló esta interacción — el gemba de la verificación manual es lo
+  que la encontró, no una relectura de texto.
+- **Verify:** la propiedad es que el panel nunca sobrevive a una
+  navegación real del sistema — mutación forzada: quitar
+  `setMenuAbierto(false)` del handler debe reproducir el hallazgo original.
+  Luego `./scripts/check`.
+- **Commit:** `fix(app): close the about panel on system back navigation`
+
+### T7 · Crédito de la aplicación y leyenda de no-rastreo/sin fines de lucro
+
+- **Files:** modify `src/components/AboutPanel.tsx`,
+  `src/components/AboutPanel.test.tsx`.
+- **Origin:** pedido explícito del humano en la verificación manual (T5):
+  agregar quién desarrolló la aplicación y reforzar, en una leyenda corta,
+  que no hay rastreo ni fines de lucro. El scope permite contenido más
+  allá del mínimo declarado ("como mínimo" los cuatro ítems existentes).
+- **TDD:** RED — dos afirmaciones nuevas: (a) el panel muestra el texto
+  "Desarrollado por DEDU · 2026"; (b) muestra una leyenda que dice, sin
+  ambigüedad, que no hay rastreo y que no persigue fines de lucro. →
+  GREEN — una sección nueva (o una línea agregada a la sección de
+  Privacidad existente, evaluado al implementar cuál lee mejor) con ese
+  texto. → REFACTOR.
+- **Satisfies:** pedido explícito del humano; no contradice ningún Must
+  NOT del scope (no es un ajuste de usuario, no traduce/resume la
+  atribución de BodyParts3D, que es un texto aparte y ya literal).
+- **Verify:** la propiedad es que ambos textos están presentes y
+  legibles — mutación forzada: borrar la línea de crédito o la leyenda
+  rompe la aserción correspondiente. Luego `./scripts/check`.
+- **Commit:** `feat(about-panel): credit the developer and state no tracking, no profit`
+
 ## Order & risks
 
 - **Execution order:** T1 → T2 → T3 → T4 → T5. T1 primero porque T2 lo
