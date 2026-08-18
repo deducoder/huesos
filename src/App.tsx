@@ -44,8 +44,8 @@ const ACENTO_PESTANIA: Record<Pestania, string> = {
 
 /**
  * Las pestañas de nivel superior, agrupadas en una sola píldora (e8.5).
- * Ocultas en modo `'ficha'`: no hay nada que elegir mientras se está
- * viendo una, "Volver" ya cubre esa salida.
+ * En modo `'ficha'` la cabecera entera es otra y no las monta: no hay nada
+ * que elegir mientras se está viendo una, "Volver" ya cubre esa salida.
  */
 function Pestanas({ modo, onCambiar }: { modo: Modo; onCambiar: (tipo: Pestania) => void }) {
   const activa = (pestania: Pestania) =>
@@ -239,15 +239,34 @@ export function App() {
 
   return (
     <main className="relative flex h-dvh flex-col bg-superficie text-tinta">
-      <header
-        data-testid="cabecera"
-        className="mt-3 mb-3 flex items-stretch justify-between gap-2 px-3.5"
-      >
-        <h1 className="sr-only font-display">huesos-mono</h1>
-        <LogoIcono />
-        {modo.tipo !== 'ficha' && <Pestanas modo={modo} onCambiar={(tipo) => setModo({ tipo })} />}
-        <MenuIcono />
-      </header>
+      {modo.tipo === 'ficha' ? (
+        /* Mientras la ficha está abierta, la cabecera **es** la salida (e8.5,
+           mockup): "Volver" y el nombre de la aplicación, sin pestañas ni
+           íconos. No hay nada que elegir hasta volver. */
+        <header
+          data-testid="cabecera"
+          className="flex items-center gap-3 border-tinta border-b-2 bg-panel px-5 py-3"
+        >
+          <button
+            type="button"
+            onClick={() => setModo({ tipo: modo.origen })}
+            className="min-h-tactil rounded-full border-2 border-tinta bg-panel px-4 font-semibold text-sm text-tinta hover:bg-acento-suave"
+          >
+            ← Volver
+          </button>
+          <h1 className="font-display font-semibold text-base">huesos-mono</h1>
+        </header>
+      ) : (
+        <header
+          data-testid="cabecera"
+          className="mt-3 mb-3 flex items-stretch justify-between gap-2 px-3.5"
+        >
+          <h1 className="sr-only font-display">huesos-mono</h1>
+          <LogoIcono />
+          <Pestanas modo={modo} onCambiar={(tipo) => setModo({ tipo })} />
+          <MenuIcono />
+        </header>
+      )}
       <div className="min-h-0 flex-1">
         {modo.tipo === 'explorar' && (
           <ExploreView
@@ -264,9 +283,7 @@ export function App() {
             />
           </div>
         )}
-        {modo.tipo === 'ficha' && (
-          <BoneDetailView boneId={modo.boneId} onBack={() => setModo({ tipo: modo.origen })} />
-        )}
+        {modo.tipo === 'ficha' && <BoneDetailView boneId={modo.boneId} />}
         {modo.tipo === 'test-elegir' && (
           <ElegirVarianteDeTest onElegir={(tipo) => setModo({ tipo })} />
         )}
