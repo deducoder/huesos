@@ -46,6 +46,14 @@ describe('AboutPanel', () => {
     expect(screen.getByText(/sin fines de lucro/i)).toBeInTheDocument()
   })
 
+  it('descarga responsabilidad: sin garantías, no es asesoría médica, uso bajo propio riesgo', () => {
+    render(<AboutPanel onClose={vi.fn()} />)
+    expect(screen.getByText(/tal cual/i)).toBeInTheDocument()
+    expect(screen.getByText(/no (es|constituye) asesor[ií]a m[eé]dica/i)).toBeInTheDocument()
+    expect(screen.getByText(/bajo tu propio riesgo/i)).toBeInTheDocument()
+    expect(screen.getByText(/no (es|será) responsable/i)).toBeInTheDocument()
+  })
+
   it('al montar, el foco entra al panel', () => {
     render(<AboutPanel onClose={vi.fn()} />)
     expect(screen.getByRole('dialog')).toHaveFocus()

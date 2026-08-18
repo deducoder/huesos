@@ -75,6 +75,16 @@ export function AboutPanel({ onClose }: { onClose: () => void }) {
         </section>
 
         <section className="mt-4">
+          <h3 className="font-display font-semibold text-sm">Descargo de responsabilidad</h3>
+          <p className="mt-1 text-tinta-suave text-sm">
+            La aplicación se ofrece tal cual, sin garantías de ningún tipo. Es una herramienta de
+            estudio y no constituye asesoría médica ni sustituye el criterio de un profesional. El
+            uso queda bajo tu propio riesgo: quien la desarrolla no es responsable por daños o
+            perjuicios derivados de su uso.
+          </p>
+        </section>
+
+        <section className="mt-4">
           <p className="text-tinta-suave text-sm">
             Sin rastreo. Sin fines de lucro. Desarrollado por DEDU · 2026.
           </p>
