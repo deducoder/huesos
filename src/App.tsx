@@ -13,8 +13,10 @@ import { SkeletonTestView } from './features/test/SkeletonTestView'
  * Qué vista está montada, sin router (ADR-003): la aplicación no necesita
  * enlaces profundos por hueso todavía, y esto evita una dependencia nueva.
  *
- * `origen` en el modo `'ficha'` decide a dónde vuelve "Volver": si se llegó
- * desde `ExploreView` (e3.2) o desde la lista sin escena (e3.3, `RF-03`).
+ * A dónde vuelve "Volver" desde una ficha no es un campo del modo sino la
+ * entrada anterior del historial (ADR-013): a `'ficha'` solo se llega
+ * empujando desde `'explorar'` o desde `'fichas'`, así que retroceder acierta
+ * el origen por construcción.
  *
  * `'test-elegir'` es la pestaña "Test" antes de elegir variante (e4.5);
  * `'test-esqueleto'`/`'test-hueso'` montan `RF-04`/`RF-05` respectivamente.
@@ -22,7 +24,7 @@ import { SkeletonTestView } from './features/test/SkeletonTestView'
 type Modo =
   | { tipo: 'explorar' }
   | { tipo: 'fichas' }
-  | { tipo: 'ficha'; boneId: string; origen: 'explorar' | 'fichas' }
+  | { tipo: 'ficha'; boneId: string }
   | { tipo: 'test-elegir' }
   | { tipo: 'test-esqueleto' }
   | { tipo: 'test-hueso' }
@@ -318,7 +320,7 @@ export function App() {
         >
           <button
             type="button"
-            onClick={() => navegar({ tipo: modo.origen })}
+            onClick={() => window.history.back()}
             className="min-h-tactil rounded-full border-2 border-tinta bg-panel px-4 font-semibold text-sm text-tinta hover:bg-acento-suave"
           >
             ← Volver
@@ -344,14 +346,14 @@ export function App() {
           <ExploreView
             selected={selected}
             onSelect={(id) => setSelected((actual) => toggleSelection(actual, id))}
-            onViewDetail={(id) => navegar({ tipo: 'ficha', boneId: id, origen: 'explorar' })}
+            onViewDetail={(id) => navegar({ tipo: 'ficha', boneId: id })}
           />
         )}
         {modo.tipo === 'fichas' && (
           <div className="h-full overflow-y-auto pt-2 pb-2 md:mx-auto md:max-w-2xl">
             <FichasAccordion
               bones={catalog}
-              onSelect={(id) => navegar({ tipo: 'ficha', boneId: id, origen: 'fichas' })}
+              onSelect={(id) => navegar({ tipo: 'ficha', boneId: id })}
             />
           </div>
         )}
@@ -360,11 +362,9 @@ export function App() {
           <ElegirVarianteDeTest onElegir={(tipo) => navegar({ tipo })} />
         )}
         {modo.tipo === 'test-esqueleto' && (
-          <SkeletonTestView onCambiarModo={() => navegar({ tipo: 'test-elegir' })} />
+          <SkeletonTestView onCambiarModo={() => window.history.back()} />
         )}
-        {modo.tipo === 'test-hueso' && (
-          <BoneTestView onCambiarModo={() => navegar({ tipo: 'test-elegir' })} />
-        )}
+        {modo.tipo === 'test-hueso' && <BoneTestView onCambiarModo={() => window.history.back()} />}
       </div>
     </main>
   )

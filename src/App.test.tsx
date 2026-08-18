@@ -203,4 +203,25 @@ describe('la aplicación, de punta a punta', () => {
       expect(screen.getByTestId('escena-sustituida')).toBeInTheDocument()
     })
   })
+  it('tras volver con «← Volver», el «atrás» del sistema no reentra a la ficha', async () => {
+    const user = userEvent.setup()
+    render(<App />)
+
+    await user.click(screen.getByRole('button', { name: /^fichas$/i }))
+    await user.click(screen.getByRole('button', { name: /^miembro inferior/i }))
+    await user.click(screen.getByRole('button', { name: /^fémur derecho$/i }))
+    expect(screen.getByTestId('escena-aislada-sustituida')).toBeInTheDocument()
+
+    await user.click(screen.getByRole('button', { name: /volver/i }))
+    expect(screen.queryByTestId('escena-aislada-sustituida')).not.toBeInTheDocument()
+
+    // «Volver» retrocede en el historial: no deja una entrada nueva detrás
+    // a la que el gesto del sistema pueda reentrar.
+    window.history.back()
+
+    await waitFor(() => {
+      expect(screen.getByTestId('escena-sustituida')).toBeInTheDocument()
+    })
+    expect(screen.queryByTestId('escena-aislada-sustituida')).not.toBeInTheDocument()
+  })
 })

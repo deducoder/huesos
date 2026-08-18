@@ -43,3 +43,33 @@ diseño, no un truco de prueba.
 la agrega, falta una clave y el compilador lo dice. Una lista la aceptaría
 en silencio — que es exactamente el hallazgo aparcado sobre
 `esProgresoDeHueso`, cerrado por construcción en vez de repetido.
+
+## T2 · Los botones que ya decían «atrás» retroceden, y `origen` se barre
+
+**Hecho.** «← Volver» y las dos salidas de `onCambiarModo` pasan por
+`window.history.back()`. El campo `origen` desapareció del tipo `Modo`, de
+sus dos sitios de escritura y de su único lector; las dos apariciones que
+quedan de la palabra son prosa de comentario.
+
+**RED:** una prueba nueva abre la ficha del fémur desde Fichas, pulsa
+«← Volver» y luego `history.back()`, esperando llegar a Explorar y no
+reentrar a la ficha. Fallaba: tras T1, «Volver» empujaba una entrada nueva
+y el gesto del sistema volvía a entrar donde se acababa de salir.
+
+**Un RED falso, corregido antes de seguir.** El primer intento navegaba por
+la categoría «Cráneo» hasta «frontal» y fallaba con *Unable to find an
+accessible element* — el selector, no el comportamiento. Un rojo por
+andamiaje roto no prueba nada, así que se reescribió siguiendo el camino
+que los tests vecinos ya usan (Miembro inferior → fémur derecho) y ahí sí
+falló por la reentrada.
+
+**Verificación — mutación forzada:** devolver el empuje en «Volver»
+(`navegar({ tipo: 'fichas' })`) da 2 rojos: el de no-reentrada y, además,
+*lleva a la ficha completa y vuelve conservando la selección*. El segundo
+es la red de seguridad del barrido — el comportamiento que `origen`
+sostenía sigue vigilado sin el campo.
+
+**Gate:** `./scripts/check` rojo en `format:check` a la primera —
+biome colapsa a una línea el `&&` de `BoneTestView` ahora que el callback
+es más corto. Corregido con `npm run format`, no bypaseado. Verde después:
+37 archivos, 276 pruebas.
