@@ -432,3 +432,39 @@ inicializador de `opciones` y en `siguiente()`, dentro de
 **Destino:** aparcado — 2 líneas de duplicación, no vale una tarea propia
 ahora. Extraer `construirOpciones(bone, bones)` si el patrón se repite una
 tercera vez o si el componente crece.
+
+## 2026-08-17 · El color por región vive fuera de `@theme` (E8, epic-review)
+
+`REGION_ACCENT` (`src/components/region-accent.ts`, 20 valores) y
+`ACENTO_PESTANIA` (`src/App.tsx`, 3) son colores hexadecimales escritos a
+mano en TypeScript y aplicados con `style={{}}`, consumidos por
+`BoneIdentity`, `BoneSheet`, `FichasAccordion` y la navbar. ADR-007 declara
+que los tokens de `@theme` son la única fuente del aspecto y que ningún
+componente escribe un color a mano; `tests/design-tokens.test.ts` no lo ve
+porque vigila la **paleta de fábrica de Tailwind**, no la regla completa.
+
+Además, dos de los tres acentos de pestaña duplican valores literales de
+`REGION_ACCENT` (`explorar` = `thorax.bg`, `test-elegir` =
+`upper-limb.bg`) y el tercero (`fichas`, `#e4c64f`) no corresponde a
+ninguna región: ajustar el naranja de `thorax` dejaría la pestaña con el
+valor viejo sin que nada avise.
+
+Es el mismo agujero que epic-review de E7 encontró con el color del 3D.
+
+**Destino:** aparcado para una épica de consolidación visual. Dos caminos:
+un ADR que acepte "color por región" como dato de vista legítimo y amplíe
+el gate para exigir que *todo* color venga de una fuente declarada, o
+migrar los 23 valores a `@theme`. La duplicación de los acentos de pestaña
+se cierra con cualquiera de los dos.
+
+## 2026-08-17 · Tres props opcionales cuya ausencia es silenciosa (E8, epic-review)
+
+`onViewDetail?` (`BoneIdentity`, `ExploreView`), `answerFormat?` y
+`onCambiarModo?` (`TestQuestion`) se acumularon una por historia. Todos los
+llamadores actuales las pasan; un llamador futuro que olvide una se queda
+sin la función y ningún test lo nota.
+
+**Destino:** aparcado. Hacer requeridas las que todos los llamadores ya
+pasan — un cambio de una línea por llamador, pero toca tres componentes y
+sus pruebas, así que merece su propia tarea en la próxima historia que
+entre a `src/features/test/`.
