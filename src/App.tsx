@@ -115,7 +115,7 @@ export function App() {
           />
         )}
         {modo.tipo === 'fichas' && (
-          <div className="h-full overflow-y-auto py-2">
+          <div className="h-full overflow-y-auto py-2 md:mx-auto md:max-w-2xl">
             <BoneNavigator
               bones={catalog}
               selected={null}
