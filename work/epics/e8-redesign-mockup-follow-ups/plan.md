@@ -48,7 +48,7 @@ end-to-end.
 | e8.3 | done | XS | 4 tareas (T1, T2, T2b, T3) — T2b se agregó tras un hallazgo real de T3 |
 | e8.4 | done | M | 5 tareas (T1-T4 + fix de quality-review) — encontró y corrigió 2 specs e2e rotos, no anticipados en el plan |
 | e8.2 | done | M | 4 tareas, sin agregados — corrigió una capa mal ubicada en el design.md de la épica antes de implementar |
-| e8.1 | todo | S | — |
+| e8.1 | done | S | 2 tareas, sin agregados — cortó menú y flotante de scope (sin destino / cambio mayor no justificado), encontró que jsdom sobrecomputa el landmark `banner` |
 
 ## Sequencing risks
 
