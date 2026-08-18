@@ -387,3 +387,20 @@ planificada de E7.
 **Destino:** historia propia, candidata `e7.13`, con su propio scope —
 incluye decidir cómo se generan las opciones incorrectas plausibles para 206
 huesos, que es una pregunta de dominio, no de estilo.
+
+## 2026-08-17 · Las tres entradas del mockup de Claude Design pasan a E8
+
+Las tres entradas anteriores de esta fecha (navbar flotante `e7.11`,
+acordeón de Fichas `e7.12`, test de opción múltiple `e7.13`) quedan
+reclamadas por la épica **E8: Redesign mockup follow-ups**
+(`work/epics/e8-redesign-mockup-follow-ups/`), como `e8.1`, `e8.2` y
+`e8.3`+`e8.4` respectivamente — el test de opción múltiple se partió en dos
+historias (distractores de dominio, luego la opción múltiple como formato
+primario).
+
+El gemba de `epic-design` corrigió una suposición: la entrada del acordeón
+de Fichas decía que haría falta un ADR que "supersede... ADR-010". Releído
+completo, ADR-010 no gobierna la lista visible de Fichas — ver ADR-011,
+que documenta la corrección.
+
+**Destino:** ya no aparcado — en curso bajo E8.
