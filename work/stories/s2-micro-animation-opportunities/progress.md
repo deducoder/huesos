@@ -47,3 +47,12 @@ gemba walk de T1-T3 ya había dejado claro que el componente sirve los dos).
 Desviación menor: `npm run format` reformateó el `div` de resultado a
 multilínea tras el cambio — atrapado por `format:check` en el gate, corregido
 antes del commit. Gate: verde, 356/356.
+
+## T5 · Tarjeta de identidad flotante (`ExploreView`): entrada animada
+
+RED confirmado (10/11, el test nuevo falló solo). GREEN: `tarjeta-identidad`
+gana `transition-[opacity,transform] duration-panel ease-salida
+starting:translate-y-3 starting:opacity-0`, mismo patrón que T3. Solo la
+primera aparición anima — cambiar de hueso con la tarjeta ya montada sigue
+instantáneo, tal como decidió el diseño (Part 2 del reporte de
+oportunidades). Gate: verde, 357/357. Sin desviaciones.
