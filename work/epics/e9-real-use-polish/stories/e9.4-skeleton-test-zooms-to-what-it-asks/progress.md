@@ -186,3 +186,11 @@ exterior con `offset`/`scale` por encima del que mide su propia caja —su
 introdujo, sin que el diseño lo notara, un nivel de anidamiento que
 `IsolatedGroup` nunca tuvo, y el patrón copiado —correcto en su origen— no
 alcanzaba un nivel más arriba en el nuevo contexto.
+
+## T4 · Verificación manual de integración
+
+**Done.** Confirmado por el humano en su teléfono, tras dos rondas de
+hallazgos reales encontrados en esta misma verificación (T4a, T4b): la
+cámara se acerca a la zona del hueso señalado en el modo test de esqueleto
+completo, sin huesos invisibles ni encuadres desorientados, incluida la
+primera pregunta de una carga fresca. Explorar no cambió.
