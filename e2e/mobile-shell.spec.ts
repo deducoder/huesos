@@ -151,45 +151,44 @@ test('el título usa la familia display empaquetada', async ({ page }) => {
   expect(cuerpo, 'el cuerpo conserva la pila del sistema').not.toContain('Fredoka')
 })
 
-test('las filas del navegador de huesos alcanzan el mínimo táctil', async ({ page }) => {
+test('las etiquetas del acordeón de Fichas alcanzan el mínimo táctil', async ({ page }) => {
   await page.goto('/')
   await page.getByRole('button', { name: /^fichas$/i }).click()
 
-  // Un par: la píldora "Derecho" de fémur.
-  const pildoraDerecha = page.getByRole('button', { name: /fémur.*derecho/i })
-  await expect(pildoraDerecha).toBeVisible()
-  const cajaPildora = await pildoraDerecha.boundingBox()
-  expect(cajaPildora?.height ?? 0, 'alto de la píldora "fémur derecho"').toBeGreaterThanOrEqual(44)
-  expect(cajaPildora?.width ?? 0, 'ancho de la píldora "fémur derecho"').toBeGreaterThanOrEqual(44)
+  // Un par: la etiqueta "fémur derecho", dentro de "Miembro inferior".
+  await page.getByRole('button', { name: /^miembro inferior/i }).click()
+  const etiquetaPar = page.getByRole('button', { name: /^fémur derecho$/i })
+  await expect(etiquetaPar).toBeVisible()
+  const cajaPar = await etiquetaPar.boundingBox()
+  expect(cajaPar?.height ?? 0, 'alto de la etiqueta "fémur derecho"').toBeGreaterThanOrEqual(44)
+  expect(cajaPar?.width ?? 0, 'ancho de la etiqueta "fémur derecho"').toBeGreaterThanOrEqual(44)
 
-  // Un impar: esfenoides, sin píldoras de lado.
+  // Un impar: esfenoides, dentro de "Cráneo", sin lado.
+  await page.getByRole('button', { name: /^cráneo/i }).click()
   const impar = page.getByRole('button', { name: /^esfenoides$/i })
   await expect(impar).toBeVisible()
   const cajaImpar = await impar.boundingBox()
   expect(cajaImpar?.height ?? 0, 'alto de "esfenoides"').toBeGreaterThanOrEqual(44)
 })
 
-test('el nombre más largo se lee completo, y el navegador entero recorre más corto que antes de e7.4', async ({
-  page,
-}) => {
+test('el nombre más largo del catálogo se lee completo, sin recortar', async ({ page }) => {
   await page.goto('/')
   await page.getByRole('button', { name: /^fichas$/i }).click()
+  await page.getByRole('button', { name: /^miembro superior/i }).click()
 
-  // El nombre de 44 caracteres del catálogo, en su fila `paired`. No se
-  // recorta: el texto completo tiene que estar en el DOM, sin ellipsis.
-  const nombreLargo = page.getByText('falange proximal del segundo dedo de la mano', {
-    exact: true,
-  })
+  // El nombre de 44 caracteres del catálogo. No se recorta: el texto
+  // completo tiene que estar en el DOM, sin ellipsis — el acordeón (e8.2)
+  // agrega el lado al texto del botón (`accessibleName`), así que ya no
+  // aparece como nodo de texto suelto: se busca por substring, no exacto.
+  //
+  // e8.2 retira acá el guardia de regresión que e7.4 dejó sobre el alto
+  // total del navegador (≤ 6.208 px, medido contra la lista plana de
+  // antes de esa historia): con categorías colapsadas por defecto, el
+  // alto inicial del acordeón es trivialmente chico sin que eso proteja
+  // nada — comparar contra una arquitectura de información que ya no
+  // existe deja de ser una guardia real. Ver progress.md de e8.2.
+  const nombreLargo = page.getByText('falange proximal del segundo dedo de la mano')
   await expect(nombreLargo.first()).toBeVisible()
-
-  // El alto total del navegador con los 206 huesos. 6.208 px es la cifra
-  // medida en `main` antes de esta historia (ver scope.md e7.4). El
-  // prototipo de design.md proyectó 5.720 sin relleno vertical alguno; el
-  // componente real mide 5.832 con un poco de aire entre filas — sigue por
-  // debajo de la base, la proyección exacta no se sostuvo al pixel.
-  const nav = page.locator('nav[aria-label="Huesos del esqueleto"]')
-  const alto = await nav.evaluate((n) => n.scrollHeight)
-  expect(alto, 'alto total del navegador con los 206 huesos').toBeLessThanOrEqual(6208)
 })
 
 test('el panel de identidad usa el mínimo táctil y la tipografía display', async ({ page }) => {

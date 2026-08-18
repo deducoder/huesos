@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { BoneNavigator } from './components/BoneNavigator'
+import { FichasAccordion } from './components/FichasAccordion'
 import { catalog } from './data/catalog'
 import { type SelectionId, toggleSelection } from './domain/selection'
 import { BoneDetailView } from './features/bone-detail/BoneDetailView'
@@ -116,9 +116,8 @@ export function App() {
         )}
         {modo.tipo === 'fichas' && (
           <div className="h-full overflow-y-auto py-2 md:mx-auto md:max-w-2xl">
-            <BoneNavigator
+            <FichasAccordion
               bones={catalog}
-              selected={null}
               onSelect={(id) => setModo({ tipo: 'ficha', boneId: id, origen: 'fichas' })}
             />
           </div>

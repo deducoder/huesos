@@ -49,13 +49,13 @@ describe('la aplicación, de punta a punta', () => {
     )
   })
 
-  it('la pestaña "Fichas" muestra la lista de huesos sin montar la escena 3D', async () => {
+  it('la pestaña "Fichas" muestra el acordeón de categorías sin montar la escena 3D', async () => {
     const user = userEvent.setup()
     render(<App />)
 
     await user.click(screen.getByRole('button', { name: /^fichas$/i }))
 
-    expect(screen.getByRole('button', { name: /^fémur derecho$/i })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /^miembro inferior/i })).toBeInTheDocument()
     expect(screen.queryByTestId('escena-sustituida')).not.toBeInTheDocument()
   })
 
@@ -64,6 +64,7 @@ describe('la aplicación, de punta a punta', () => {
     render(<App />)
 
     await user.click(screen.getByRole('button', { name: /^fichas$/i }))
+    await user.click(screen.getByRole('button', { name: /^miembro inferior/i }))
     await user.click(screen.getByRole('button', { name: /^fémur derecho$/i }))
 
     expect(screen.getByTestId('escena-aislada-sustituida')).toHaveAttribute(
@@ -77,11 +78,12 @@ describe('la aplicación, de punta a punta', () => {
     render(<App />)
 
     await user.click(screen.getByRole('button', { name: /^fichas$/i }))
+    await user.click(screen.getByRole('button', { name: /^miembro inferior/i }))
     await user.click(screen.getByRole('button', { name: /^fémur derecho$/i }))
     await user.click(screen.getByRole('button', { name: /volver/i }))
 
     // La lista de fichas está de vuelta, y no la escena 3D de Explorar.
-    expect(screen.getByRole('button', { name: /^fémur derecho$/i })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /^miembro inferior/i })).toBeInTheDocument()
     expect(screen.queryByTestId('escena-sustituida')).not.toBeInTheDocument()
   })
 

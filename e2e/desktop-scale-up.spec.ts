@@ -50,23 +50,20 @@ test('en Explorar, la tarjeta de identidad no se estira a lo ancho del lienzo', 
   expect(cajaTarjeta?.width ?? 0, 'ancho de la tarjeta').toBeLessThan(caja.width * 0.5)
 })
 
-test('en Fichas, la fila de un par no se estira a lo ancho del viewport', async ({ page }) => {
+test('en Fichas, el acordeón de categorías no se estira a lo ancho del viewport', async ({
+  page,
+}) => {
   await page.goto('/')
   await page.getByRole('button', { name: 'Fichas', exact: true }).click()
 
-  const fila = page.getByRole('button', { name: /^hueso parietal derecho$/i })
-  await expect(fila).toBeVisible()
-
-  // El nombre y las píldoras comparten una `<li>`: el ancho de esa fila es lo
-  // que la falta de un `max-width` en el contenedor estira a lo ancho del
-  // viewport (el `flex-1` del nombre crece hasta llenarla, empujando las
-  // píldoras al borde — un `boundingBox()` del propio `<span>` del nombre no
-  // lo vería, porque el texto queda alineado a la izquierda de esa misma
-  // caja ya crecida).
-  const filaAncestro = fila.locator('xpath=ancestor::li[1]')
-  const cajaFila = await filaAncestro.boundingBox()
-  expect(cajaFila, 'la fila del par no está en la página').not.toBeNull()
-  expect(cajaFila?.width ?? 0, 'ancho de la fila').toBeLessThan(700)
+  // El botón de categoría es `w-full` dentro del contenedor `md:max-w-2xl`
+  // de `App.tsx` — mide directo el ancho que ese contenedor le da, sin
+  // necesitar el rodeo por un ancestro que el acordeón (e8.2) ya no tiene.
+  const categoria = page.getByRole('button', { name: /^cráneo/i })
+  await expect(categoria).toBeVisible()
+  const caja = await categoria.boundingBox()
+  expect(caja, 'el botón de categoría no está en la página').not.toBeNull()
+  expect(caja?.width ?? 0, 'ancho del botón de categoría').toBeLessThan(700)
 })
 
 test('en el modo test de hueso aislado, la barra de respuesta no se estira a lo ancho del viewport', async ({
