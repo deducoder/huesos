@@ -1,4 +1,4 @@
-import { render, screen, within } from '@testing-library/react'
+import { render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { describe, expect, it, vi } from 'vitest'
 import { App } from './App'
@@ -145,5 +145,62 @@ describe('la aplicación, de punta a punta', () => {
 
     expect(screen.getByTestId('escena-aislada-sustituida')).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /responder/i })).toBeInTheDocument()
+  })
+  /**
+   * El «atrás» del sistema (e9.6, ADR-013).
+   *
+   * `App` siembra la entrada de arranque con `replaceState`, así que la
+   * entrada actual de cada montaje lleva `{ tipo: 'explorar' }` — eso es lo
+   * que hace que retroceder desde aquí sea determinista pese a que jsdom
+   * comparte `window.history` entre los casos de este archivo.
+   */
+  it('el «atrás» del sistema vuelve de la ficha a Explorar, con la selección intacta', async () => {
+    const user = userEvent.setup()
+    render(<App />)
+
+    await user.click(screen.getByRole('button', { name: /^fémur derecho$/i }))
+    await user.click(screen.getByRole('button', { name: /ver ficha completa/i }))
+    expect(screen.getByTestId('escena-aislada-sustituida')).toBeInTheDocument()
+
+    window.history.back()
+
+    await waitFor(() => {
+      expect(screen.queryByTestId('escena-aislada-sustituida')).not.toBeInTheDocument()
+    })
+    expect(screen.getByRole('button', { name: /^fémur derecho$/i })).toHaveAttribute(
+      'aria-pressed',
+      'true',
+    )
+  })
+
+  it('el «atrás» del sistema vuelve del test de esqueleto a la elección de variante', async () => {
+    const user = userEvent.setup()
+    render(<App />)
+
+    await user.click(screen.getByRole('button', { name: /^test$/i }))
+    await user.click(screen.getByRole('button', { name: /esqueleto completo/i }))
+    expect(screen.getByRole('button', { name: /responder/i })).toBeInTheDocument()
+
+    window.history.back()
+
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: /esqueleto completo/i })).toBeInTheDocument()
+    })
+  })
+
+  it('un state que no es un Modo devuelve a Explorar en vez de dejar la vista desincronizada', async () => {
+    const user = userEvent.setup()
+    render(<App />)
+
+    await user.click(screen.getByRole('button', { name: /^fichas$/i }))
+    expect(screen.queryByTestId('escena-sustituida')).not.toBeInTheDocument()
+
+    // Una entrada escrita por otra cosa: otra aplicación del mismo origen, o
+    // una versión anterior de esta tras un despliegue.
+    window.dispatchEvent(new PopStateEvent('popstate', { state: { tipo: 'inventado' } }))
+
+    await waitFor(() => {
+      expect(screen.getByTestId('escena-sustituida')).toBeInTheDocument()
+    })
   })
 })
