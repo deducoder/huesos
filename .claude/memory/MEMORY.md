@@ -60,3 +60,5 @@
 - [El rojo de un módulo ausente no prueba nada](red-from-a-missing-module-proves-nothing.md) — el stub identidad revela qué afirmaciones del gate se cumplen solas.
 - [Acortar la etiqueta rompe «Label in Name»](shortened-labels-break-label-in-name.md) — el control por voz dice lo que se ve; el aria-label tiene que empezar por ahí.
 - [Contar líneas envueltas, no razones de ancho](count-wrapped-lines-not-width-ratios.md) — una palabra larga decide el wrap mucho antes que el total de caracteres.
+- [emissive no puede superar a un material ya claro](emissive-cannot-outshine-a-light-base.md) — teñir el color dio el doble que el tope teórico de emitir luz.
+- [El estado externo de tipo laxo pide su propio store](loosely-typed-external-state-needs-its-own-store.md) — un WeakMap propio evita heredar el `any` de `userData` y el `as` que lo acompaña.
