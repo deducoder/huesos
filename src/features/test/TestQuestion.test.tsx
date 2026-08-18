@@ -222,6 +222,45 @@ describe('TestQuestion — modo opción múltiple (formato por defecto)', () => 
 
     expect(responderBtn).toBeEnabled()
   })
+
+  it('elegir la opción correcta y responder registra un acierto', async () => {
+    const user = userEvent.setup()
+    const store = almacenFalso()
+    render(<TestQuestion bones={catalog} store={store} renderScene={renderScenaSustituida} />)
+
+    const boneId = screen.getByTestId('escena').dataset.hueso
+    const bone = findBone(catalog, boneId ?? null)
+    if (!bone) throw new Error('la pregunta no eligió un hueso válido')
+
+    const grupo = screen.getByRole('group', { name: /qué hueso es/i })
+    await user.click(within(grupo).getByRole('button', { name: bone.es }))
+    await user.click(screen.getByRole('button', { name: /^responder$/i }))
+
+    expect(screen.getByText(/^correcto$/i)).toBeInTheDocument()
+    expect(store.read()[bone.id]).toEqual({ correct: 1, incorrect: 0 })
+  })
+
+  it('elegir una opción incorrecta y responder registra un fallo, y muestra el nombre correcto', async () => {
+    const user = userEvent.setup()
+    const store = almacenFalso()
+    render(<TestQuestion bones={catalog} store={store} renderScene={renderScenaSustituida} />)
+
+    const boneId = screen.getByTestId('escena').dataset.hueso
+    const bone = findBone(catalog, boneId ?? null)
+    if (!bone) throw new Error('la pregunta no eligió un hueso válido')
+
+    const grupo = screen.getByRole('group', { name: /qué hueso es/i })
+    const opciones = within(grupo).getAllByRole('button')
+    const incorrecta = opciones.find((o) => o.textContent !== bone.es)
+    if (!incorrecta) throw new Error('las 3 opciones eran todas el hueso correcto')
+    await user.click(incorrecta)
+    await user.click(screen.getByRole('button', { name: /^responder$/i }))
+
+    expect(screen.getByText(/^incorrecto$/i)).toBeInTheDocument()
+    expect(screen.getByText(bone.es, { exact: false })).toBeInTheDocument()
+    expect(screen.getByText(bone.la, { exact: false })).toBeInTheDocument()
+    expect(store.read()[bone.id]).toEqual({ correct: 0, incorrect: 1 })
+  })
 })
 
 describe('TestQuestion y el registro de progreso', () => {
