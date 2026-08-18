@@ -122,3 +122,17 @@ petición de red, que es la confirmación de que la History API no toca
 **Estado:** `./scripts/check` verde (37 archivos, 277 pruebas) y
 `./scripts/check-integration` verde (22 de 22). Pendiente T4, la prueba
 manual en el teléfono, que es la única que puede cerrar la historia.
+
+## T4 · Prueba manual de integración
+
+**Aprobada por el usuario** en su teléfono real, a través del túnel de
+Cloudflare, contra el dev server que quedó vivo toda la historia — sin
+reiniciar nada.
+
+Los cinco comportamientos del plan: retroceso de la ficha a Fichas y a
+Explorar (con la selección viva), del test de esqueleto a la elección de
+variante, el abandono del sitio desde Explorar recién cargada, y la
+no-reentrada tras usar «← Volver».
+
+Es la verificación que cierra la historia: `popstate` en jsdom no reproduce
+el gesto de un teléfono, y así estaba declarado desde el scope.
