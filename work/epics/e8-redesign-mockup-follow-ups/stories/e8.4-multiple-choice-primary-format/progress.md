@@ -37,3 +37,14 @@ detectan.
    fingido.
 
 Gate: `./scripts/check` verde (250 tests, lint/format/types limpios).
+
+## T2 · Responder en modo `choice` — calificar y registrar
+
+Como se anticipó en T1: los 2 tests nuevos (acierto registra
+`{correct:1, incorrect:0}` y muestra "Correcto"; fallo registra
+`{correct:0, incorrect:1}` y muestra "Incorrecto" + `bone.es`/`bone.la`)
+pasaron en verde sin RED — la calificación ya estaba en el componente
+desde T1. Mutación forzada (`anotar(seleccionId === bone.id)` →
+`anotar(true)`) confirmó que el test del fallo lo detecta.
+
+Gate: `./scripts/check` verde (252 tests, lint/format/types limpios).
