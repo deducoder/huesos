@@ -68,7 +68,7 @@ function Pestanas({ modo, onCambiar }: { modo: Modo; onCambiar: (tipo: Pestania)
             type="button"
             onClick={() => onCambiar(pestania)}
             style={on ? { backgroundColor: ACENTO_PESTANIA[pestania] } : undefined}
-            className={`min-h-tactil rounded-[10px] px-4 font-semibold text-sm ${
+            className={`min-h-tactil w-20 rounded-[10px] px-1 text-center font-semibold text-sm ${
               on ? 'text-tinta' : 'bg-transparent text-tinta-suave'
             }`}
           >
@@ -130,7 +130,7 @@ function ElegirVarianteDeTest({
   onElegir: (variante: 'test-esqueleto' | 'test-hueso') => void
 }) {
   return (
-    <div className="flex h-full flex-col items-center justify-center gap-4 pt-20">
+    <div className="flex h-full flex-col items-center justify-center gap-4 pt-[88px]">
       <p className="text-tinta-suave">¿Sobre qué querés que te pregunte?</p>
       <div className="flex gap-3">
         <button
@@ -179,7 +179,7 @@ export function App() {
           />
         )}
         {modo.tipo === 'fichas' && (
-          <div className="h-full overflow-y-auto pt-20 pb-2 md:mx-auto md:max-w-2xl">
+          <div className="h-full overflow-y-auto pt-[88px] pb-2 md:mx-auto md:max-w-2xl">
             <FichasAccordion
               bones={catalog}
               onSelect={(id) => setModo({ tipo: 'ficha', boneId: id, origen: 'fichas' })}
