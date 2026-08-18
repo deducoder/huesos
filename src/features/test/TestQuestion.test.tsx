@@ -387,9 +387,17 @@ describe('TestQuestion — modo opción múltiple (formato por defecto)', () => 
 
     // Se busca de nuevo, no sobre `grupo`: si el grupo se hubiera
     // desmontado, esto fallaría en vez de leer hijos de un nodo huérfano.
+    // Nombre exacto, no `new RegExp(shortName(bone.es))`: sin escapar, esa
+    // regex hacía substring match, y 5 pares de nombres cortos son
+    // substring uno del otro («1.ª vértebra torácica» dentro de «11.ª
+    // vértebra torácica», «Escafoides» dentro de «Escafoides del tarso»)
+    // — si el distractor sorteado era el par, `getByRole` encontraba dos
+    // coincidencias y reventaba. Intermitente, no determinista: dependía
+    // de qué distractor tocara. Verificado contra los 120 nombres cortos
+    // reales antes de este arreglo.
     const grupoTrasResponder = screen.getByRole('group', { name: /qué hueso es/i })
     const correcta = within(grupoTrasResponder).getByRole('button', {
-      name: new RegExp(shortName(bone.es)),
+      name: `✓ ${shortName(bone.es)}`,
     })
     expect(correcta).toHaveTextContent('✓')
   })
@@ -416,10 +424,18 @@ describe('TestQuestion — modo opción múltiple (formato por defecto)', () => 
     await user.click(incorrecta)
     await user.click(screen.getByRole('button', { name: /^responder$/i }))
 
+    // Igualdad exacta, no `.includes()`: el mismo riesgo que el test
+    // anterior — 5 pares de nombres cortos son substring uno del otro, y
+    // `.find()` no lanza error ante la ambigüedad, solo elige el primero
+    // que encuentra. Con `.includes()`, un distractor «1.ª vértebra
+    // torácica» + un tercer botón «11.ª vértebra torácica» podían resolver
+    // al botón equivocado en silencio, sin que ningún error lo delatara.
+    // `textoElegido` se capturó antes de responder, sin glifo; tras
+    // responder, la misma opción lleva «✗ » al frente.
     const grupoTrasResponder = screen.getByRole('group', { name: /qué hueso es/i })
     const elegidaAhora = within(grupoTrasResponder)
       .getAllByRole('button')
-      .find((o) => o.textContent?.includes(textoElegido ?? ''))
+      .find((o) => o.textContent === `✗ ${textoElegido}`)
     expect(elegidaAhora).toHaveTextContent('✗')
   })
 
