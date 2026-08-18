@@ -131,3 +131,58 @@ copió— sino también sus **compañeros de viaje**: el `near` ajustado es
 parte del mismo paquete, no un detalle aparte, y esta historia zoomea
 sobre huesos individuales exactamente igual que aquella aísla huesos
 individuales. El mismo rango de tamaños, el mismo riesgo.
+
+## T4b · Hallazgo de la verificación manual: la primera pregunta encuadraba en el espacio sin normalizar
+
+**Reportado por el humano tras el fix del plano cercano:** «el primero
+sigue fallando, el zoom aparece con vista superior y el esqueleto queda
+fuera de cámara, solo en el primer caso, el resto está excelente».
+
+**Reproducido en carga fresca, no solo en la primera pregunta de una
+sesión ya iniciada** —distinción importante: el defecto es del **montaje**,
+no del **orden**—. Cuatro cargas nuevas de la página, siempre igual:
+lienzo vacío en la primera pregunta, con huesos grandes («radio») y
+chicos por igual — descartando que fuera el mismo bug del plano cercano
+(T4a), que era específico de huesos diminutos.
+
+**Causa, confirmada con la matriz real, no con sospecha.** Instrumentado
+`copia.parent?.matrixWorld` justo antes de `updateMatrixWorld`: su
+traslación medía `[0, 0, 0]` —identidad— en el primer commit, aunque el
+`<group position={offset} scale={scale}>` de `CenteredSkeleton` declara un
+`offset` con `Y` bien distinto de cero. `Object3D.updateMatrixWorld`
+propaga **hacia abajo**, nunca hacia arriba: llamarlo sobre `copia` (T1)
+recomputa la subrama de `copia` a partir de la matriz que su padre tenga
+**en ese momento**, y en el primer commit ese padre —el grupo con el
+offset— todavía no había corrido su propio cálculo. La caja mundial del
+hueso seleccionado salía calculada en el espacio del activo sin
+normalizar, con un centro que no correspondía a dónde el hueso se ve
+realmente en pantalla.
+
+**Por qué solo la primera pregunta:** de la segunda en adelante, la matriz
+del grupo ya quedó resuelta por el ciclo de render de react-three-fiber en
+el frame anterior, así que el mismo código —sin cambiar— ya lee un padre
+correcto. El defecto nunca fue "la primera pregunta" como concepto: es "el
+primer commit desde que el grupo con offset existe", que normalmente
+coincide con la primera pregunta de una carga fresca.
+
+- **GREEN:** `copia.parent?.updateMatrixWorld(true)` en vez de
+  `copia.updateMatrixWorld(true)` — un nivel más arriba, que es
+  exactamente el nivel donde vive el offset que faltaba aplicar.
+- **Verificado con 8 cargas frescas**, ninguna en blanco (24,3 %–65,3 % de
+  píxeles claros, contra 0 huesos visibles antes del fix). Tres capturas a
+  mano confirman encuadre correcto, sin vista superior ni hueso fuera de
+  cámara: una falange, un cóccix, y una tercera revisada también en
+  regla.
+- **Gate:** `./scripts/check` verde — 326 tests (sin tests nuevos: es una
+  corrección de una línea sobre un mecanismo que T1 ya cubría con su
+  propia prueba fuente, que sigue en verde porque el patrón de llamada
+  —`updateMatrixWorld(true)`— no cambió de forma, solo de sobre qué
+  objeto se invoca).
+
+**Lo que ni el diseño ni T1 anticiparon:** `IsolatedGroup`
+(`IsolatedBoneScene.tsx`) no tiene este problema porque no existe un grupo
+exterior con `offset`/`scale` por encima del que mide su propia caja —su
+`groupRef` **es** la cima de la jerarquía relevante. `CenteredSkeleton`
+introdujo, sin que el diseño lo notara, un nivel de anidamiento que
+`IsolatedGroup` nunca tuvo, y el patrón copiado —correcto en su origen— no
+alcanzaba un nivel más arriba en el nuevo contexto.

@@ -90,9 +90,19 @@ function SkeletonHalf({ bones, selected, half, onPick, onSelectedBox }: HalfProp
     let encontrada = false
     // `expandByObject` lee `matrixWorld`, y react-three-fiber la recalcula en
     // su propio ciclo de render — no necesariamente antes de que este efecto
-    // corra. Mismo motivo que `IsolatedGroup` ya documenta para su propia
-    // caja.
-    copia.updateMatrixWorld(true)
+    // corra (mismo motivo que `IsolatedGroup` ya documenta para su propia
+    // caja). Se actualiza desde el padre —el `<group>` con `offset`/`scale`
+    // de `CenteredSkeleton`—, no desde `copia`: `updateMatrixWorld` propaga
+    // hacia abajo, nunca hacia arriba, y en el primer commit ese grupo
+    // todavía no corrió su propio cálculo — verificado con la traslación
+    // de su matriz en `[0, 0, 0]` (identidad) en ese instante. Actualizar
+    // solo `copia` habría heredado esa matriz vieja, y la caja mundial
+    // habría salido en el espacio del activo sin normalizar: el encuadre
+    // de la primera pregunta apuntaba a un centro que no correspondía a
+    // dónde se ve el hueso en pantalla — hallazgo de la verificación
+    // manual (e9.4), reproducido en carga fresca, no solo en la primera
+    // pregunta de una sesión ya iniciada.
+    copia.parent?.updateMatrixWorld(true)
 
     copia.traverse((objeto: Object3D) => {
       const malla = objeto as Mesh
