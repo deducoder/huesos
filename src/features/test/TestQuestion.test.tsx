@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react'
+import { render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { describe, expect, it } from 'vitest'
 import { catalog } from '../../data/catalog'
@@ -25,7 +25,12 @@ function almacenFalso(inicial: ProgressRecord = {}): ProgressStore & { escritura
 describe('TestQuestion', () => {
   it('must-data-003: ningún nombre del catálogo aparece en el DOM antes de responder', () => {
     render(
-      <TestQuestion bones={catalog} store={almacenFalso()} renderScene={renderScenaSustituida} />,
+      <TestQuestion
+        bones={catalog}
+        store={almacenFalso()}
+        renderScene={renderScenaSustituida}
+        answerFormat="open"
+      />,
     )
     const texto = document.body.textContent ?? ''
     for (const bone of catalog) {
@@ -39,7 +44,12 @@ describe('TestQuestion', () => {
 
   it('monta exactamente una escena', () => {
     render(
-      <TestQuestion bones={catalog} store={almacenFalso()} renderScene={renderScenaSustituida} />,
+      <TestQuestion
+        bones={catalog}
+        store={almacenFalso()}
+        renderScene={renderScenaSustituida}
+        answerFormat="open"
+      />,
     )
     expect(screen.getAllByTestId('escena')).toHaveLength(1)
   })
@@ -47,7 +57,12 @@ describe('TestQuestion', () => {
   it('muestra "Correcto" en texto al responder bien', async () => {
     const user = userEvent.setup()
     render(
-      <TestQuestion bones={catalog} store={almacenFalso()} renderScene={renderScenaSustituida} />,
+      <TestQuestion
+        bones={catalog}
+        store={almacenFalso()}
+        renderScene={renderScenaSustituida}
+        answerFormat="open"
+      />,
     )
 
     const boneId = screen.getByTestId('escena').dataset.hueso
@@ -63,7 +78,12 @@ describe('TestQuestion', () => {
   it('muestra "Incorrecto" en texto al responder mal', async () => {
     const user = userEvent.setup()
     render(
-      <TestQuestion bones={catalog} store={almacenFalso()} renderScene={renderScenaSustituida} />,
+      <TestQuestion
+        bones={catalog}
+        store={almacenFalso()}
+        renderScene={renderScenaSustituida}
+        answerFormat="open"
+      />,
     )
 
     await user.type(screen.getByRole('textbox'), 'esta respuesta no es ningún hueso real')
@@ -75,7 +95,12 @@ describe('TestQuestion', () => {
   it('muestra el nombre correcto en ambas nomenclaturas al responder mal', async () => {
     const user = userEvent.setup()
     render(
-      <TestQuestion bones={catalog} store={almacenFalso()} renderScene={renderScenaSustituida} />,
+      <TestQuestion
+        bones={catalog}
+        store={almacenFalso()}
+        renderScene={renderScenaSustituida}
+        answerFormat="open"
+      />,
     )
 
     const boneId = screen.getByTestId('escena').dataset.hueso
@@ -92,7 +117,12 @@ describe('TestQuestion', () => {
   it('no muestra ninguna nomenclatura al responder bien — ya se sabía', async () => {
     const user = userEvent.setup()
     render(
-      <TestQuestion bones={catalog} store={almacenFalso()} renderScene={renderScenaSustituida} />,
+      <TestQuestion
+        bones={catalog}
+        store={almacenFalso()}
+        renderScene={renderScenaSustituida}
+        answerFormat="open"
+      />,
     )
 
     const boneId = screen.getByTestId('escena').dataset.hueso
@@ -108,7 +138,12 @@ describe('TestQuestion', () => {
   it('el hueso preguntado sigue resaltado tras responder mal', async () => {
     const user = userEvent.setup()
     render(
-      <TestQuestion bones={catalog} store={almacenFalso()} renderScene={renderScenaSustituida} />,
+      <TestQuestion
+        bones={catalog}
+        store={almacenFalso()}
+        renderScene={renderScenaSustituida}
+        answerFormat="open"
+      />,
     )
 
     const antes = screen.getByTestId('escena').dataset.hueso
@@ -122,7 +157,12 @@ describe('TestQuestion', () => {
   it('"Siguiente pregunta" nunca repite el hueso inmediatamente anterior', async () => {
     const user = userEvent.setup()
     render(
-      <TestQuestion bones={catalog} store={almacenFalso()} renderScene={renderScenaSustituida} />,
+      <TestQuestion
+        bones={catalog}
+        store={almacenFalso()}
+        renderScene={renderScenaSustituida}
+        answerFormat="open"
+      />,
     )
 
     for (let i = 0; i < 50; i++) {
@@ -135,11 +175,106 @@ describe('TestQuestion', () => {
   })
 })
 
+describe('TestQuestion — modo opción múltiple (formato por defecto)', () => {
+  it('no hay ningún campo de texto en el formato por defecto', () => {
+    render(
+      <TestQuestion bones={catalog} store={almacenFalso()} renderScene={renderScenaSustituida} />,
+    )
+    expect(screen.queryByRole('textbox')).not.toBeInTheDocument()
+  })
+
+  it('muestra exactamente 3 opciones, ninguna marcada como correcta', () => {
+    render(
+      <TestQuestion bones={catalog} store={almacenFalso()} renderScene={renderScenaSustituida} />,
+    )
+    const grupo = screen.getByRole('group', { name: /qué hueso es/i })
+    const opciones = within(grupo).getAllByRole('button')
+    expect(opciones).toHaveLength(3)
+    for (const opcion of opciones) {
+      expect(opcion).toHaveAttribute('aria-pressed', 'false')
+    }
+  })
+
+  it('una de las 3 opciones es el hueso preguntado', () => {
+    render(
+      <TestQuestion bones={catalog} store={almacenFalso()} renderScene={renderScenaSustituida} />,
+    )
+    const boneId = screen.getByTestId('escena').dataset.hueso
+    const bone = findBone(catalog, boneId ?? null)
+    if (!bone) throw new Error('la pregunta no eligió un hueso válido')
+
+    const grupo = screen.getByRole('group', { name: /qué hueso es/i })
+    expect(within(grupo).getByRole('button', { name: bone.es })).toBeInTheDocument()
+  })
+
+  it('"Responder" está deshabilitado hasta elegir una opción', async () => {
+    const user = userEvent.setup()
+    render(
+      <TestQuestion bones={catalog} store={almacenFalso()} renderScene={renderScenaSustituida} />,
+    )
+    const responderBtn = screen.getByRole('button', { name: /^responder$/i })
+    expect(responderBtn).toBeDisabled()
+
+    const grupo = screen.getByRole('group', { name: /qué hueso es/i })
+    const [primeraOpcion] = within(grupo).getAllByRole('button')
+    if (!primeraOpcion) throw new Error('no había ninguna opción para elegir')
+    await user.click(primeraOpcion)
+
+    expect(responderBtn).toBeEnabled()
+  })
+
+  it('elegir la opción correcta y responder registra un acierto', async () => {
+    const user = userEvent.setup()
+    const store = almacenFalso()
+    render(<TestQuestion bones={catalog} store={store} renderScene={renderScenaSustituida} />)
+
+    const boneId = screen.getByTestId('escena').dataset.hueso
+    const bone = findBone(catalog, boneId ?? null)
+    if (!bone) throw new Error('la pregunta no eligió un hueso válido')
+
+    const grupo = screen.getByRole('group', { name: /qué hueso es/i })
+    await user.click(within(grupo).getByRole('button', { name: bone.es }))
+    await user.click(screen.getByRole('button', { name: /^responder$/i }))
+
+    expect(screen.getByText(/^correcto$/i)).toBeInTheDocument()
+    expect(store.read()[bone.id]).toEqual({ correct: 1, incorrect: 0 })
+  })
+
+  it('elegir una opción incorrecta y responder registra un fallo, y muestra el nombre correcto', async () => {
+    const user = userEvent.setup()
+    const store = almacenFalso()
+    render(<TestQuestion bones={catalog} store={store} renderScene={renderScenaSustituida} />)
+
+    const boneId = screen.getByTestId('escena').dataset.hueso
+    const bone = findBone(catalog, boneId ?? null)
+    if (!bone) throw new Error('la pregunta no eligió un hueso válido')
+
+    const grupo = screen.getByRole('group', { name: /qué hueso es/i })
+    const opciones = within(grupo).getAllByRole('button')
+    const incorrecta = opciones.find((o) => o.textContent !== bone.es)
+    if (!incorrecta) throw new Error('las 3 opciones eran todas el hueso correcto')
+    await user.click(incorrecta)
+    await user.click(screen.getByRole('button', { name: /^responder$/i }))
+
+    expect(screen.getByText(/^incorrecto$/i)).toBeInTheDocument()
+    expect(screen.getByText(bone.es, { exact: false })).toBeInTheDocument()
+    expect(screen.getByText(bone.la, { exact: false })).toBeInTheDocument()
+    expect(store.read()[bone.id]).toEqual({ correct: 0, incorrect: 1 })
+  })
+})
+
 describe('TestQuestion y el registro de progreso', () => {
   /** Responde la pregunta montada, bien o mal, y devuelve el hueso preguntado. */
   async function responder(store: ProgressStore, acertando: boolean) {
     const user = userEvent.setup()
-    render(<TestQuestion bones={catalog} store={store} renderScene={renderScenaSustituida} />)
+    render(
+      <TestQuestion
+        bones={catalog}
+        store={store}
+        renderScene={renderScenaSustituida}
+        answerFormat="open"
+      />,
+    )
 
     const boneId = screen.getByTestId('escena').dataset.hueso
     const bone = findBone(catalog, boneId ?? null)

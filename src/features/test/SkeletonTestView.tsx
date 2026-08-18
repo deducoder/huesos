@@ -19,7 +19,7 @@ export function SkeletonTestView() {
           bones={catalog}
           selected={boneId}
           onPick={() => {}}
-          accessibleHint="Un hueso está señalado en el esqueleto. Escribí su nombre en el campo de respuesta."
+          accessibleHint="Un hueso está señalado en el esqueleto. Elegí su nombre entre las 3 opciones."
         />
       )}
     />

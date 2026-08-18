@@ -251,27 +251,29 @@ test('la elección de variante de test usa el mínimo táctil', async ({ page })
   }
 })
 
-test('el campo de respuesta y sus botones usan el mínimo táctil, sin desbordar', async ({
-  page,
-}) => {
+test('las opciones y sus botones usan el mínimo táctil, sin desbordar', async ({ page }) => {
   await page.goto('/')
   await page.getByRole('button', { name: /^test$/i }).click()
   await page.getByRole('button', { name: 'Esqueleto completo', exact: true }).click()
   await page.waitForTimeout(2500)
 
-  const input = page.getByPlaceholder(/qué hueso es/i)
+  const grupo = page.getByRole('group', { name: /qué hueso es/i })
+  const opciones = await grupo.getByRole('button').all()
   const responder = page.getByRole('button', { name: /^responder$/i })
-  const cajaInput = await input.boundingBox()
-  const cajaResponder = await responder.boundingBox()
 
-  expect(cajaInput?.height ?? 0, 'alto del campo de respuesta').toBeGreaterThanOrEqual(44)
+  for (const opcion of opciones) {
+    const caja = await opcion.boundingBox()
+    expect(caja?.height ?? 0, 'alto de una opción').toBeGreaterThanOrEqual(44)
+  }
+  const cajaResponder = await responder.boundingBox()
   expect(cajaResponder?.height ?? 0, 'alto de "Responder"').toBeGreaterThanOrEqual(44)
   expect(
     (cajaResponder?.x ?? 0) + (cajaResponder?.width ?? 0),
     'el botón "Responder" no se desborda del viewport',
   ).toBeLessThanOrEqual(390)
 
-  await input.fill('fémur')
+  const [primeraOpcion] = opciones
+  await primeraOpcion?.click()
   await responder.click()
   await page.waitForTimeout(300)
 
