@@ -35,3 +35,15 @@ vez de la sintaxis arbitraria `[@starting-style]:` que sugería `design.md`
 — mismo resultado, más corta. Solo entrada, tal como decidió el diseño; la
 salida sigue instantánea (comentario en el código explica el porqué). Gate:
 verde, 354/354. Sin otras desviaciones.
+
+## T4 · Retroalimentación del test: panel de resultado y prensado de opciones
+
+RED confirmado: los 2 tests nuevos fallaron (28/28 con los previos en verde).
+GREEN: las opciones ganan `active:scale-[0.97]` con `transition-transform
+duration-rapida ease-salida`; el `role="status"` del resultado gana
+`transition-opacity duration-base ease-salida starting:opacity-0` en **ambos**
+formatos (`open` y `choice` — el plan solo mencionaba uno explícitamente, el
+gemba walk de T1-T3 ya había dejado claro que el componente sirve los dos).
+Desviación menor: `npm run format` reformateó el `div` de resultado a
+multilínea tras el cambio — atrapado por `format:check` en el gate, corregido
+antes del commit. Gate: verde, 356/356.
