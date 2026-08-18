@@ -1,4 +1,4 @@
-import { expect, type Page, test } from '@playwright/test'
+import { expect, type Locator, type Page, test } from '@playwright/test'
 import { PNG } from 'pngjs'
 
 /**
@@ -425,4 +425,100 @@ test('el hueso más chico del modelo se sigue viendo, y el que no tiene geometr�
   await page.getByRole('button', { name: 'hioides', exact: true }).click()
   await expect(page.getByText(/no está en el modelo 3D/i)).toBeVisible()
   await expect(page.locator('canvas')).toHaveCount(0)
+})
+
+/**
+ * Cuánto hueso queda a la vista y cuánto detrás de la tarjeta flotante.
+ *
+ * La tarjeta se oculta **solo para la captura**, sin tocar el layout: es
+ * blanca, así que contaría como hueso y taparía justo lo que hay que medir.
+ * Mismo truco que `explore.spec.ts` usa para no contaminar su diferencia de
+ * píxeles con el texto de la tarjeta de identidad.
+ */
+async function huesoSobreYBajoLaTarjeta(page: Page, lienzo: Locator) {
+  const cajaLienzo = await lienzo.boundingBox()
+  const cajaTarjeta = await page.getByTestId('tarjeta-ficha').boundingBox()
+  expect(cajaLienzo, 'el lienzo está en la página').not.toBeNull()
+  expect(cajaTarjeta, 'la tarjeta está en la página').not.toBeNull()
+
+  await page.getByTestId('tarjeta-ficha').evaluate((t) => {
+    t.style.visibility = 'hidden'
+  })
+  const captura = await lienzo.screenshot()
+  await page.getByTestId('tarjeta-ficha').evaluate((t) => {
+    t.style.visibility = ''
+  })
+
+  const { width: w, height: h, data } = PNG.sync.read(captura)
+  // Dónde empieza la tarjeta, en píxeles de la captura del lienzo.
+  const escala = h / (cajaLienzo?.height ?? h)
+  const corte = ((cajaTarjeta?.y ?? 0) - (cajaLienzo?.y ?? 0)) * escala
+
+  let visible = 0
+  let tapado = 0
+  let primeraFila = h
+  let ultimaFila = -1
+  for (let y = 0; y < h; y++) {
+    for (let x = 0; x < w; x++) {
+      const i = (w * y + x) << 2
+      const luminancia =
+        0.2126 * (data[i] ?? 0) + 0.7152 * (data[i + 1] ?? 0) + 0.0722 * (data[i + 2] ?? 0)
+      if (luminancia <= 90) continue
+      if (y < corte) visible++
+      else tapado++
+      if (y < primeraFila) primeraFila = y
+      if (y > ultimaFila) ultimaFila = y
+    }
+  }
+  // Qué fracción de la franja libre recorre el hueso de arriba abajo. Es una
+  // medida más honesta que el área: dice si el hueso aprovecha el sitio que
+  // tiene, y no cambia porque el hueso sea más o menos macizo.
+  const recorrido = ultimaFila < 0 ? 0 : (ultimaFila - primeraFila) / Math.max(corte, 1)
+  // Cuánta franja libre queda desaprovechada por debajo del hueso. Es lo que
+  // distingue medir la tarjeta de suponerla: con una reserva fija, una ficha
+  // corta deja un hueco que nadie usa.
+  const huecoBajoElHueso =
+    ultimaFila < 0 ? 1 : (Math.max(corte, 1) - ultimaFila) / Math.max(corte, 1)
+  return { visible, tapado, recorrido, huecoBajoElHueso }
+}
+
+test('el hueso queda donde la tarjeta no lo tapa', async ({ page }) => {
+  // El caso extremo aquí es el fémur, no la clavícula: es el hueso ALTO, el
+  // que ocupa el lienzo de arriba abajo y por tanto el que más queda detrás
+  // de la tarjeta. Medido antes del arreglo: 47,9 % visible, 52,1 % tapado.
+  // La clavícula, en cambio, daba 100 % — los dos defectos de esta historia
+  // tienen cada uno su propio caso extremo, y no son el mismo hueso.
+  const lienzo = await abrirFicha(page, 'miembro inferior', 'fémur derecho')
+  const { visible, tapado, recorrido } = await huesoSobreYBajoLaTarjeta(page, lienzo)
+
+  const porcentaje = (100 * visible) / (visible + tapado)
+  expect(porcentaje, 'porcentaje del fémur que se ve').toBeGreaterThan(90)
+  // Y no vale «arreglarlo» encogiendo el hueso hasta que quepa en cualquier
+  // parte. El fémur es el hueso más largo del cuerpo: tiene que seguir
+  // recorriendo la mayor parte de la franja que la tarjeta le deja.
+  expect(recorrido, 'fracción de la franja libre que recorre el fémur').toBeGreaterThan(0.7)
+})
+
+test('la reserva sale del alto real de la tarjeta, no de su máximo declarado', async ({ page }) => {
+  // La tarjeta declara `max-h-[45vh]`, pero su alto real depende de cuánto
+  // tenga escrito cada hueso. El fémur trae «Articula con» y «Dato clínico»
+  // y llena la tarjeta; la tibia no trae ni eso ni sinónimos, y su ficha es
+  // de las más cortas del catálogo. Los dos son huesos largos de la pierna,
+  // de proporciones parecidas, así que lo que cambia entre ellos es la
+  // tarjeta y no la geometría.
+  //
+  // Si la reserva fuera el 45 % fijo, la ficha corta desperdiciaría toda la
+  // franja que su tarjeta no llega a ocupar. Medirla es lo que hace que el
+  // hueso llegue hasta donde empieza la tarjeta en los dos casos.
+  const conFichaLarga = await huesoSobreYBajoLaTarjeta(
+    page,
+    await abrirFicha(page, 'miembro inferior', 'fémur derecho'),
+  )
+  const conFichaCorta = await huesoSobreYBajoLaTarjeta(
+    page,
+    await abrirFicha(page, 'miembro inferior', 'tibia derecho'),
+  )
+
+  expect(conFichaLarga.huecoBajoElHueso, 'hueco bajo el fémur, de ficha larga').toBeLessThan(0.2)
+  expect(conFichaCorta.huecoBajoElHueso, 'hueco bajo la tibia, de ficha corta').toBeLessThan(0.2)
 })
