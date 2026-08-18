@@ -252,7 +252,9 @@ describe('TestQuestion — modo opción múltiple (formato por defecto)', () => 
 
     const grupo = screen.getByRole('group', { name: /qué hueso es/i })
     const opciones = within(grupo).getAllByRole('button')
-    const incorrecta = opciones.find((o) => o.textContent !== bone.es)
+    // Las opciones muestran el nombre corto (e9.5), no `bone.es`: comparar
+    // contra el completo no distinguía nada y hacía este test intermitente.
+    const incorrecta = opciones.find((o) => o.textContent !== shortName(bone.es))
     if (!incorrecta) throw new Error('las 3 opciones eran todas el hueso correcto')
     await user.click(incorrecta)
     await user.click(screen.getByRole('button', { name: /^responder$/i }))
