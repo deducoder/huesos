@@ -550,3 +550,31 @@ esa vista ya tenía.
 de las props opcionales. El patrón a reutilizar es `useFraccionCubierta` en
 `BoneDetailView`: un `ResizeObserver` sobre el elemento flotante, medido
 después del layout.
+
+## 2026-08-18 · Una palabra larga llena el botón de opción hasta el borde (e9.5, verificación manual)
+
+En el modo test, una opción cuyo nombre contiene una palabra indivisible larga
+—«metacarpiano», «metatarsiano»— ocupa el botón entero de lado a lado. Medido
+en 390 px: el contenido da 99 px de `scrollWidth` contra 98 de `clientWidth`,
+un píxel; pero con `rounded-full` y `px-2` las esquinas redondeadas se comen
+los extremos del texto y a la vista parece que se sale.
+
+**No lo introdujo e9.5** y la historia lo mejora: la derivación acorta el
+resto del nombre, nunca la palabra. La causa es el ancho de columna —tres
+columnas en 390 px dejan 86 px útiles— y ninguna abreviatura razonable la
+resuelve.
+
+**Por qué no se corrigió acá:** el remedio es de layout —dos columnas en vez
+de tres, o `hyphens: auto`— y toca la grilla de opciones, que es el objeto de
+**e9.2**, la historia que cambia el estado posterior a la respuesta y con él
+el alto de esa barra.
+
+**Destino:** entra en **e9.2**, junto a la barra de respuesta que no reserva
+sitio sobre el lienzo, ya aparcada desde e9.3 con el mismo dueño.
+
+**Un aviso sobre su guardia:** `e2e/mobile-shell.spec.ts:266` se llama «las
+opciones y sus botones usan el mínimo táctil, sin desbordar» y **no mide el
+desbordamiento del texto**: comprueba el alto de cada opción y que el botón
+«Responder» no se salga del viewport. El nombre promete más de lo que afirma.
+Si e9.2 quiere vigilar esto, la medida es `scrollWidth` contra `clientWidth`
+del propio botón.
