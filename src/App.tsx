@@ -77,14 +77,14 @@ function ElegirVarianteDeTest({
         <button
           type="button"
           onClick={() => onElegir('test-esqueleto')}
-          className="rounded border border-tinta px-4 py-2 hover:bg-acento-suave"
+          className="min-h-tactil rounded-suave border-2 border-tinta px-4 hover:bg-acento-suave"
         >
           Esqueleto completo
         </button>
         <button
           type="button"
           onClick={() => onElegir('test-hueso')}
-          className="rounded border border-tinta px-4 py-2 hover:bg-acento-suave"
+          className="min-h-tactil rounded-suave border-2 border-tinta px-4 hover:bg-acento-suave"
         >
           Hueso aislado
         </button>

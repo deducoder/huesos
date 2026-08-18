@@ -239,3 +239,44 @@ test('el botón «Volver» de la ficha usa el mínimo táctil', async ({ page })
   expect(caja?.height ?? 0, 'alto del botón "Volver"').toBeGreaterThanOrEqual(44)
   expect(caja?.width ?? 0, 'ancho del botón "Volver"').toBeGreaterThanOrEqual(44)
 })
+
+test('la elección de variante de test usa el mínimo táctil', async ({ page }) => {
+  await page.goto('/')
+  await page.getByRole('button', { name: /^test$/i }).click()
+
+  for (const nombre of ['Esqueleto completo', 'Hueso aislado']) {
+    const caja = await page.getByRole('button', { name: nombre, exact: true }).boundingBox()
+    expect(caja?.height ?? 0, `alto de "${nombre}"`).toBeGreaterThanOrEqual(44)
+    expect(caja?.width ?? 0, `ancho de "${nombre}"`).toBeGreaterThanOrEqual(44)
+  }
+})
+
+test('el campo de respuesta y sus botones usan el mínimo táctil, sin desbordar', async ({
+  page,
+}) => {
+  await page.goto('/')
+  await page.getByRole('button', { name: /^test$/i }).click()
+  await page.getByRole('button', { name: 'Esqueleto completo', exact: true }).click()
+  await page.waitForTimeout(2500)
+
+  const input = page.getByPlaceholder(/qué hueso es/i)
+  const responder = page.getByRole('button', { name: /^responder$/i })
+  const cajaInput = await input.boundingBox()
+  const cajaResponder = await responder.boundingBox()
+
+  expect(cajaInput?.height ?? 0, 'alto del campo de respuesta').toBeGreaterThanOrEqual(44)
+  expect(cajaResponder?.height ?? 0, 'alto de "Responder"').toBeGreaterThanOrEqual(44)
+  expect(
+    (cajaResponder?.x ?? 0) + (cajaResponder?.width ?? 0),
+    'el botón "Responder" no se desborda del viewport',
+  ).toBeLessThanOrEqual(390)
+
+  await input.fill('fémur')
+  await responder.click()
+  await page.waitForTimeout(300)
+
+  const siguiente = page.getByRole('button', { name: /siguiente pregunta/i })
+  const cajaSiguiente = await siguiente.boundingBox()
+  expect(cajaSiguiente?.height ?? 0, 'alto de "Siguiente pregunta"').toBeGreaterThanOrEqual(44)
+  expect(cajaSiguiente?.width ?? 0, 'ancho de "Siguiente pregunta"').toBeGreaterThanOrEqual(44)
+})
