@@ -64,3 +64,44 @@ duration-base ease-salida` agregado siempre (no condicional) a cada botón de
 `Pestanas`, para que ambas direcciones (activar/desactivar) interpolen. Gate:
 verde, 358/358. Sin desviaciones. Con esto terminan las 6 tareas de código
 del plan — queda T7, la integración manual.
+
+## T7 · Integración manual
+
+`./scripts/check-integration` (32 tests, build de producción + navegador
+real) encontró una regresión real de T2: "Hioides" es una categoría de un
+solo hueso, y con el contenido siempre montado, el botón de categoría y el
+botón del hueso propio ahora comparten el mismo nombre accesible —
+`e2e/mobile-shell.spec.ts:429` (`getByRole('button', {name: /^hioides/i})`)
+dejó de ser unívoco. Corregido acotando con `expanded: false` (solo el botón
+de categoría declara `aria-expanded`) — commit separado
+(`fix(e2e): disambiguate hioides category from its own bone button`), no
+anticipado en el plan. Suite completa reconfirmada verde después: 32/32,
+incluido `should-perf-007` (mediana 4,1 ms, máximo 21,6 ms — comparable a la
+línea base de e7.10, sin degradación).
+
+Para lo que ni jsdom ni la suite existente prueban, un script Playwright ad
+hoc (no committeado, borrado al terminar) contra el build de producción
+confirmó, con Chromium real:
+- El acordeón: el contenido colapsado tiene un ancestro `inert` de verdad
+  (no solo el atributo reflejado en jsdom); expandir lo quita.
+- Las 4 transiciones de entrada/color (acordeón, `AboutPanel`, tarjeta de
+  identidad, píldora de pestaña) tienen `transition-duration` real, distinta
+  de `0s`, en el navegador.
+- Con `prefers-reduced-motion: reduce` emulado, esa misma duración cae a
+  `0.01ms` y el acordeón queda expandido a los 50ms de tocarlo (sin
+  transición perceptible).
+- Capturas de pantalla del acordeón expandido, el panel de menú y la
+  tarjeta de identidad con un hueso seleccionado: sin defectos visuales.
+
+## Finalize
+
+- Full gate set: verde — `./scripts/check` (358/358) y
+  `./scripts/check-integration` (32/32).
+- Orphaned-test check: se encontró y corrigió `e2e/mobile-shell.spec.ts`
+  (ver T7). `BoneTestView.test.tsx` y `SkeletonTestView.test.tsx` —envuelven
+  `TestQuestion`, no tocados por esta historia— se corrieron aparte: 11/11
+  en verde, sin impacto.
+- Acceptance criteria: cumplidos de punta a punta — los 6 Must/Should de
+  `design.md` verificados arriba; los 3 Must NOT se sostienen (sin librería
+  externa, sin animación de la escena 3D, `AboutPanel` sin animar su
+  salida, ninguna transición supera 300ms).
