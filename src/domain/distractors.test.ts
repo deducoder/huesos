@@ -53,20 +53,50 @@ describe('pickDistractors — caso límite: región sin suficientes huesos pregu
     }
   })
 
-  it('incluye siempre el único compañero de región disponible', () => {
+  it('nunca incluye al hermano anatómico (hip-bone-left) — ver "sin el hermano anatómico" más abajo', () => {
     for (let i = 0; i < 200; i++) {
       const distractores = pickDistractors(coxalDerecho, catalog)
-      expect(distractores.map((d) => d.id)).toContain('hip-bone-left')
+      expect(distractores.map((d) => d.id)).not.toContain('hip-bone-left')
     }
   })
 
-  it('el hueco se completa con un hueso preguntable de otra región', () => {
+  it('ambos distractores se completan desde otras regiones, ninguno de pelvic-girdle', () => {
     for (let i = 0; i < 200; i++) {
       const distractores = pickDistractors(coxalDerecho, catalog)
-      const relleno = distractores.find((d) => d.id !== 'hip-bone-left')
-      expect(relleno).toBeDefined()
-      expect(relleno?.region).not.toBe('pelvic-girdle')
-      expect(relleno?.meshName).not.toBeNull()
+      for (const d of distractores) {
+        expect(d.region).not.toBe('pelvic-girdle')
+        expect(d.meshName).not.toBeNull()
+      }
+    }
+  })
+})
+
+describe('pickDistractors — sin el hermano anatómico', () => {
+  // clavicle-right y clavicle-left comparten el mismo `es` ("clavícula"): el
+  // lado no está en el nombre, se agrega aparte en la vista (BoneNavigator,
+  // accessibleName). Si el hermano aparece como distractor, la opción múltiple
+  // muestra dos botones con el mismo texto — hallazgo de la verificación
+  // manual (T3).
+  const claviculaDerecha = catalog.find((b) => b.id === 'clavicle-right')
+  if (claviculaDerecha === undefined)
+    throw new Error('fixture: clavicle-right no está en el catálogo')
+
+  it('nunca elige al hermano anatómico (mismo nombre, lado opuesto) como distractor', () => {
+    for (let i = 0; i < 200; i++) {
+      const distractores = pickDistractors(claviculaDerecha, catalog)
+      expect(distractores.map((d) => d.id)).not.toContain('clavicle-left')
+    }
+  })
+
+  it('tampoco elige dos distractores que sean hermanos entre sí', () => {
+    // shoulder-girdle tiene 4 huesos preguntables; al excluir clavicle-right
+    // (preguntado) y clavicle-left (su hermano) solo quedan scapula-right y
+    // scapula-left — hermanos entre sí. Si se eligen los dos, la opción
+    // múltiple mostraría "escápula" y "escápula".
+    for (let i = 0; i < 200; i++) {
+      const distractores = pickDistractors(claviculaDerecha, catalog)
+      const nombres = distractores.map((d) => d.es)
+      expect(new Set(nombres).size).toBe(nombres.length)
     }
   })
 })
