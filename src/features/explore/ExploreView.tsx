@@ -49,7 +49,7 @@ export function ExploreView({ selected, onSelect, onViewDetail }: Props) {
           // esta pasada.
           <div
             data-testid="tarjeta-identidad"
-            className="absolute inset-x-4 bottom-4 max-h-[45vh] overflow-y-auto rounded-tarjeta border-2 border-tinta bg-panel shadow-dura md:inset-x-auto md:left-4 md:right-auto md:w-full md:max-w-sm"
+            className="absolute inset-x-4 bottom-4 max-h-[45vh] overflow-y-auto rounded-tarjeta border-2 border-tinta bg-panel shadow-dura transition-[opacity,transform] duration-panel ease-salida starting:translate-y-3 starting:opacity-0 md:inset-x-auto md:left-4 md:right-auto md:w-full md:max-w-sm"
           >
             <button
               type="button"
