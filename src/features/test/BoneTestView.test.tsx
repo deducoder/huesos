@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react'
+import { render, screen, within } from '@testing-library/react'
 import { describe, expect, it, vi } from 'vitest'
 import { catalog } from '../../data/catalog'
 import { findBone } from '../../domain/selection'
@@ -32,15 +32,13 @@ vi.mock('../../components/IsolatedBoneScene', () => ({
 }))
 
 describe('BoneTestView', () => {
-  it('must-data-003: ningún nombre del catálogo aparece en el DOM antes de responder', () => {
+  it('must-data-010: ninguna de las 3 opciones llega marcada como correcta antes de responder', () => {
     render(<BoneTestView />)
-    const texto = document.body.textContent ?? ''
-    for (const bone of catalog) {
-      expect(texto).not.toContain(bone.es)
-      expect(texto).not.toContain(bone.la)
-      for (const sinonimo of bone.synonyms) {
-        expect(texto).not.toContain(sinonimo)
-      }
+    const grupo = screen.getByRole('group', { name: /qué hueso es/i })
+    const opciones = within(grupo).getAllByRole('button')
+    expect(opciones).toHaveLength(3)
+    for (const opcion of opciones) {
+      expect(opcion).toHaveAttribute('aria-pressed', 'false')
     }
   })
 

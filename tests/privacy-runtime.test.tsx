@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react'
+import { render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { App } from '../src/App'
@@ -68,8 +68,11 @@ describe('must-privacy-006: nada sale a la red mientras se usa la aplicación', 
     render(<App />)
     await user.click(screen.getByRole('button', { name: 'Test' }))
     await user.click(screen.getByRole('button', { name: 'Hueso aislado' }))
-    await user.type(screen.getByRole('textbox'), 'una respuesta cualquiera')
-    await user.click(screen.getByRole('button', { name: /responder/i }))
+    const grupo = screen.getByRole('group', { name: /qué hueso es/i })
+    const [primeraOpcion] = within(grupo).getAllByRole('button')
+    if (!primeraOpcion) throw new Error('no había ninguna opción para elegir')
+    await user.click(primeraOpcion)
+    await user.click(screen.getByRole('button', { name: /^responder$/i }))
 
     expect(screen.getByText(/^correcto$|^incorrecto$/i)).toBeInTheDocument()
     expect(llamadas, 'el progreso no sale del navegador').toEqual([])
