@@ -439,6 +439,40 @@ describe('TestQuestion — modo opción múltiple (formato por defecto)', () => 
     expect(elegidaAhora).toHaveTextContent('✗')
   })
 
+  it('las opciones dan retroalimentación de prensado', () => {
+    render(
+      <TestQuestion
+        bones={catalog}
+        store={almacenFalso()}
+        renderScene={renderScenaSustituida}
+        onCambiarModo={cambiarModoNoop}
+      />,
+    )
+    const grupo = screen.getByRole('group', { name: /qué hueso es/i })
+    for (const opcion of within(grupo).getAllByRole('button')) {
+      expect(opcion).toHaveClass('active:scale-[0.97]', 'duration-rapida')
+    }
+  })
+
+  it('el panel de resultado entra con transición', async () => {
+    const user = userEvent.setup()
+    render(
+      <TestQuestion
+        bones={catalog}
+        store={almacenFalso()}
+        renderScene={renderScenaSustituida}
+        onCambiarModo={cambiarModoNoop}
+      />,
+    )
+    const grupo = screen.getByRole('group', { name: /qué hueso es/i })
+    const [primeraOpcion] = within(grupo).getAllByRole('button')
+    if (!primeraOpcion) throw new Error('no había ninguna opción para elegir')
+    await user.click(primeraOpcion)
+    await user.click(screen.getByRole('button', { name: /^responder$/i }))
+
+    expect(screen.getByRole('status')).toHaveClass('duration-base', 'ease-salida')
+  })
+
   it('nunca hay dos botones de acción a la vez, ni antes ni después de responder', async () => {
     const user = userEvent.setup()
     render(
