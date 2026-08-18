@@ -91,7 +91,7 @@ export function TestQuestion({ bones, store, renderScene, answerFormat = 'choice
 
   return (
     <div className="flex h-full flex-col md:mx-auto md:max-w-3xl">
-      <div className="min-h-0 flex-1">{renderScene(bone.id)}</div>
+      <div className="min-h-0 flex-1 bg-lienzo">{renderScene(bone.id)}</div>
       <div className="border-tinta border-t p-4" data-testid="barra-respuesta">
         {resultado === 'pendiente' ? (
           answerFormat === 'open' ? (
@@ -123,10 +123,10 @@ export function TestQuestion({ bones, store, renderScene, answerFormat = 'choice
                     type="button"
                     aria-pressed={seleccionId === opcion.id}
                     onClick={() => setSeleccionId(opcion.id)}
-                    className={`min-h-tactil rounded-suave border-2 border-tinta px-2 text-sm ${
+                    className={`min-h-tactil rounded-full border-2 border-tinta px-2 font-semibold text-sm ${
                       seleccionId === opcion.id
-                        ? 'bg-acento font-semibold text-panel'
-                        : 'bg-panel text-tinta hover:bg-acento-suave'
+                        ? 'bg-acento text-panel'
+                        : 'bg-superficie text-tinta hover:bg-acento-suave'
                     }`}
                   >
                     {opcion.es}
@@ -137,7 +137,7 @@ export function TestQuestion({ bones, store, renderScene, answerFormat = 'choice
                 type="button"
                 onClick={responderOpcion}
                 disabled={seleccionId === null}
-                className="min-h-tactil rounded-suave border-2 border-tinta bg-acento px-4 text-panel text-sm hover:bg-acento-fuerte disabled:cursor-default disabled:border-tinta-suave disabled:bg-panel disabled:text-tinta-suave"
+                className="min-h-tactil rounded-full border-2 border-tinta bg-acento px-4 font-semibold text-panel text-sm shadow-dura hover:bg-acento-fuerte disabled:cursor-default disabled:border-tinta-suave disabled:bg-panel disabled:text-tinta-suave disabled:shadow-none"
               >
                 Responder
               </button>
