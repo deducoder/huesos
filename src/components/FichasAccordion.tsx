@@ -4,6 +4,7 @@ import { toNavigatorRows } from '../domain/navigator-rows'
 import { groupByRegion } from '../domain/regions'
 import { groupByCategory } from './categories'
 import { REGION_LABEL, SIDE_LABEL } from './labels'
+import { REGION_ACCENT } from './region-accent'
 
 /**
  * El nombre que oye un lector de pantalla: el hueso y, si es par, su lado.
@@ -60,110 +61,125 @@ export function FichasAccordion({ bones, onSelect }: Props) {
       {categorias.map((cat) => {
         const expandida = expandidas.has(cat.category)
         const total = cat.regions.reduce((suma, r) => suma + r.bones.length, 0)
+        const primeraRegion = cat.regions[0]
+        // La categoría toma el color de su primera región (e8.5, informal;
+        // mockup real): "Cráneo" (neurocráneo + cara) se ve dorado, no dos
+        // colores mezclados — el mockup nunca combina más de un `bg` por
+        // categoría, aunque tenga varios subgrupos adentro.
+        const acentoCategoria = primeraRegion ? REGION_ACCENT[primeraRegion.region] : undefined
         return (
           <div key={cat.category} className="mb-3">
             <button
               type="button"
               aria-expanded={expandida}
               onClick={() => alternar(cat.category)}
-              className="min-h-tactil flex w-full items-center justify-between rounded-suave border-2 border-tinta bg-panel px-3 text-left font-display font-semibold text-sm shadow-dura hover:bg-acento-suave"
+              style={acentoCategoria ? { backgroundColor: acentoCategoria.bg } : undefined}
+              className="flex min-h-20 w-full items-center justify-between rounded-suave border-2 border-tinta px-4 py-3 text-left font-display font-semibold text-base shadow-dura"
             >
               <span>
                 {cat.category}
-                <span className="ml-2 font-normal text-tinta-suave">{total}</span>
+                <span className="ml-2 font-normal text-tinta/70">{total}</span>
               </span>
               <span aria-hidden="true" className={expandida ? 'rotate-180' : ''}>
                 ⌄
               </span>
             </button>
             {expandida && (
-              <div className="mt-2 flex flex-col gap-3 pl-2">
-                {cat.regions.map((grupo) => (
-                  <section key={grupo.region}>
-                    <h3 className="mb-2 flex items-baseline gap-2 font-display font-semibold text-sm">
-                      {subLabel(grupo.region)}
-                      <span className="font-normal text-tinta-suave text-xs">
-                        {grupo.bones.length}
-                      </span>
-                      {!grupo.representable && (
-                        <span className="text-aviso text-xs">· no representable</span>
-                      )}
-                    </h3>
-                    <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
-                      {toNavigatorRows(grupo.bones).map((fila) => {
-                        if (fila.kind === 'single') {
-                          const bone = fila.bone
-                          const descriptionId =
-                            bone.meshName === null ? `${bone.id}-missing` : undefined
-                          return (
-                            <span key={bone.id}>
-                              <button
-                                type="button"
-                                aria-describedby={descriptionId}
-                                onClick={() => onSelect(bone.id)}
-                                className="min-h-tactil w-full rounded-tarjeta border-2 border-tinta bg-panel px-2 text-left text-sm hover:bg-acento-suave focus-visible:outline focus-visible:outline-2 focus-visible:outline-acento"
-                              >
-                                {accessibleName(bone)}
-                                {bone.meshName === null && <span aria-hidden="true"> ·</span>}
-                              </button>
-                              {descriptionId && (
-                                <span id={descriptionId} className="sr-only">
-                                  {bone.missingReason}
-                                </span>
-                              )}
-                            </span>
-                          )
-                        }
-
-                        // Ningún lado tiene malla: colapsa a una sola etiqueta,
-                        // mismo criterio que BoneNavigator (e7.4) — elegir lado
-                        // no distingue nada observable.
-                        if (fila.right.meshName === null && fila.left.meshName === null) {
-                          const descriptionId = `${fila.right.id}-missing`
-                          return (
-                            <span key={fila.right.id}>
-                              <button
-                                type="button"
-                                aria-describedby={descriptionId}
-                                onClick={() => onSelect(fila.right.id)}
-                                className="min-h-tactil w-full rounded-tarjeta border-2 border-tinta bg-panel px-2 text-left text-sm hover:bg-acento-suave focus-visible:outline focus-visible:outline-2 focus-visible:outline-acento"
-                              >
-                                {fila.name}
-                                <span aria-hidden="true"> ·</span>
-                              </button>
-                              <span id={descriptionId} className="sr-only">
-                                {fila.right.missingReason}
+              <div className="mt-2 flex flex-col gap-3">
+                {cat.regions.map((grupo) => {
+                  const acentoGrupo = REGION_ACCENT[grupo.region]
+                  return (
+                    <section
+                      key={grupo.region}
+                      style={{ backgroundColor: acentoGrupo.bg }}
+                      className="rounded-suave border-2 border-tinta p-4 shadow-dura"
+                    >
+                      <h3
+                        className="mb-2 flex items-baseline gap-2 font-display font-semibold text-sm"
+                        style={{ color: acentoGrupo.text }}
+                      >
+                        {subLabel(grupo.region)}
+                        <span className="font-normal text-xs opacity-70">{grupo.bones.length}</span>
+                        {!grupo.representable && (
+                          <span className="text-aviso text-xs">· no representable</span>
+                        )}
+                      </h3>
+                      <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+                        {toNavigatorRows(grupo.bones).map((fila) => {
+                          if (fila.kind === 'single') {
+                            const bone = fila.bone
+                            const descriptionId =
+                              bone.meshName === null ? `${bone.id}-missing` : undefined
+                            return (
+                              <span key={bone.id}>
+                                <button
+                                  type="button"
+                                  aria-describedby={descriptionId}
+                                  onClick={() => onSelect(bone.id)}
+                                  className="flex min-h-16 w-full items-center rounded-suave border-2 border-tinta bg-panel/75 px-3 py-2 text-left text-sm leading-snug hover:bg-panel focus-visible:outline focus-visible:outline-2 focus-visible:outline-acento"
+                                >
+                                  {accessibleName(bone)}
+                                  {bone.meshName === null && <span aria-hidden="true"> ·</span>}
+                                </button>
+                                {descriptionId && (
+                                  <span id={descriptionId} className="sr-only">
+                                    {bone.missingReason}
+                                  </span>
+                                )}
                               </span>
-                            </span>
-                          )
-                        }
+                            )
+                          }
 
-                        return [fila.right, fila.left].map((bone) => {
-                          const descriptionId =
-                            bone.meshName === null ? `${bone.id}-missing` : undefined
-                          return (
-                            <span key={bone.id}>
-                              <button
-                                type="button"
-                                aria-describedby={descriptionId}
-                                onClick={() => onSelect(bone.id)}
-                                className="min-h-tactil w-full rounded-tarjeta border-2 border-tinta bg-panel px-2 text-left text-sm hover:bg-acento-suave focus-visible:outline focus-visible:outline-2 focus-visible:outline-acento"
-                              >
-                                {accessibleName(bone)}
-                                {bone.meshName === null && <span aria-hidden="true"> ·</span>}
-                              </button>
-                              {descriptionId && (
+                          // Ningún lado tiene malla: colapsa a una sola etiqueta,
+                          // mismo criterio que BoneNavigator (e7.4) — elegir lado
+                          // no distingue nada observable.
+                          if (fila.right.meshName === null && fila.left.meshName === null) {
+                            const descriptionId = `${fila.right.id}-missing`
+                            return (
+                              <span key={fila.right.id}>
+                                <button
+                                  type="button"
+                                  aria-describedby={descriptionId}
+                                  onClick={() => onSelect(fila.right.id)}
+                                  className="flex min-h-16 w-full items-center rounded-suave border-2 border-tinta bg-panel/75 px-3 py-2 text-left text-sm leading-snug hover:bg-panel focus-visible:outline focus-visible:outline-2 focus-visible:outline-acento"
+                                >
+                                  {fila.name}
+                                  <span aria-hidden="true"> ·</span>
+                                </button>
                                 <span id={descriptionId} className="sr-only">
-                                  {bone.missingReason}
+                                  {fila.right.missingReason}
                                 </span>
-                              )}
-                            </span>
-                          )
-                        })
-                      })}
-                    </div>
-                  </section>
-                ))}
+                              </span>
+                            )
+                          }
+
+                          return [fila.right, fila.left].map((bone) => {
+                            const descriptionId =
+                              bone.meshName === null ? `${bone.id}-missing` : undefined
+                            return (
+                              <span key={bone.id}>
+                                <button
+                                  type="button"
+                                  aria-describedby={descriptionId}
+                                  onClick={() => onSelect(bone.id)}
+                                  className="flex min-h-16 w-full items-center rounded-suave border-2 border-tinta bg-panel/75 px-3 py-2 text-left text-sm leading-snug hover:bg-panel focus-visible:outline focus-visible:outline-2 focus-visible:outline-acento"
+                                >
+                                  {accessibleName(bone)}
+                                  {bone.meshName === null && <span aria-hidden="true"> ·</span>}
+                                </button>
+                                {descriptionId && (
+                                  <span id={descriptionId} className="sr-only">
+                                    {bone.missingReason}
+                                  </span>
+                                )}
+                              </span>
+                            )
+                          })
+                        })}
+                      </div>
+                    </section>
+                  )
+                })}
               </div>
             )}
           </div>

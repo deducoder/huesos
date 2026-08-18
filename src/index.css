@@ -55,11 +55,15 @@
   --color-acento-fuerte: #1f41a8; /* el acento bajo el puntero — 8.82 con panel */
   /* La superficie del lienzo 3D. Oscura dentro de un tema claro, y no por
      gusto: el hueso del modelo es un beige muy claro, así que sobre blanco
-     pierde contorno, y sobre cualquier fondo azulado el resaltado celeste del
-     hueso elegido (#38bdf8) deja de distinguirse — comprobado con capturas en
-     e7.2. Es la salida reversible que el brief prefería frente a tocar el
-     material del activo, que es un no-go. */
-  --color-lienzo: #4a4640;
+     pierde contorno — comprobado con capturas en e7.2. Es la salida
+     reversible que el brief prefería frente a tocar el material del activo,
+     que es un no-go.
+     Valor del mockup real (e8.5, oklch(0.26 0.015 260)) en vez del gris
+     cálido original de e7.2 — el resaltado ya no es el celeste hardcodeado
+     que e7.2 pesó (#38bdf8): desde e7.10 se lee de `--color-acento` en
+     tiempo de ejecución (`SkeletonScene.tsx`), verificado de nuevo acá con
+     una captura contra el fondo nuevo. */
+  --color-lienzo: #20242b;
 
   --color-aviso: #b4560a; /* borde de lo que el modelo no representa */
   --color-aviso-fondo: #fff1dc;

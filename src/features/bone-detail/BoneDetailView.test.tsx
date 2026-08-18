@@ -1,5 +1,4 @@
 import { render, screen } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
 import { describe, expect, it, vi } from 'vitest'
 import { catalog } from '../../data/catalog'
 import { findBone } from '../../domain/selection'
@@ -25,7 +24,7 @@ vi.mock('../../components/IsolatedBoneScene', () => ({
 
 describe('la ficha completa de un hueso', () => {
   it('muestra la escena aislada y la identidad del hueso pedido', () => {
-    render(<BoneDetailView boneId="femur-right" onBack={vi.fn()} />)
+    render(<BoneDetailView boneId="femur-right" />)
     expect(screen.getByTestId('escena-aislada-sustituida')).toHaveAttribute(
       'data-hueso',
       'femur-right',
@@ -33,24 +32,15 @@ describe('la ficha completa de un hueso', () => {
     expect(screen.getByRole('heading', { name: /fémur/i })).toBeInTheDocument()
   })
 
-  it('vuelve al llamar a "Volver"', async () => {
-    const user = userEvent.setup()
-    const onBack = vi.fn()
-    render(<BoneDetailView boneId="femur-right" onBack={onBack} />)
-
-    await user.click(screen.getByRole('button', { name: /volver/i }))
-    expect(onBack).toHaveBeenCalled()
-  })
-
   it('no ofrece un segundo botón de ficha completa dentro de la ficha', () => {
-    render(<BoneDetailView boneId="femur-right" onBack={vi.fn()} />)
+    render(<BoneDetailView boneId="femur-right" />)
     expect(screen.queryByRole('button', { name: /ver ficha completa/i })).not.toBeInTheDocument()
   })
 })
 
 describe('la ficha de un hueso que el modelo no incluye', () => {
   it('explica la ausencia en vez de dejar un panel vacío', () => {
-    render(<BoneDetailView boneId="malleus-right" onBack={vi.fn()} />)
+    render(<BoneDetailView boneId="malleus-right" />)
 
     // La razón tiene que estar donde iría la escena, no solo en el panel de
     // identidad: un lienzo negro al lado de un texto correcto sigue pareciendo
@@ -64,13 +54,13 @@ describe('la ficha de un hueso que el modelo no incluye', () => {
   })
 
   it('no anuncia una vista tridimensional que no existe', () => {
-    render(<BoneDetailView boneId="malleus-right" onBack={vi.fn()} />)
+    render(<BoneDetailView boneId="malleus-right" />)
 
     expect(screen.queryByLabelText(/aislado en 3D/i)).not.toBeInTheDocument()
   })
 
   it('no cambia nada para un hueso que sí tiene geometría', () => {
-    render(<BoneDetailView boneId="femur-right" onBack={vi.fn()} />)
+    render(<BoneDetailView boneId="femur-right" />)
 
     expect(screen.getByTestId('escena-aislada-sustituida')).toHaveAttribute(
       'data-hueso',

@@ -41,6 +41,12 @@ export function ExploreView({ selected, onSelect, onViewDetail }: Props) {
           <SkeletonScene bones={catalog} selected={selected} onPick={onSelect} />
         </div>
         {bone && (
+          // Alto dinámico, según el contenido de cada hueso (e8.5, iteración
+          // informal) — un alto fijo (probado y descartado) dejaba un hueco
+          // vacío incómodo en los casos cortos. `max-h-[45vh]` es el único
+          // techo, para el caso más largo del catálogo (`hioides`). El salto
+          // de alto entre huesos queda para una animación futura, no para
+          // esta pasada.
           <div
             data-testid="tarjeta-identidad"
             className="absolute inset-x-4 bottom-4 max-h-[45vh] overflow-y-auto rounded-tarjeta border-2 border-tinta bg-panel shadow-dura md:inset-x-auto md:left-4 md:right-auto md:w-full md:max-w-sm"

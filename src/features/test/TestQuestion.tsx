@@ -44,6 +44,8 @@ interface Props {
    * (`must-data-003`).
    */
   answerFormat?: 'open' | 'choice'
+  /** Si se pasa, ofrece volver a elegir la variante de test sin salir de la pestaña. */
+  onCambiarModo?: () => void
 }
 
 type Resultado = 'pendiente' | 'correcto' | 'incorrecto'
@@ -54,7 +56,13 @@ type Resultado = 'pendiente' | 'correcto' | 'incorrecto'
  * `SkeletonTestView` (e4.2) e `IsolatedBoneScene`-based views (e4.4)
  * comparten este mismo flujo sin duplicarlo.
  */
-export function TestQuestion({ bones, store, renderScene, answerFormat = 'choice' }: Props) {
+export function TestQuestion({
+  bones,
+  store,
+  renderScene,
+  answerFormat = 'choice',
+  onCambiarModo,
+}: Props) {
   const [bone, setBone] = useState<Bone>(() => pickTestableBone(bones, { progress: store.read() }))
   const [respuesta, setRespuesta] = useState('')
   const [opciones, setOpciones] = useState<Bone[]>(() =>
@@ -90,9 +98,21 @@ export function TestQuestion({ bones, store, renderScene, answerFormat = 'choice
   }
 
   return (
-    <div className="flex h-full flex-col md:mx-auto md:max-w-3xl">
-      <div className="min-h-0 flex-1">{renderScene(bone.id)}</div>
-      <div className="border-tinta border-t p-4" data-testid="barra-respuesta">
+    <div className="relative h-full md:mx-auto md:max-w-3xl">
+      <div className="absolute inset-0 bg-lienzo">{renderScene(bone.id)}</div>
+      {onCambiarModo && (
+        <button
+          type="button"
+          onClick={onCambiarModo}
+          className="absolute top-4 left-4 min-h-tactil rounded-full border-2 border-tinta bg-panel px-4 font-semibold text-sm shadow-dura hover:bg-acento-suave"
+        >
+          ← cambiar modo
+        </button>
+      )}
+      <div
+        className="absolute inset-x-4 bottom-4 rounded-tarjeta border-2 border-tinta bg-panel p-4 shadow-dura"
+        data-testid="barra-respuesta"
+      >
         {resultado === 'pendiente' ? (
           answerFormat === 'open' ? (
             <form onSubmit={responder} className="flex gap-2">
@@ -123,10 +143,10 @@ export function TestQuestion({ bones, store, renderScene, answerFormat = 'choice
                     type="button"
                     aria-pressed={seleccionId === opcion.id}
                     onClick={() => setSeleccionId(opcion.id)}
-                    className={`min-h-tactil rounded-suave border-2 border-tinta px-2 text-sm ${
+                    className={`min-h-tactil rounded-full border-2 border-tinta px-2 font-semibold text-sm ${
                       seleccionId === opcion.id
-                        ? 'bg-acento font-semibold text-panel'
-                        : 'bg-panel text-tinta hover:bg-acento-suave'
+                        ? 'bg-acento text-panel'
+                        : 'bg-superficie text-tinta hover:bg-acento-suave'
                     }`}
                   >
                     {opcion.es}
@@ -137,7 +157,7 @@ export function TestQuestion({ bones, store, renderScene, answerFormat = 'choice
                 type="button"
                 onClick={responderOpcion}
                 disabled={seleccionId === null}
-                className="min-h-tactil rounded-suave border-2 border-tinta bg-acento px-4 text-panel text-sm hover:bg-acento-fuerte disabled:cursor-default disabled:border-tinta-suave disabled:bg-panel disabled:text-tinta-suave"
+                className="min-h-tactil rounded-full border-2 border-tinta bg-acento px-4 font-semibold text-panel text-sm shadow-dura hover:bg-acento-fuerte disabled:cursor-default disabled:border-tinta-suave disabled:bg-panel disabled:text-tinta-suave disabled:shadow-none"
               >
                 Responder
               </button>
