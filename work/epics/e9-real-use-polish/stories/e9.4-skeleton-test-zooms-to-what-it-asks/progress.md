@@ -59,3 +59,33 @@ FOV)` que existía, ahora nombrada.
   `reservedBottom` rompe (c) — dejaría `ExploreView` con un
   `reservedBottom` `undefined` si algún día pasa `selected` sin `zoom`.
 - **Gate:** `./scripts/check` verde — 324 tests.
+
+## T3 · `SkeletonTestView` conecta `reservedBottom` al zoom
+
+**Done.** `renderScene` consume el segundo argumento (`reservedBottom`, que
+e9.2 ya calcula y este componente ignoraba) y lo pasa como
+`zoom={{ reservedBottom }}`.
+
+- **RED:** 1 en rojo, con el mock extendido para capturar `zoom` en un
+  objeto module-level (`capturado.zoom`), no en un atributo de texto del
+  DOM — el mismo error que casi se comete en e9.2 T3 (`!== ''` pasa con
+  cualquier valor serializado) no se repitió esta vez porque el plan ya lo
+  nombraba explícitamente.
+- **Un obstáculo real de TypeScript, no del diseño.** La primera versión
+  del test —`capturado.zoom = undefined` seguido de `render(...)` y después
+  `capturado.zoom?.reservedBottom`— daba `error TS2339: Property
+  'reservedBottom' does not exist on type 'never'`. Reproducido en
+  aislamiento fuera del proyecto: TypeScript estrecha una propiedad de
+  objeto al tipo de su última asignación **visible en el mismo flujo**, y
+  no la ensancha de vuelta al pasar por una función externa que la
+  reasigna (el mock, un closure distinto) — el estrechamiento a `undefined`
+  sobrevive a través de `render()`, y el chequeo opcional `?.` termina
+  evaluándose contra `never` porque no queda ninguna rama con forma de
+  objeto. Solución: envolver el reinicio en una función (`resetearZoom()`)
+  en vez de una asignación directa — a través de una llamada, TypeScript no
+  arrastra el estrechamiento. Confirmado con una reproducción mínima antes
+  de aplicar el cambio al archivo real.
+- **GREEN:** una línea en `SkeletonTestView.tsx`.
+- **Mutación forzada:** quitar `zoom={{ reservedBottom }}` deja
+  `capturado.zoom` en `undefined` y pone el test en rojo.
+- **Gate:** `./scripts/check` verde — 325 tests.

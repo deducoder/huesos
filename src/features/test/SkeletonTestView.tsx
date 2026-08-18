@@ -15,11 +15,12 @@ export function SkeletonTestView({ onCambiarModo }: { onCambiarModo: () => void 
       bones={catalog}
       store={progressStore}
       onCambiarModo={onCambiarModo}
-      renderScene={(boneId) => (
+      renderScene={(boneId, reservedBottom) => (
         <SkeletonScene
           bones={catalog}
           selected={boneId}
           onPick={() => {}}
+          zoom={{ reservedBottom }}
           accessibleHint="Un hueso está señalado en el esqueleto. Elegí su nombre entre las 3 opciones."
         />
       )}
