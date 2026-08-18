@@ -32,7 +32,7 @@ export function BoneSheet({ bone }: { bone: Bone }) {
   const acento = REGION_ACCENT[bone.region]
 
   return (
-    <section className="px-5 pt-6 pb-8" aria-labelledby="ficha-hueso">
+    <section className="px-5 pt-5 pb-6" aria-labelledby="ficha-hueso">
       <h2 id="ficha-hueso" className="font-display font-semibold text-[27px] text-tinta">
         {bone.es}
       </h2>

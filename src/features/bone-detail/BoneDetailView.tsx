@@ -17,7 +17,7 @@ interface Props {
  */
 function AusenciaEnElModelo() {
   return (
-    <div className="flex h-full flex-col items-center justify-center gap-3 p-8 text-center">
+    <div className="flex h-full flex-col items-center gap-3 p-8 pt-16 text-center">
       <p className="font-semibold text-panel">Este hueso no está en el modelo 3D</p>
       <p className="max-w-md text-panel/80 text-sm">
         Forma parte de los 206 huesos del esqueleto y su ficha está completa; lo único que falta es
@@ -36,11 +36,13 @@ function AusenciaEnElModelo() {
  * mientras la ficha está abierta, esa cabecera **es** la salida, y el botón no
  * puede estar en dos lugares.
  *
- * En pantalla angosta el 3D toma un alto fijo y la ficha se lee debajo, como el
- * mockup; en pantalla ancha sigue siendo la columna lateral que e7.9 dejó.
- * Cuando el hueso no tiene geometría, el lugar de la escena lo ocupa la
- * explicación de la ausencia: **no se monta ningún lienzo**, así que tampoco
- * hay etiqueta accesible anunciando una vista tridimensional inexistente.
+ * La ficha es una tarjeta flotante abajo, con las mismas medidas que la de
+ * `ExploreView` (e8.5): la escena se queda con la pantalla entera y el hueso
+ * aislado —lo único que esta vista tiene para mostrar que no esté escrito— se
+ * ve lo más grande posible. Cuando el hueso no tiene geometría, el lugar de la
+ * escena lo ocupa la explicación de la ausencia: **no se monta ningún
+ * lienzo**, así que tampoco hay etiqueta accesible anunciando una vista
+ * tridimensional inexistente.
  */
 export function BoneDetailView({ boneId }: Props) {
   const bone = findBone(catalog, boneId)
@@ -50,15 +52,15 @@ export function BoneDetailView({ boneId }: Props) {
   }
 
   return (
-    <div className="grid h-full min-h-0 grid-rows-[16rem_1fr] md:grid-cols-[1fr_22rem] md:grid-rows-1">
-      <div className="min-h-0 border-tinta border-b-2 bg-lienzo md:border-r-2 md:border-b-0">
+    <div className="relative h-full min-h-0 bg-lienzo">
+      <div className="absolute inset-0">
         {bone.meshName === null ? (
           <AusenciaEnElModelo />
         ) : (
           <IsolatedBoneScene bones={catalog} boneId={boneId} />
         )}
       </div>
-      <div className="min-h-0 overflow-y-auto">
+      <div className="absolute inset-x-4 bottom-4 max-h-[45vh] overflow-y-auto rounded-tarjeta border-2 border-tinta bg-panel shadow-dura md:inset-x-auto md:left-4 md:right-auto md:w-full md:max-w-sm">
         <BoneSheet bone={bone} />
       </div>
     </div>
