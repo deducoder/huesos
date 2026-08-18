@@ -24,3 +24,14 @@ dentro de un contenedor `grid-rows-[0fr]/[1fr]` con `inert={!expandida}` y
 `data-testid="fichas-contenido-{categoría}"`; la flecha gana
 `transition-transform`. Gate: verde, 353/353 (los 9 tests previos del
 archivo siguen pasando sin tocarlos, más 1 nuevo). Sin desviaciones del plan.
+
+## T3 · Panel de menú (`AboutPanel`): entrada animada
+
+RED confirmado aislando el cambio del componente con `git stash` (el test
+nuevo falló solo, los 11 existentes en verde). GREEN: overlay y diálogo
+usan el variante nativo `starting:` de Tailwind 4 (confirmado en
+`node_modules/tailwindcss/dist/lib.js` que reconoce `@starting-style`) en
+vez de la sintaxis arbitraria `[@starting-style]:` que sugería `design.md`
+— mismo resultado, más corta. Solo entrada, tal como decidió el diseño; la
+salida sigue instantánea (comentario en el código explica el porqué). Gate:
+verde, 354/354. Sin otras desviaciones.
