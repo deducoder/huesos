@@ -244,7 +244,8 @@ test('la elección de variante de test usa el mínimo táctil', async ({ page })
   await page.getByRole('button', { name: /^test$/i }).click()
 
   for (const nombre of ['Esqueleto completo', 'Hueso aislado']) {
-    const caja = await page.getByRole('button', { name: nombre, exact: true }).boundingBox()
+    const patron = new RegExp(`^${nombre}`, 'i')
+    const caja = await page.getByRole('button', { name: patron }).boundingBox()
     expect(caja?.height ?? 0, `alto de "${nombre}"`).toBeGreaterThanOrEqual(44)
     expect(caja?.width ?? 0, `ancho de "${nombre}"`).toBeGreaterThanOrEqual(44)
   }
@@ -253,7 +254,7 @@ test('la elección de variante de test usa el mínimo táctil', async ({ page })
 test('las opciones y sus botones usan el mínimo táctil, sin desbordar', async ({ page }) => {
   await page.goto('/')
   await page.getByRole('button', { name: /^test$/i }).click()
-  await page.getByRole('button', { name: 'Esqueleto completo', exact: true }).click()
+  await page.getByRole('button', { name: /^esqueleto completo/i }).click()
   await page.waitForTimeout(2500)
 
   const grupo = page.getByRole('group', { name: /qué hueso es/i })

@@ -67,7 +67,7 @@ describe('must-privacy-006: nada sale a la red mientras se usa la aplicación', 
     const user = userEvent.setup()
     render(<App />)
     await user.click(screen.getByRole('button', { name: 'Test' }))
-    await user.click(screen.getByRole('button', { name: 'Hueso aislado' }))
+    await user.click(screen.getByRole('button', { name: /^hueso aislado/i }))
     const grupo = screen.getByRole('group', { name: /qué hueso es/i })
     const [primeraOpcion] = within(grupo).getAllByRole('button')
     if (!primeraOpcion) throw new Error('no había ninguna opción para elegir')

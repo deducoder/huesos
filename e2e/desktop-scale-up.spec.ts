@@ -71,7 +71,7 @@ test('en el modo test de hueso aislado, la barra de respuesta no se estira a lo 
 }) => {
   await page.goto('/')
   await page.getByRole('button', { name: 'Test', exact: true }).click()
-  await page.getByRole('button', { name: 'Hueso aislado', exact: true }).click()
+  await page.getByRole('button', { name: /^hueso aislado/i }).click()
 
   const barra = page.getByTestId('barra-respuesta')
   await expect(barra).toBeVisible()

@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react'
 import { useState } from 'react'
 import { FichasAccordion } from './components/FichasAccordion'
+import { REGION_ACCENT } from './components/region-accent'
 import { catalog } from './data/catalog'
 import { type SelectionId, toggleSelection } from './domain/selection'
 import { BoneDetailView } from './features/bone-detail/BoneDetailView'
@@ -90,7 +91,7 @@ function IconoCuadrado({ children }: { children: ReactNode }) {
   return (
     <div
       aria-hidden="true"
-      className="flex h-tactil w-tactil flex-none items-center justify-center rounded-suave border-2 border-tinta bg-panel text-tinta shadow-dura"
+      className="flex h-tactil w-tactil flex-none shrink-0 items-center justify-center self-center rounded-suave border-2 border-tinta bg-panel text-tinta shadow-dura"
     >
       {children}
     </div>
@@ -123,6 +124,83 @@ function MenuIcono() {
   )
 }
 
+/** El ícono de "esqueleto completo": una figura de palito. */
+function IconoEsqueletoCompleto() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true">
+      <circle cx="12" cy="5" r="3.2" fill="currentColor" />
+      <rect x="9" y="9" width="6" height="9" rx="2.5" fill="currentColor" />
+      <rect
+        x="3"
+        y="10"
+        width="5"
+        height="2.6"
+        rx="1.3"
+        fill="currentColor"
+        transform="rotate(-20 3 10)"
+      />
+      <rect
+        x="16"
+        y="10"
+        width="5"
+        height="2.6"
+        rx="1.3"
+        fill="currentColor"
+        transform="rotate(20 16 10)"
+      />
+      <rect x="9" y="17" width="2.6" height="6" rx="1.3" fill="currentColor" />
+      <rect x="12.4" y="17" width="2.6" height="6" rx="1.3" fill="currentColor" />
+    </svg>
+  )
+}
+
+/** El ícono de "hueso aislado": el mismo motivo que el logo, más chico. */
+function IconoHuesoAislado() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true">
+      <rect x="7" y="9" width="10" height="6" rx="3" fill="currentColor" />
+      <circle cx="6" cy="6" r="3.2" fill="currentColor" />
+      <circle cx="18" cy="6" r="3.2" fill="currentColor" />
+      <circle cx="6" cy="18" r="3.2" fill="currentColor" />
+      <circle cx="18" cy="18" r="3.2" fill="currentColor" />
+    </svg>
+  )
+}
+
+function TarjetaVariante({
+  icono,
+  iconoBg,
+  titulo,
+  descripcion,
+  onClick,
+}: {
+  icono: ReactNode
+  iconoBg: string
+  titulo: string
+  descripcion: string
+  onClick: () => void
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className="flex w-full items-center gap-3 rounded-suave border-2 border-tinta bg-panel p-4 text-left shadow-dura hover:bg-acento-suave"
+    >
+      <span
+        aria-hidden="true"
+        className="flex h-11 w-11 flex-none items-center justify-center rounded-suave border-2 border-tinta text-tinta"
+        style={{ backgroundColor: iconoBg }}
+      >
+        {icono}
+      </span>
+      <span>
+        <span className="block font-display font-semibold text-tinta">{titulo}</span>
+        <span className="mt-0.5 block text-tinta-suave text-sm">{descripcion}</span>
+      </span>
+    </button>
+  )
+}
+
 /** La elección de variante antes de empezar a preguntar (`RF-04` vs `RF-05`). */
 function ElegirVarianteDeTest({
   onElegir,
@@ -130,24 +208,24 @@ function ElegirVarianteDeTest({
   onElegir: (variante: 'test-esqueleto' | 'test-hueso') => void
 }) {
   return (
-    <div className="flex h-full flex-col items-center justify-center gap-4 pt-[88px]">
-      <p className="text-tinta-suave">¿Sobre qué querés que te pregunte?</p>
-      <div className="flex gap-3">
-        <button
-          type="button"
-          onClick={() => onElegir('test-esqueleto')}
-          className="min-h-tactil rounded-suave border-2 border-tinta px-4 hover:bg-acento-suave"
-        >
-          Esqueleto completo
-        </button>
-        <button
-          type="button"
-          onClick={() => onElegir('test-hueso')}
-          className="min-h-tactil rounded-suave border-2 border-tinta px-4 hover:bg-acento-suave"
-        >
-          Hueso aislado
-        </button>
-      </div>
+    <div className="flex h-full flex-col gap-3 px-4 pt-4">
+      <p className="mb-1 font-display font-semibold text-tinta">
+        ¿Sobre qué querés que te pregunte?
+      </p>
+      <TarjetaVariante
+        icono={<IconoEsqueletoCompleto />}
+        iconoBg={ACENTO_PESTANIA.explorar}
+        titulo="Esqueleto completo"
+        descripcion="Muestro el modelo entero y señalás el hueso que te pregunto."
+        onClick={() => onElegir('test-esqueleto')}
+      />
+      <TarjetaVariante
+        icono={<IconoHuesoAislado />}
+        iconoBg={REGION_ACCENT.face.bg}
+        titulo="Hueso aislado"
+        descripcion="Muestro un hueso solo, sin contexto, para practicar reconocimiento."
+        onClick={() => onElegir('test-hueso')}
+      />
     </div>
   )
 }
@@ -163,9 +241,9 @@ export function App() {
     <main className="relative flex h-dvh flex-col bg-superficie text-tinta">
       <header
         data-testid="cabecera"
-        className="absolute inset-x-0 top-0 z-10 flex items-center justify-between gap-2 px-3.5 pt-4 pb-2.5"
+        className="mt-3 mb-3 flex items-stretch justify-between gap-2 px-3.5"
       >
-        <h1 className="sr-only">huesos-mono</h1>
+        <h1 className="sr-only font-display">huesos-mono</h1>
         <LogoIcono />
         {modo.tipo !== 'ficha' && <Pestanas modo={modo} onCambiar={(tipo) => setModo({ tipo })} />}
         <MenuIcono />
@@ -179,7 +257,7 @@ export function App() {
           />
         )}
         {modo.tipo === 'fichas' && (
-          <div className="h-full overflow-y-auto pt-[88px] pb-2 md:mx-auto md:max-w-2xl">
+          <div className="h-full overflow-y-auto pt-2 pb-2 md:mx-auto md:max-w-2xl">
             <FichasAccordion
               bones={catalog}
               onSelect={(id) => setModo({ tipo: 'ficha', boneId: id, origen: 'fichas' })}
