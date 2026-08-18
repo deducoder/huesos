@@ -97,7 +97,7 @@ Updated by `story-close` as each story lands — the only cross-artifact write.
 | e9.1 | done | S | S — el color no cambió: el mecanismo sí (emissive -> color); un fix ajeno de e9.5 encontrado y arreglado en main |
 | e9.2 | done | M | M — 4 tareas, 8 commits; dos falsos verdes propios atrapados antes de commitear, un defecto de e9.5 con causa real (no intermitencia) encontrado y arreglado |
 | e9.4 | done | M | M — 3 tareas, 2 hallazgos reales de verificación manual (plano cercano, matriz de padre sin actualizar), 10 commits |
-| e9.7 | todo | M | — |
+| e9.7 | done | M | L — 4 tareas planeadas más 2 nuevas (T6, T7) de la verificación manual, más 2 hallazgos de quality-review (ADR-016, comentario desactualizado); 15 commits |
 
 ## Sequencing risks
 
