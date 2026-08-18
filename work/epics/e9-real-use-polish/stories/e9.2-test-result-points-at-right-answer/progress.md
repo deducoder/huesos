@@ -126,3 +126,21 @@ JSX que T1 reescribía. El plan la había ordenado así a propósito
 ("independientes… pero van después porque son de menor riesgo"), y el
 resultado real fue que el orden en el archivo, no el orden del plan, decidió
 cuándo se escribió cada línea.
+
+## T5 · Verificación manual de integración
+
+**Done.** Confirmado por el humano en su teléfono: acertar y errar en las
+dos variantes de test (esqueleto completo y hueso aislado), «Siguiente
+pregunta» en el lugar de «Responder», y en hueso aislado el hueso ya no
+queda detrás de la barra.
+
+**Chequeo de tests huérfanos:** `App.test.tsx` y `BoneDetailView.test.tsx`
+importan componentes que esta historia tocó (`ExploreView`/`TestQuestion` vía
+`App`; `useFraccionCubierta` extraído vía `BoneDetailView`) sin haber sido
+tocados ellos mismos. Los dos corridos — **20 de 20**, sin regresión: el
+comportamiento público de ninguno de los dos cambió.
+
+**Gates finales:** `./scripts/check` verde (321 tests) ·
+`./scripts/check-integration` **32 de 32**, con los puertos 4173-4175
+comprobados libres antes de correr · `should-perf-007` mediana 4,7 ms
+(máximo 20,4 ms), sin regresión respecto de e9.1.
