@@ -216,11 +216,17 @@ test('el lienzo de Explorar ocupa toda la pantalla disponible', async ({ page })
     })
     .toBeGreaterThan(250)
 
-  // El alto disponible bajo la cabecera y las pestañas — no el viewport
-  // entero, que también incluye ese encabezado.
+  // El alto disponible bajo la cabecera **con su margen** — no el viewport
+  // entero, que también incluye ese encabezado, y no el borde inferior de las
+  // pestañas: desde e8.5 la navbar lleva aire simétrico arriba y abajo (pedido
+  // explícito), así que medir desde el `<nav>` contaría ese margen como espacio
+  // desperdiciado. Lo que esto sigue prohibiendo es un hueco muerto **extra**
+  // entre la cabecera y el lienzo.
   const altoDisponible = await page.evaluate(() => {
-    const nav = document.querySelector('nav[aria-label="Modo de estudio"]')
-    return nav ? window.innerHeight - nav.getBoundingClientRect().bottom : 0
+    const cabecera = document.querySelector('[data-testid="cabecera"]')
+    if (!cabecera) return 0
+    const margen = Number.parseFloat(getComputedStyle(cabecera).marginBottom)
+    return window.innerHeight - (cabecera.getBoundingClientRect().bottom + margen)
   })
   const caja = await lienzo.boundingBox()
   expect(caja?.height ?? 0, 'alto del lienzo en Explorar').toBeGreaterThanOrEqual(
