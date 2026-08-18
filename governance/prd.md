@@ -46,6 +46,14 @@ sinónimos registrados para ese hueso. Observable: para el hueso «fémur»,
 `FEMUR`, `femur`, `el fémur` y `os femoris` se validan todas como correctas;
 `tibia` no.
 
+**Desde E8 (ADR-012) este no es el formato por defecto.** El test responde con
+tres opciones (`RF-04`/`RF-05` en modo opción múltiple) y la interfaz no ofrece
+ninguna forma de activar la respuesta escrita. El comportamiento descrito acá
+sigue construido, gobernado por `must-data-003` y con su prueba en verde
+(`TestQuestion.test.tsx`, con `answerFormat="open"`): lo que cambió es la puerta
+de entrada, no la capacidad. Si una épica futura vuelve a ofrecerlo, ADR-012 deja
+el camino documentado.
+
 ### RF-07: Corrección explícita del error
 
 Ante una respuesta incorrecta, el sistema lo dice, muestra el nombre correcto en
