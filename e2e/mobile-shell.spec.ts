@@ -561,8 +561,7 @@ function aireAlrededor(captura: Buffer, corte: number) {
 async function corteDeLaTarjeta(page: Page, lienzo: Locator) {
   const cajaLienzo = await lienzo.boundingBox()
   const cajaTarjeta = await page.getByTestId('tarjeta-ficha').boundingBox()
-  const escala = 1
-  return ((cajaTarjeta?.y ?? 0) - (cajaLienzo?.y ?? 0)) * escala
+  return (cajaTarjeta?.y ?? 0) - (cajaLienzo?.y ?? 0)
 }
 
 /** Arrastra sobre el lienzo, como un dedo girando el hueso. */

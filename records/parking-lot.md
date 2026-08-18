@@ -526,3 +526,27 @@ del propio hueso, no del lado: hay que decidir de dónde se deriva —una marca
 en el catálogo, o la terminación del nombre— y esa decisión es de su diseño.
 Ojo con los localizadores de `e2e/`, que buscan «fémur derecho» por nombre
 accesible exacto.
+
+## 2026-08-18 · El modo test de hueso aislado no reserva sitio para su barra (e9.3, quality-review)
+
+`BoneTestView` pasa `reservedBottom={0}` a `IsolatedBoneScene`, pero su barra
+de respuesta —`data-testid="barra-respuesta"`, `inset-x-4 bottom-4` con las
+tres opciones más el botón— **sí flota sobre el lienzo**, igual que la
+tarjeta de la ficha. El hueso se centra detrás de ella por el mismo motivo
+que motivó esta historia.
+
+**Por qué no se corrigió acá:** el alto de esa barra hay que medirlo donde
+vive, que es `TestQuestion`, y ese componente es el objeto entero de **e9.2**
+—cambia su estado posterior a la respuesta, y con él el alto de la barra—.
+Tocarlo desde e9.3 obligaría a e9.2 a resolver el conflicto sobre un archivo
+a medio camino, y la medición habría que rehacerla igual con la barra nueva.
+
+**Por qué el 0 es honesto y no un descuido:** la prop es requerida a
+propósito, así que pasar un valor es una decisión visible en el código y no
+un default silencioso. `0` deja el comportamiento anterior, que es el que
+esa vista ya tenía.
+
+**Destino:** **e9.2**, que entra a `src/features/test/` y ya lleva la deuda
+de las props opcionales. El patrón a reutilizar es `useFraccionCubierta` en
+`BoneDetailView`: un `ResizeObserver` sobre el elemento flotante, medido
+después del layout.
