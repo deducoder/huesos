@@ -49,4 +49,4 @@
 - [El color del texto no viaja con su contenedor](text-color-doesnt-follow-its-container.md) — `text-tinta` sobre el lienzo oscuro fue ilegible desde e7.2 y ningún gate lo vio.
 - [Un gate apuntado al error conocido no vigila la regla](a-gate-aimed-at-the-known-error-misses-the-rule.md) — el color fuera de tokens se coló en E7 y en E8 por la misma rendija.
 - [Un criterio no debe exigir que un archivo quede intacto](acceptance-criteria-shouldnt-name-an-untouched-file.md) — describe el medio, no el fin, y se rompe con el cambio legítimo.
-- [Puntero de la última sesión](session-pointer.md) — 2026-08-17: E8 mergeada; e8.5 (fidelidad visual, informal) en curso sin cerrar.
+- [Puntero de la última sesión](session-pointer.md) — 2026-08-18: E8 cerrada y pusheada (211 commits, E7 incluida); sin work item en curso, toca elegir E9.
