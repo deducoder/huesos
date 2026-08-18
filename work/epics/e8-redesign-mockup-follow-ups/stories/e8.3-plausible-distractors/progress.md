@@ -35,3 +35,49 @@ forzada (mismo criterio que T1):
   determinismo falla.
 
 Gate: `./scripts/check` verde (244 tests, lint/format/types limpios).
+
+## T3 · Verificación manual — huesos reales de punta a punta
+
+Corrida contra el catálogo real (script `vitest` no commiteado,
+`src/domain/_manual-check.test.ts`, borrado al cerrar la tarea): un hueso
+de cada una de las 8 regiones con huesos preguntables, más `ear`/`hyoid`
+para confirmar que nunca son preguntables (0 preguntables cada una,
+confirmado).
+
+**Encontró un defecto real, no cosmético:** `es` no lleva el lado
+(`clavicle-right`/`clavicle-left` comparten `es: 'clavícula'`;
+`rib-12-right`/`rib-12-left` comparten `'duodécima costilla'`). La primera
+corrida mostró pares de opciones con el **mismo texto** — p. ej. pregunta
+"clavícula" con distractores "escápula" y "clavícula" — que en una opción
+múltiple es un test roto: acertar o fallar dependería de en cuál de los
+dos botones idénticos se hace clic, no de saber anatomía.
+
+Corregido en dos capas, ambas con su propio RED → GREEN (ver **T2b** en
+`plan.md`, agregada fuera del plan original):
+1. El hermano del hueso *preguntado* nunca es distractor.
+2. Dos distractores nunca son hermanos *entre sí* — el primer intento de
+   la corrección (1) sola no alcanzaba: en `shoulder-girdle` (solo 4
+   preguntables) los dos únicos candidatos que quedaban tras excluir la
+   clavícula y su hermano eran `scapula-right`/`scapula-left`, hermanos
+   entre sí — la segunda corrida manual los mostró como "escápula" /
+   "escápula" y expuso que la corrección (1) no bastaba.
+
+Tres corridas más del script manual, post-corrección, sobre las 8 regiones
+cada vez: ningún par de opciones repite `es`, todos los nombres son huesos
+reales y legibles. Script borrado (`_manual-check.test.ts` no se commitea,
+era una verificación puntual — el checkpoint que queda commiteado es la
+suite de tests, no el script ad hoc).
+
+Gate: `./scripts/check` verde (246 tests, lint/format/types limpios).
+
+## Finalize
+
+- Full gate set: verde (`./scripts/check`, 246 tests, 34 archivos).
+- Orphaned-test check: `src/domain/distractors.ts` es net-new — ningún test
+  preexistente lo importaba antes de esta historia, nada que revisar.
+  `src/domain/side-pairing.ts` (`siblingId`) gana un consumidor nuevo, pero
+  su propio test (`side-pairing.test.ts`) no cambió de comportamiento —
+  sigue verde sin tocarse.
+- Acceptance criteria: cumplidas de punta a punta, incluida la que el
+  diseño no anticipó (exclusión de hermanos) — el hallazgo de T3 se cerró
+  dentro de esta misma historia, no se aparcó.

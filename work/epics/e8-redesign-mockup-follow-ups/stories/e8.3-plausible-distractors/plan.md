@@ -59,6 +59,26 @@ huesos sintéticos de un test.
   nunca el hueso preguntado, nunca repetidos entre sí — revisión visual
   del output, no solo el conteo.
 
+### T2b · Excluir hermanos anatómicos (agregada durante T3, no estaba planeada)
+
+La verificación manual (T3, más abajo) encontró que `es` no lleva el lado
+—`clavicle-right`/`clavicle-left` comparten `es: 'clavícula'`— así que
+`pickDistractors` podía elegir el hermano anatómico del hueso preguntado, o
+dos hermanos entre sí como los dos distractores, mostrando la misma
+etiqueta dos veces en una opción múltiple.
+
+- **Files:** modify `src/domain/distractors.ts`, `src/domain/distractors.test.ts`
+- **TDD:** RED — `clavicle-right` (región `shoulder-girdle`, 4 preguntables)
+  nunca debe traer `clavicle-left` como distractor, y los dos distractores
+  nunca deben compartir `es` entre sí → GREEN — excluir `siblingId(bone)`
+  del pool inicial, y quitar el hermano del candidato recién elegido en
+  cada iteración → REFACTOR.
+- **Verify:** propiedad — ningún par de huesos devueltos (correcto +
+  distractores) comparte `es`; forced mutation: no quitar el hermano del
+  elegido tras cada `extraerAlAzar` → el test de "tampoco elige dos
+  distractores que sean hermanos entre sí" debe fallar.
+- **Commit:** `fix(domain): never let a distractor share its label with the correct bone or another distractor`
+
 ## Order & risks
 
 - **Execution order:** T1 → T2 → T3. T2 modifica la misma función que T1
@@ -68,3 +88,6 @@ huesos sintéticos de un test.
 - **Riesgos:** el único riesgo real de la historia (el caso límite de
   `pelvic-girdle`) ya se cerró en el diseño, no queda abierto para
   implementación — T2 es donde se prueba, no donde se descubre.
+- **Riesgo que el diseño no anticipó:** el nombre en español no distingue el
+  lado. T3 lo encontró; T2b lo cerró. Queda documentado para que e8.4 (o
+  cualquier otra vista que muestre `es` solo) no lo reintroduzca.
