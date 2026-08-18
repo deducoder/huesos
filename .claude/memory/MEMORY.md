@@ -62,3 +62,4 @@
 - [Contar líneas envueltas, no razones de ancho](count-wrapped-lines-not-width-ratios.md) — una palabra larga decide el wrap mucho antes que el total de caracteres.
 - [emissive no puede superar a un material ya claro](emissive-cannot-outshine-a-light-base.md) — teñir el color dio el doble que el tope teórico de emitir luz.
 - [El estado externo de tipo laxo pide su propio store](loosely-typed-external-state-needs-its-own-store.md) — un WeakMap propio evita heredar el `any` de `userData` y el `as` que lo acompaña.
+- [Mantener contenido viejo montado puede duplicar texto](keeping-old-content-mounted-can-duplicate-text.md) — una búsqueda sin acotar deja de ser inequívoca cuando dos vistas conviven en vez de excluirse.

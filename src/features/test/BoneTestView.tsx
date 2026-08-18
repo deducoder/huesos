@@ -8,17 +8,17 @@ import { TestQuestion } from './TestQuestion'
  * `TestQuestion` que `SkeletonTestView` (e4.2) — la única diferencia es qué
  * escena reutiliza, `IsolatedBoneScene` (e3.1) en vez de `SkeletonScene`.
  */
-export function BoneTestView({ onCambiarModo }: { onCambiarModo?: () => void }) {
+export function BoneTestView({ onCambiarModo }: { onCambiarModo: () => void }) {
   return (
     <TestQuestion
       bones={catalog}
       store={progressStore}
       onCambiarModo={onCambiarModo}
-      renderScene={(boneId) => (
+      renderScene={(boneId, reservedBottom) => (
         <IsolatedBoneScene
           bones={catalog}
           boneId={boneId}
-          reservedBottom={0}
+          reservedBottom={reservedBottom}
           accessibleLabel="Un hueso está señalado, aislado del resto del esqueleto. Elegí su nombre entre las 3 opciones."
         />
       )}

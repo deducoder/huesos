@@ -17,6 +17,7 @@ function ExploreViewConSuEstado() {
     <ExploreView
       selected={selected}
       onSelect={(id) => setSelected((actual) => toggleSelection(actual, id))}
+      onViewDetail={vi.fn()}
     />
   )
 }

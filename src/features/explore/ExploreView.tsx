@@ -7,8 +7,8 @@ import { findBone, type SelectionId } from '../../domain/selection'
 interface Props {
   selected: SelectionId
   onSelect: (id: string) => void
-  /** Si se pasa, ofrece abrir la ficha completa del hueso elegido (RF-03, e3.2). */
-  onViewDetail?: (id: string) => void
+  /** Abre la ficha completa del hueso elegido (RF-03, e3.2). Requerida: ver `BoneIdentity`. */
+  onViewDetail: (id: string) => void
 }
 
 /**
