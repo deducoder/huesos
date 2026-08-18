@@ -64,3 +64,34 @@ al correr `check-integration`:
 Suite de integración completa: 21/21 en verde
 (`./scripts/check-integration`), incluido `explore.spec.ts` sin tocarse
 — ADR-010/ADR-011 se sostuvieron. Gate rápido verde (266 tests).
+
+## T4 · Verificación manual — recorrido real en el navegador
+
+Build + `vite preview` en puerto propio (matado al terminar, verificado
+libre), recorrido con Playwright real:
+
+- 9 categorías colapsadas al montar Fichas.
+- Expandir "Cráneo" muestra "hueso frontal"; activarlo navega a la ficha
+  (aparece "Volver").
+- **"Volver" deja "Cráneo" colapsado otra vez** (`aria-expanded: false`)
+  — confirma la decisión ya tomada en `scope.md`/`design.md` ("el estado
+  de categorías expandidas es local a `FichasAccordion`"): al desmontar
+  y remontar el componente, el estado se pierde. No es un olvido, es la
+  consecuencia directa de la decisión — dicha en voz alta acá, como el
+  plan pedía.
+- Teclado: `Tab` alcanza un botón de categoría, `Enter` lo activa
+  (`aria-expanded` pasa a `true`) — alcanzable sin mouse.
+
+`explore.spec.ts` corrido por separado, en verde, sin haberse tocado.
+
+## Finalize
+
+- Full gate set: verde (`./scripts/check` — 266 tests;
+  `./scripts/check-integration` — 21/21).
+- Orphaned-test check: `BoneNavigator.tsx` confirmado sin diferencias
+  contra `main` (`git diff main -- src/components/BoneNavigator.tsx` →
+  vacío) — ADR-011 se cumplió al pie de la letra. `FichasAccordion.tsx`
+  solo menciona `BoneNavigator` en comentarios, ningún import real.
+  Ningún otro archivo fuera de los tocados importa `categories.ts` o
+  `FichasAccordion.tsx`.
+- Acceptance criteria: cumplidas de punta a punta.
