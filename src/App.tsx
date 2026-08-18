@@ -254,7 +254,10 @@ export function App() {
           >
             ← Volver
           </button>
-          <h1 className="font-display font-semibold text-base">huesos-mono</h1>
+          {/* El nombre sigue siendo el encabezado de la página —sin él la
+              vista queda sin título para un lector de pantalla— pero no se
+              dibuja: en la ficha, "Volver" es lo único que hace falta ver. */}
+          <h1 className="sr-only font-display">huesos-mono</h1>
         </header>
       ) : (
         <header
