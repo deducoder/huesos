@@ -19,3 +19,27 @@
   (16/16). Verificado con captura.
 
 Nada que el plan no anticipara.
+
+## T3 · Verificación manual — no realizada
+
+El usuario pidió cerrar directamente. Gates automáticos verdes; nadie probó
+los cinco controles con el dedo en un teléfono real para esta historia.
+Riesgo aceptado por decisión explícita, mismo patrón que e7.6 y e7.7.
+
+## Cierre
+
+**Chequeo de tests huérfanos:** `TestQuestion.test.tsx`,
+`SkeletonTestView.test.tsx`, `BoneTestView.test.tsx` y `App.test.tsx` no
+fueron tocados y siguen verdes.
+
+**Criterios de aceptación:**
+
+| Criterio | Estado |
+|---|---|
+| Must 1 · los cinco controles ≥ 44 px | cumplido |
+| Must 2 · campo+«Responder» sin desbordar | cumplido — verificado, no asumido |
+| Must NOT 1 · sin tocar escenas/dominio del test | respetado |
+| Must NOT 2 · sin tipografía display | respetado |
+
+**Gates finales:** `./scripts/check` verde (233 tests) ·
+`npx playwright test` verde (16/16).
