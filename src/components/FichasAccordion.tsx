@@ -74,7 +74,7 @@ export function FichasAccordion({ bones, onSelect }: Props) {
               aria-expanded={expandida}
               onClick={() => alternar(cat.category)}
               style={acentoCategoria ? { backgroundColor: acentoCategoria.bg } : undefined}
-              className="min-h-tactil flex w-full items-center justify-between rounded-suave border-2 border-tinta px-3 text-left font-display font-semibold text-sm shadow-dura"
+              className="flex min-h-20 w-full items-center justify-between rounded-suave border-2 border-tinta px-4 py-3 text-left font-display font-semibold text-base shadow-dura"
             >
               <span>
                 {cat.category}
@@ -92,7 +92,7 @@ export function FichasAccordion({ bones, onSelect }: Props) {
                     <section
                       key={grupo.region}
                       style={{ backgroundColor: acentoGrupo.bg }}
-                      className="rounded-suave border-2 border-tinta p-3 shadow-dura"
+                      className="rounded-suave border-2 border-tinta p-4 shadow-dura"
                     >
                       <h3
                         className="mb-2 flex items-baseline gap-2 font-display font-semibold text-sm"
