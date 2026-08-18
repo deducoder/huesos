@@ -34,7 +34,7 @@ navegación serían envoltorio sobre dos llamadas —el proyecto no tiene hoy
 ni un solo hook propio, y este no gana su excepción.
 
 **Legacy sweep:** **el campo `origen` del modo `ficha` queda huérfano.**
-Existe (`App.tsx:33`) para que «← Volver» sepa a dónde regresar, y es su
+Existe (`App.tsx:25`) para que «← Volver» sepa a dónde regresar, y es su
 único lector (`App.tsx:252`). Cuando ese botón pase a `history.back()`, la
 entrada anterior del historial ya es el origen por construcción —a `ficha`
 solo se llega empujando desde `explorar` o desde `fichas`— y el campo deja
