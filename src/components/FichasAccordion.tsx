@@ -116,7 +116,7 @@ export function FichasAccordion({ bones, onSelect }: Props) {
                                   type="button"
                                   aria-describedby={descriptionId}
                                   onClick={() => onSelect(bone.id)}
-                                  className="min-h-tactil w-full rounded-suave border-2 border-tinta bg-panel/75 px-2 text-left text-sm hover:bg-panel focus-visible:outline focus-visible:outline-2 focus-visible:outline-acento"
+                                  className="flex min-h-16 w-full items-center rounded-suave border-2 border-tinta bg-panel/75 px-3 py-2 text-left text-sm leading-snug hover:bg-panel focus-visible:outline focus-visible:outline-2 focus-visible:outline-acento"
                                 >
                                   {accessibleName(bone)}
                                   {bone.meshName === null && <span aria-hidden="true"> ·</span>}
@@ -141,7 +141,7 @@ export function FichasAccordion({ bones, onSelect }: Props) {
                                   type="button"
                                   aria-describedby={descriptionId}
                                   onClick={() => onSelect(fila.right.id)}
-                                  className="min-h-tactil w-full rounded-suave border-2 border-tinta bg-panel/75 px-2 text-left text-sm hover:bg-panel focus-visible:outline focus-visible:outline-2 focus-visible:outline-acento"
+                                  className="flex min-h-16 w-full items-center rounded-suave border-2 border-tinta bg-panel/75 px-3 py-2 text-left text-sm leading-snug hover:bg-panel focus-visible:outline focus-visible:outline-2 focus-visible:outline-acento"
                                 >
                                   {fila.name}
                                   <span aria-hidden="true"> ·</span>
@@ -162,7 +162,7 @@ export function FichasAccordion({ bones, onSelect }: Props) {
                                   type="button"
                                   aria-describedby={descriptionId}
                                   onClick={() => onSelect(bone.id)}
-                                  className="min-h-tactil w-full rounded-suave border-2 border-tinta bg-panel/75 px-2 text-left text-sm hover:bg-panel focus-visible:outline focus-visible:outline-2 focus-visible:outline-acento"
+                                  className="flex min-h-16 w-full items-center rounded-suave border-2 border-tinta bg-panel/75 px-3 py-2 text-left text-sm leading-snug hover:bg-panel focus-visible:outline focus-visible:outline-2 focus-visible:outline-acento"
                                 >
                                   {accessibleName(bone)}
                                   {bone.meshName === null && <span aria-hidden="true"> ·</span>}
