@@ -101,3 +101,28 @@ función tipada con 2 parámetros admite un callback que solo usa el primero.
 decorativa (mismo patrón de error que en e9.1 con el gate de contraste), y
 que el defecto de «peroné» no era intermitencia de entorno sino una
 interacción real y determinista con el hueso sorteado.
+
+## T4 · `metacarpiano`/`metatarsiano` no desbordan su botón
+
+**El código ya estaba.** Al escribir T1 agregué `[hyphens:auto]` a la clase
+del botón de opción en el mismo reemplazo que introdujo `estadoOpcion` —sin
+notarlo como una tarea aparte en el momento—, así que no hay un commit nuevo
+que hacer acá: la línea vive en `5526f5a`. Lo que faltaba de T4 era la
+**verificación**, que el plan pedía contra el navegador real, y eso sí se
+hizo ahora, no antes.
+
+- **Sin RED de vitest**, como el plan preveía: jsdom no calcula ancho de
+  texto real.
+- **Medido contra el dev server**, mismo método que el design: `metacarpiano`
+  y `metatarsiano` dan `scrollWidth === clientWidth === 98` — sin
+  desbordamiento, contra los 99/98 (1 px) que medía el design antes del
+  cambio.
+- **Gate:** `./scripts/check` ya estaba verde desde T1; no vuelve a correr
+  acá porque no hay cambio de código.
+
+**Lo que el plan no anticipó:** que una tarea sin dependencias de las
+anteriores igual podía colarse dentro de otra, por estar en el mismo bloque
+JSX que T1 reescribía. El plan la había ordenado así a propósito
+("independientes… pero van después porque son de menor riesgo"), y el
+resultado real fue que el orden en el archivo, no el orden del plan, decidió
+cuándo se escribió cada línea.
