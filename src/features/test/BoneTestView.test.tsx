@@ -16,7 +16,6 @@ vi.mock('../../components/IsolatedBoneScene', () => ({
   IsolatedBoneScene: ({
     boneId,
     accessibleLabel,
-    reservedBottom,
   }: {
     boneId: string
     accessibleLabel?: string
@@ -28,7 +27,6 @@ vi.mock('../../components/IsolatedBoneScene', () => ({
       <div
         data-testid="escena-aislada-sustituida"
         data-hueso={boneId}
-        data-reserved-bottom={reservedBottom}
         role="img"
         aria-label={label}
       />
