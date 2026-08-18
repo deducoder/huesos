@@ -169,3 +169,18 @@ con red.
 **Gates:** `./scripts/check` verde. `./scripts/check-integration` verde,
 **31 de 31**. `should-perf-007` en mediana 4,0 ms — los controles no mueven
 el presupuesto, como el diseño anticipaba.
+
+## T5 · Prueba manual de integración
+
+**Aprobada por el usuario** en su teléfono real, por el túnel, contra el dev
+server que quedó vivo toda la historia.
+
+La rotación corregida funciona en los dos ejes, y el hueso se ve bien **con
+y sin «Dato clínico»** — es decir, con la tarjeta alta y con la baja. Esa
+distinción es exactamente lo que separa medir el alto real de la tarjeta de
+suponer el 45 % declarado, y es la comprobación que el usuario hizo de un
+vistazo y que la suite necesitó dos huesos y una mutación para afirmar.
+
+También queda resuelta la duda que dejé abierta sobre el tamaño: el fémur se
+ve más chico que antes en área, y el usuario lo da por bueno viendo la
+pantalla.
