@@ -178,3 +178,34 @@ anatómico citando «BoneNavigator, accessibleName» — una función que ya no
 existe. El razonamiento seguía siendo correcto y la referencia había muerto;
 ahora apunta a `fullName`/`visibleName`. Un `tsc` verde no distingue un
 comentario cierto de uno que señala al vacío.
+
+## T9 · Verificación manual de integración
+
+**Done.** Comprobado por el humano en su teléfono, y por la máquina en 390 px
+con capturas.
+
+**En el teléfono (humano):**
+- **Fichas: correcto y legible.** Es la vista que motivó la historia.
+- **Test: legible, pero las etiquetas «se ven algo grandes».** **Riesgo
+  asumido de forma explícita: se deja así.** El remedio pertenece al layout de
+  la grilla de opciones, que es e9.2 — la misma raíz que el hallazgo aparcado
+  el 2026-08-18 sobre la palabra larga que llena el botón. Se registra como
+  decisión tomada, no como defecto pendiente sin dueño.
+
+**Desde el escritorio (medido, no mirado por encima):**
+- Ninguna etiqueta de la grilla pasa de **64 px**, el mínimo del botón; la
+  falange más larga medía 78 px y tres líneas antes de la historia.
+- La ficha titula «Falange proximal 2.º mano», el lado dice «derecha» y la
+  fila «Nombre completo» conserva el nombre íntegro del catálogo.
+- Subgrupos capitalizados: «Neurocráneo» y «Cara».
+- El test sorteó **«5.ª costilla», «11.ª costilla», «12.ª costilla»**: tres
+  opciones de la misma región, distinguibles entre sí. Es exactamente el
+  colapso que ADR-014 temía, no ocurriendo.
+
+**Gates finales:** `./scripts/check` verde (312 tests) ·
+`./scripts/check-integration` **31 de 31** · `should-perf-007` en mediana
+4,0 ms, sin cambio respecto de e9.3.
+
+**Chequeo de tests huérfanos:** 18 archivos de prueba importan del catálogo,
+que ganó un campo sin tocar `es`; los 18 pasan. Los que afirmaban sobre texto
+visible o nombre accesible ya se actualizaron dentro de su tarea (T4, T5, T7).
