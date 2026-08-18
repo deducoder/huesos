@@ -486,3 +486,21 @@ ajustes visuales de Explorar.
 presentación del mismo hueso, extraer el criterio compartido (`ocultarLado`,
 la resolución de acento, el orden de los campos) a una función de vista y
 dejar que cada presentación se quede solo con su marcado.
+
+## 2026-08-17 · La tipografía display sigue sin evaluarse (epic-design e9)
+
+Era el cuarto punto del alcance de `e8.5` y el único con un ADR detrás:
+ADR-008 rechazó Baloo 2 antes de que existiera el mockup que ahora gobierna
+el aspecto. Cambiarla exige un ADR que lo supersede, no un commit de CSS.
+
+**Por qué no entra en E9:** no es ninguno de los nueve puntos observados
+usando la aplicación, y el objetivo de la épica es que un recorrido en el
+teléfono no tropiece. Una tipografía distinta no quita ningún tropiezo.
+
+**Por qué importa igual:** hasta ahora vivía como pregunta abierta en el
+handoff de la sesión del 2026-08-18, y un handoff no es un destino — la
+próxima sesión que no lo lea la pierde.
+
+**Destino:** aparcado, con dueño en la épica de consolidación visual, junto
+a los 14 literales hexadecimales fuera de `@theme` y su gate. Las dos
+decisiones son sobre el mismo sistema y comparten el mismo ADR-007.
