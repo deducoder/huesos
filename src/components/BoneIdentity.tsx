@@ -2,6 +2,7 @@ import { type Bone, isUnpaired } from '../data/bone'
 import { catalog } from '../data/catalog'
 import { isSideIrrelevant } from '../domain/side-pairing'
 import { REGION_LABEL, SIDE_LABEL } from './labels'
+import { REGION_ACCENT } from './region-accent'
 
 interface Props {
   bone: Bone | undefined
@@ -35,29 +36,35 @@ export function BoneIdentity({ bone, onViewDetail }: Props) {
   // navegador tampoco lo ofrece desde e7.4 (`toNavigatorRows`). El panel no
   // puede afirmar una elección que el estudiante nunca hizo.
   const ocultarLado = bone.side !== null && isSideIrrelevant(bone, catalog)
+  const acento = REGION_ACCENT[bone.region]
 
   return (
     <section className="p-6" aria-labelledby="identidad-hueso">
       <h2 id="identidad-hueso" className="font-display font-semibold text-2xl text-tinta">
         {bone.es}
       </h2>
-      <p className="mt-1 text-acento text-lg italic">{bone.la}</p>
+      <p className="mt-1 text-lg italic" style={{ color: acento.text }}>
+        {bone.la}
+      </p>
 
-      <dl className="mt-4 space-y-1 text-sm">
-        <div className="flex items-center gap-2">
-          <dt className="text-tinta-suave">Región</dt>
-          <dd className="w-fit rounded-tarjeta border-2 border-tinta bg-acento-suave px-3 py-0.5 font-semibold">
+      <dl className="mt-3 space-y-1 text-sm">
+        <div className="flex flex-wrap items-center gap-2">
+          <dt className="sr-only">Región</dt>
+          <dd
+            className="w-fit rounded-full border-2 border-tinta px-3 py-1 font-semibold"
+            style={{ backgroundColor: acento.bg, color: acento.text }}
+          >
             {REGION_LABEL[bone.region]}
           </dd>
+          {bone.side !== null && !ocultarLado && (
+            <>
+              <dt className="sr-only">Lado</dt>
+              <dd className="w-fit rounded-full border-2 border-tinta bg-panel px-3 py-1 font-semibold">
+                {SIDE_LABEL[bone.side]}
+              </dd>
+            </>
+          )}
         </div>
-        {bone.side !== null && !ocultarLado && (
-          <div className="flex items-center gap-2">
-            <dt className="text-tinta-suave">Lado</dt>
-            <dd className="w-fit rounded-tarjeta border-2 border-tinta bg-panel px-3 py-0.5 font-semibold">
-              {SIDE_LABEL[bone.side]}
-            </dd>
-          </div>
-        )}
         {isUnpaired(bone) && (
           <div className="flex gap-2">
             <dt className="text-tinta-suave">Lateralidad</dt>
@@ -82,7 +89,7 @@ export function BoneIdentity({ bone, onViewDetail }: Props) {
         <button
           type="button"
           onClick={() => onViewDetail(bone.id)}
-          className="mt-4 min-h-tactil rounded-suave border-2 border-tinta px-4 text-tinta text-sm hover:bg-acento-suave"
+          className="mt-4 min-h-tactil w-full rounded-full border-2 border-tinta bg-acento font-semibold text-panel shadow-dura hover:bg-acento-fuerte"
         >
           Ver ficha completa
         </button>
