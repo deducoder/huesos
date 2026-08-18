@@ -36,3 +36,5 @@
 - [Un estilo en línea reafirmado necesita un vigilante, no una regla CSS](inline-styles-need-a-watchdog-not-a-css-rule.md) — si una librería lo reasigna en un momento impredecible, un MutationObserver propio es la única defensa robusta.
 - [`sr-only` se comporta distinto según la capa de prueba](sr-only-behaves-differently-per-test-layer.md) — jsdom lo ignora, Playwright lo trata como realmente invisible; `dispatchEvent` en vez de `.click()`.
 - [El boundingBox de un span flex-1 esconde el vacío visual](flex-item-boundingbox-hides-visual-gaps.md) — el texto queda alineado a un extremo de una caja ya crecida; hay que medir el ancestro real.
+- [Medir por la vía accesible, no la obvia](measure-via-the-accessible-path-not-the-obvious-one.md) — clic directo en WebGL mide el entorno, no la app; el navegador de huesos mide lo mismo sin ese ruido.
+- [Un guardrail puede describir la opción descartada de un ADR](guardrail-text-can-carry-a-rejected-option.md) — should-perf-007 seguía hablando del SVG que ADR-001 rechazó, no del glTF que aceptó.
