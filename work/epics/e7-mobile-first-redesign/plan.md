@@ -64,12 +64,15 @@ porque mide el producto terminado, no una versión intermedia.
 - [ ] **Feature complete** — +e7.7, e7.8, e7.9 — las seis vistas bajo ADR-007 y
       el escritorio ampliado desde el móvil. Demo: el recorrido entero
       —explorar → ficha → test— en teléfono y en escritorio.
-- [ ] **Integración en dispositivo** — antes de e7.10 — la suite de navegador
+- [x] **Integración en dispositivo** — antes de e7.10 — la suite de navegador
       corriendo en viewport móvil sobre las seis vistas, más una pasada humana
       en hardware real. No es un epic multicomponente —hay un solo cliente— pero
       la costura que ninguna prueba unitaria ve es la de **las vistas entre sí
       en un mismo dispositivo**: volver de la ficha, cambiar de pestaña, girar
-      la pantalla.
+      la pantalla. Verificado a mano en celular real el 2026-08-17 (vía
+      `vite preview` + `cloudflared`): las seis vistas, las dos costuras de
+      "Volver" (Explorar↔ficha, Fichas↔ficha) y el giro de pantalla, sin
+      hallazgos.
 - [ ] **Epic complete** — +e7.10 — criterios de `scope.md` cumplidos, incluida
       la medición de `should-perf-007` o su marcado explícito como no
       verificado con la razón.
