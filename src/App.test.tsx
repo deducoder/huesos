@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react'
+import { render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { describe, expect, it, vi } from 'vitest'
 import { App } from './App'
@@ -26,6 +26,32 @@ describe('la aplicación, de punta a punta', () => {
   it('empieza en la vista de exploración', () => {
     render(<App />)
     expect(screen.getByRole('button', { name: /^fémur derecho$/i })).toBeInTheDocument()
+  })
+
+  it('el título y las pestañas viven en la misma cabecera (e8.1)', () => {
+    render(<App />)
+    // No `getByRole('banner')`: un `<header>` anidado dentro de `<main>`
+    // no expone el landmark `banner` en un navegador real (verificado con
+    // Playwright) — jsdom lo deja pasar igual, así que ese query mentiría.
+    const cabecera = screen.getByTestId('cabecera')
+    expect(within(cabecera).getByRole('heading', { name: 'huesos-mono' })).toBeInTheDocument()
+    expect(
+      within(cabecera).getByRole('navigation', { name: /modo de estudio/i }),
+    ).toBeInTheDocument()
+  })
+
+  it('en modo ficha, la cabecera muestra el título sin las pestañas', async () => {
+    const user = userEvent.setup()
+    render(<App />)
+
+    await user.click(screen.getByRole('button', { name: /^fémur derecho$/i }))
+    await user.click(screen.getByRole('button', { name: /ver ficha completa/i }))
+
+    const cabecera = screen.getByTestId('cabecera')
+    expect(within(cabecera).getByRole('heading', { name: 'huesos-mono' })).toBeInTheDocument()
+    expect(
+      within(cabecera).queryByRole('navigation', { name: /modo de estudio/i }),
+    ).not.toBeInTheDocument()
   })
 
   it('lleva a la ficha completa y vuelve conservando la selección', async () => {

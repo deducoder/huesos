@@ -46,10 +46,7 @@ function Pestanas({ modo, onCambiar }: { modo: Modo; onCambiar: (tipo: Pestania)
   }
 
   return (
-    <nav
-      className="flex gap-2 border-tinta border-b-2 bg-panel px-4 py-2"
-      aria-label="Modo de estudio"
-    >
+    <nav className="flex items-center gap-2 py-2" aria-label="Modo de estudio">
       {PESTANIAS.map((pestania) => (
         <button
           key={pestania}
@@ -102,10 +99,13 @@ export function App() {
 
   return (
     <main className="flex h-dvh flex-col bg-superficie text-tinta">
-      <header className="border-tinta border-b-2 bg-panel px-4 py-3">
-        <h1 className="font-display font-semibold text-titulo">huesos-mono</h1>
+      <header
+        data-testid="cabecera"
+        className="flex items-stretch justify-between gap-2 border-tinta border-b-2 bg-panel px-4"
+      >
+        <h1 className="flex items-center font-display font-semibold text-lg">huesos-mono</h1>
+        {modo.tipo !== 'ficha' && <Pestanas modo={modo} onCambiar={(tipo) => setModo({ tipo })} />}
       </header>
-      {modo.tipo !== 'ficha' && <Pestanas modo={modo} onCambiar={(tipo) => setModo({ tipo })} />}
       <div className="min-h-0 flex-1">
         {modo.tipo === 'explorar' && (
           <ExploreView
