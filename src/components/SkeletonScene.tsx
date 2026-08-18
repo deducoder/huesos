@@ -39,6 +39,14 @@ interface HalfProps {
   selected: string | null
   half: SceneHalf
   onPick: (id: string) => void
+  /**
+   * La caja mundial del hueso `selected` si su malla está en esta mitad, o
+   * `null` si no (e9.4). Reutiliza `esteHueso`, la misma resolución por
+   * mitad que ya decide el resaltado de color — una segunda comparación por
+   * nombre de malla reintroduciría el bug de b2.1 con los pares que
+   * comparten una sola malla.
+   */
+  onSelectedBox?: (box: Box3 | null) => void
 }
 
 /**
@@ -51,7 +59,7 @@ interface HalfProps {
  * eje y el único par que ya trae completo. Espejar eso no lo mueve al otro
  * lado: lo copia encima de sí mismo.
  */
-function SkeletonHalf({ bones, selected, half, onPick }: HalfProps) {
+function SkeletonHalf({ bones, selected, half, onPick, onSelectedBox }: HalfProps) {
   const { scene } = useGLTF(skeletonUrl, DRACO_PATH)
   const copia = useMemo(() => {
     const clon = scene.clone(true)
@@ -65,6 +73,19 @@ function SkeletonHalf({ bones, selected, half, onPick }: HalfProps) {
   const coloresBase = useRef(new WeakMap<MeshStandardMaterial, Color>())
 
   useLayoutEffect(() => {
+    // Se acumula acá, no en una variable booleana: `expandByObject` necesita
+    // la malla completa, y una sola mitad puede tener más de una malla para
+    // el mismo hueso solo en teoría (el catálogo de hoy no lo hace, pero
+    // nada en `boneIdForMesh` lo prohíbe) — expandir, no reasignar, cubre
+    // ambos casos con el mismo código.
+    const cajaSeleccion = new Box3()
+    let encontrada = false
+    // `expandByObject` lee `matrixWorld`, y react-three-fiber la recalcula en
+    // su propio ciclo de render — no necesariamente antes de que este efecto
+    // corra. Mismo motivo que `IsolatedGroup` ya documenta para su propia
+    // caja.
+    copia.updateMatrixWorld(true)
+
     copia.traverse((objeto: Object3D) => {
       const malla = objeto as Mesh
       if (!malla.isMesh) return
@@ -84,8 +105,14 @@ function SkeletonHalf({ bones, selected, half, onPick }: HalfProps) {
       const resaltado = esteHueso !== null && esteHueso === selected
       const base = coloresBase.current.get(propio)
       propio.color = resaltado ? colorDeSeleccion() : (base ?? propio.color)
+      if (resaltado) {
+        cajaSeleccion.expandByObject(malla)
+        encontrada = true
+      }
     })
-  }, [copia, selected, bones, half])
+
+    onSelectedBox?.(encontrada ? cajaSeleccion : null)
+  }, [copia, selected, bones, half, onSelectedBox])
 
   const handleClick = (evento: ThreeEvent<MouseEvent>) => {
     evento.stopPropagation()

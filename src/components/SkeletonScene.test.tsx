@@ -73,4 +73,12 @@ describe('la escena del esqueleto', () => {
     // presente — no sería un tinte: seguiría sumando luz sobre el tinte.
     expect(fuente).not.toMatch(/emissiveIntensity/)
   })
+
+  it('reporta la caja del hueso señalado reutilizando la resolución por mitad', () => {
+    // e9.4: el mismo `esteHueso` que ya decide el resaltado de color decide
+    // qué malla expandir — no una segunda comparación que podría reintroducir
+    // el bug de b2.1 (mallas compartidas entre pares, comparadas por nombre).
+    expect(fuente).toMatch(/onSelectedBox\?\.\(/)
+    expect(fuente).not.toMatch(/malla\.name === selected/)
+  })
 })
