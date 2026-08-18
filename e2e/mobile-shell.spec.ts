@@ -316,3 +316,19 @@ test('el «atrás» del sistema recorre la aplicación en vez de abandonarla', a
   await page.goBack()
   await expect(page.getByRole('button', { name: /esqueleto completo/i })).toBeVisible()
 })
+
+test('desde Explorar recién cargada, el «atrás» del sistema abandona el sitio', async ({
+  page,
+}) => {
+  // El MUST NOT de e9.6: la corrección es no perder la aplicación *desde una
+  // ficha*, no secuestrar el gesto para siempre. Sin esta prueba, cambiar el
+  // `replaceState` de arranque por un `pushState` dejaría al usuario atrapado
+  // y ninguna otra prueba lo vería — el resto solo mira que el retroceso
+  // funcione, nunca que siga pudiendo salir.
+  await esperarExplorar(page)
+  expect(page.url(), 'la aplicación está cargada').toContain('localhost:4173')
+
+  await page.goBack()
+
+  expect(page.url(), 'el historial propio estaba agotado').not.toContain('localhost:4173')
+})
