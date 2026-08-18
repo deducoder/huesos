@@ -317,6 +317,10 @@ export function App() {
     window.history.replaceState(modoInicial(), '')
     const alRetroceder = (evento: PopStateEvent) => {
       setModo(esModo(evento.state) ? evento.state : modoInicial())
+      // El panel es una capa ajena al historial (no es un `Modo`): una
+      // navegación real de "atrás" no le pertenece, así que no debe
+      // sobrevivir montada encima de la vista a la que el sistema volvió.
+      setMenuAbierto(false)
     }
     window.addEventListener('popstate', alRetroceder)
     return () => window.removeEventListener('popstate', alRetroceder)

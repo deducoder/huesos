@@ -294,5 +294,25 @@ describe('la aplicación, de punta a punta', () => {
 
       expect(screen.queryByRole('button', { name: /menú/i })).not.toBeInTheDocument()
     })
+
+    it('el «atrás» del sistema cierra el panel, no solo cambia la vista de fondo', async () => {
+      // Hallazgo de la verificación manual (e9.7): el panel es estado
+      // local, ajeno al historial por diseño — pero eso significaba que
+      // sobrevivía a una navegación real del sistema, quedando montado
+      // encima de una vista que ya no era la que estaba cuando se abrió.
+      const user = userEvent.setup()
+      render(<App />)
+
+      await user.click(screen.getByRole('button', { name: /^fichas$/i }))
+      await user.click(screen.getByRole('button', { name: /menú/i }))
+      expect(screen.getByRole('dialog')).toBeInTheDocument()
+
+      window.history.back()
+
+      await waitFor(() => {
+        expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+      })
+      expect(screen.getByRole('button', { name: /^fémur derecho$/i })).toBeInTheDocument()
+    })
   })
 })
