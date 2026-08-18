@@ -61,3 +61,59 @@ explícitamente su alcance del de `must-data-003` (que sigue intacto,
 gobernando el formato escrito oculto).
 
 Gate: `./scripts/check` verde (254 tests, lint/format/types limpios).
+
+## T4 · Verificación manual — recorrido real en el navegador
+
+Build de producción + `vite preview` en un puerto propio, recorrido con
+Playwright real (no jsdom): Test → Hueso aislado y Test → Esqueleto
+completo muestran 3 opciones y 0 campos de texto en ambos; "Responder"
+arranca deshabilitado y se habilita al elegir; responder muestra el
+resultado; 6 preguntas consecutivas confirmaron que la posición de las 3
+opciones cambia entre preguntas y que ninguna repite etiqueta dentro de
+la misma pregunta; ningún texto ni `aria-label` dice "escrib" en ningún
+punto del recorrido.
+
+**Desviación real del plan, y un hallazgo que no estaba en la lista de
+archivos de ninguna tarea:** un grep de `getByPlaceholder`/`getByRole('textbox'`
+sobre `e2e/` encontró que `e2e/mobile-shell.spec.ts` dependía del `<form>`
+del formato escrito (`getByPlaceholder(/qué hueso es/i)`) para medir el
+mínimo táctil. El plan no lo había nombrado porque `./scripts/check-integration`
+no corre por tarea, solo al pushear (`gemba:integrate`) — pero dejar un
+gate que sé que está roto para que lo encuentre otra fase, ya sin este
+contexto, es exactamente lo que "no acumular defectos" pide evitar.
+Corrida la suite completa de todos modos:
+
+1. `e2e/mobile-shell.spec.ts` — el mismo problema: reescrito para elegir
+   una opción del `<fieldset>` en vez de tipear.
+2. `e2e/desktop-scale-up.spec.ts` — un segundo caso, más sutil: el test
+   ubicaba "la barra de respuesta" por `page.locator('form').first()`,
+   que ya no existe por defecto. La barra en sí (el contenedor
+   `border-tinta border-t p-4` que envuelve el formato que sea) no tenía
+   ningún selector estable — se le agregó `data-testid="barra-respuesta"`
+   en `TestQuestion.tsx`, mismo patrón que `data-testid="escena"` ya
+   usa en este mismo componente.
+3. **La primera corrida de `check-integration` dio un falso positivo — no
+   por mi cambio, sino por servidores `vite preview` obsoletos** en los
+   puertos 4173/4321, algunos de horas antes de esta sesión
+   (`ps` mostró un proceso de las 16:17). `playwright.config.ts` tiene
+   `reuseExistingServer: !process.env.CI`, así que reutilizó el build
+   viejo en vez de reconstruir — medí contra código de antes de e8.4.
+   Maté los procesos obsoletos y corrí de nuevo contra un build fresco.
+
+Suite de integración completa: 21/21 en verde
+(`./scripts/check-integration`). Gate rápido también verde
+(`./scripts/check`, 254 tests).
+
+## Finalize
+
+- Full gate set: verde (`./scripts/check` — 254 tests; `./scripts/check-integration` — 21/21).
+- Orphaned-test check: `src/App.test.tsx` monta `TestQuestion` indirectamente
+  (vía `SkeletonTestView`/`BoneTestView`) y solo verifica que el botón
+  "Responder" existe — mismo nombre accesible en ambos formatos, sigue
+  verde sin tocarse. Ningún otro archivo importa `TestQuestion`,
+  `SkeletonTestView` o `BoneTestView` fuera de sus propios tests y de
+  `App.tsx`/`SkeletonTestView.tsx`/`BoneTestView.tsx` mismos.
+- Acceptance criteria: cumplidas de punta a punta — formato por defecto
+  `choice` sin campo de texto, formato `open` intacto y solo alcanzable
+  explícito, `must-data-010` declarado con su verificación, guardia de
+  `must-data-003` sin editarse y su test sigue en verde.
