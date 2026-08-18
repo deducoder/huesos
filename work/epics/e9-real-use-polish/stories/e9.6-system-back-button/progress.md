@@ -119,6 +119,6 @@ así que ahora empuja entradas de historial — y sigue sin registrar una sola
 petición de red, que es la confirmación de que la History API no toca
 `must-privacy-006`.
 
-**Estado:** `./scripts/check` verde (37 archivos, 278 pruebas) y
+**Estado:** `./scripts/check` verde (37 archivos, 277 pruebas) y
 `./scripts/check-integration` verde (22 de 22). Pendiente T4, la prueba
 manual en el teléfono, que es la única que puede cerrar la historia.
