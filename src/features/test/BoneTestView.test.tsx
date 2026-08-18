@@ -54,6 +54,12 @@ describe('BoneTestView', () => {
     }
   })
 
+  it('must-data-010: la pista accesible no dice "escribí" — el formato por defecto es opción múltiple', () => {
+    render(<BoneTestView />)
+    const escena = screen.getByTestId('escena-aislada-sustituida')
+    expect(escena.getAttribute('aria-label') ?? '').not.toMatch(/escrib/i)
+  })
+
   it('monta la escena aislada con un hueso señalado', () => {
     render(<BoneTestView />)
     const escena = screen.getByTestId('escena-aislada-sustituida')

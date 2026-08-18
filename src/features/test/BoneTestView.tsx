@@ -17,7 +17,7 @@ export function BoneTestView() {
         <IsolatedBoneScene
           bones={catalog}
           boneId={boneId}
-          accessibleLabel="Un hueso está señalado, aislado del resto del esqueleto. Escribí su nombre en el campo de respuesta."
+          accessibleLabel="Un hueso está señalado, aislado del resto del esqueleto. Elegí su nombre entre las 3 opciones."
         />
       )}
     />

@@ -3,8 +3,16 @@ import { describe, expect, it, vi } from 'vitest'
 import { SkeletonTestView } from './SkeletonTestView'
 
 vi.mock('../../components/SkeletonScene', () => ({
-  SkeletonScene: ({ selected }: { selected: string | null }) => (
-    <div data-testid="escena-sustituida" data-hueso={selected ?? ''} />
+  SkeletonScene: ({
+    selected,
+    accessibleHint,
+  }: {
+    selected: string | null
+    accessibleHint?: string
+  }) => (
+    <div data-testid="escena-sustituida" data-hueso={selected ?? ''}>
+      <p className="sr-only">{accessibleHint}</p>
+    </div>
   ),
 }))
 
@@ -19,5 +27,10 @@ describe('SkeletonTestView', () => {
     render(<SkeletonTestView />)
     expect(screen.queryByRole('navigation')).not.toBeInTheDocument()
     expect(screen.queryByRole('heading')).not.toBeInTheDocument()
+  })
+
+  it('must-data-010: la pista accesible no dice "escribí" — el formato por defecto es opción múltiple', () => {
+    render(<SkeletonTestView />)
+    expect(document.body.textContent ?? '').not.toMatch(/escrib/i)
   })
 })
