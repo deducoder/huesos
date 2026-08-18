@@ -82,6 +82,18 @@ describe('la escena del esqueleto', () => {
     expect(fuente).not.toMatch(/malla\.name === selected/)
   })
 
+  it('actualiza la matriz mundial desde el padre, no desde la propia copia', () => {
+    // Hallazgo de la verificación manual (e9.4): `updateMatrixWorld` propaga
+    // hacia abajo, nunca hacia arriba. Llamarlo sobre `copia` en vez de sobre
+    // su padre —el `<group>` con `offset`/`scale` de `CenteredSkeleton`—
+    // deja la caja calculada contra la matriz identidad en el primer commit:
+    // el esqueleto entero fuera de cámara en la primera pregunta de una
+    // carga fresca, reproducido y confirmado con la traslación de esa
+    // matriz en `[0, 0, 0]` antes del arreglo.
+    expect(fuente).toMatch(/copia\.parent\?\.updateMatrixWorld\(true\)/)
+    expect(fuente).not.toMatch(/(?<!parent\?\.)\bcopia\.updateMatrixWorld\(/)
+  })
+
   it('la cámara es controlada, no la prop estática que solo se lee al montar', () => {
     // b2.2: `<Canvas camera={{...}}>` fija la posición una sola vez; un
     // encuadre que cambia con la selección necesita <PerspectiveCamera>
