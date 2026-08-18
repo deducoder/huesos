@@ -54,3 +54,5 @@
 - [El andamiaje de test puede ser código de producción que falta](test-scaffolding-may-be-missing-production-code.md) — si hay que limpiar estado global entre tests, preguntar quién debería sembrarlo al arrancar.
 - [Los criterios negativos son los que se quedan sin prueba](negative-criteria-are-the-ones-left-untested.md) — cortar tareas por mecanismo deja fuera los MUST NOT y los caminos de salida.
 - [Validar un discriminante con un Record, no con una lista](validate-a-discriminant-with-a-record-not-a-list.md) — la unión exige exhaustividad; la lista acepta la omisión en silencio.
+- ["Algo cambió" no es una aserción](something-changed-is-not-an-assertion.md) — el defecto puede estar presente y cambiar píxeles igual; afirmar el estado final.
+- [Descentrar la proyección, no la cámara](offset-the-projection-not-the-camera.md) — `setViewOffset` mantiene el punto de órbita en el objeto; mover la cámara lo desplaza.
