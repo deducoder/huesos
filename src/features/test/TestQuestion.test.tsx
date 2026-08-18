@@ -264,6 +264,100 @@ describe('TestQuestion — modo opción múltiple (formato por defecto)', () => 
     expect(screen.getByText(bone.la, { exact: false })).toBeInTheDocument()
     expect(store.read()[bone.id]).toEqual({ correct: 0, incorrect: 1 })
   })
+
+  it('tras responder mal, las tres opciones se quedan en pantalla', async () => {
+    const user = userEvent.setup()
+    render(
+      <TestQuestion bones={catalog} store={almacenFalso()} renderScene={renderScenaSustituida} />,
+    )
+    const boneId = screen.getByTestId('escena').dataset.hueso
+    const bone = findBone(catalog, boneId ?? null)
+    if (!bone) throw new Error('la pregunta no eligió un hueso válido')
+
+    const opciones = within(screen.getByRole('group', { name: /qué hueso es/i })).getAllByRole(
+      'button',
+    )
+    const incorrecta = opciones.find((o) => o.textContent !== shortName(bone.es))
+    if (!incorrecta) throw new Error('las 3 opciones eran todas el hueso correcto')
+    await user.click(incorrecta)
+    await user.click(screen.getByRole('button', { name: /^responder$/i }))
+
+    // Consultado de nuevo tras responder, no reutilizando la referencia de
+    // antes: si el grupo entero se hubiera desmontado, `getByRole` fallaría
+    // acá en vez de devolver en silencio los hijos de un nodo ya huérfano.
+    const grupoTrasResponder = screen.getByRole('group', { name: /qué hueso es/i })
+    expect(within(grupoTrasResponder).getAllByRole('button')).toHaveLength(3)
+  })
+
+  it('marca la opción correcta como acierto aunque el estudiante haya fallado', async () => {
+    const user = userEvent.setup()
+    render(
+      <TestQuestion bones={catalog} store={almacenFalso()} renderScene={renderScenaSustituida} />,
+    )
+    const boneId = screen.getByTestId('escena').dataset.hueso
+    const bone = findBone(catalog, boneId ?? null)
+    if (!bone) throw new Error('la pregunta no eligió un hueso válido')
+
+    const grupo = screen.getByRole('group', { name: /qué hueso es/i })
+    const opciones = within(grupo).getAllByRole('button')
+    const incorrecta = opciones.find((o) => o.textContent !== shortName(bone.es))
+    if (!incorrecta) throw new Error('las 3 opciones eran todas el hueso correcto')
+    await user.click(incorrecta)
+    await user.click(screen.getByRole('button', { name: /^responder$/i }))
+
+    // Se busca de nuevo, no sobre `grupo`: si el grupo se hubiera
+    // desmontado, esto fallaría en vez de leer hijos de un nodo huérfano.
+    const grupoTrasResponder = screen.getByRole('group', { name: /qué hueso es/i })
+    const correcta = within(grupoTrasResponder).getByRole('button', {
+      name: new RegExp(shortName(bone.es)),
+    })
+    expect(correcta).toHaveTextContent('✓')
+  })
+
+  it('marca la opción elegida como error cuando el estudiante falló', async () => {
+    const user = userEvent.setup()
+    render(
+      <TestQuestion bones={catalog} store={almacenFalso()} renderScene={renderScenaSustituida} />,
+    )
+    const boneId = screen.getByTestId('escena').dataset.hueso
+    const bone = findBone(catalog, boneId ?? null)
+    if (!bone) throw new Error('la pregunta no eligió un hueso válido')
+
+    const grupo = screen.getByRole('group', { name: /qué hueso es/i })
+    const opciones = within(grupo).getAllByRole('button')
+    const incorrecta = opciones.find((o) => o.textContent !== shortName(bone.es))
+    if (!incorrecta) throw new Error('las 3 opciones eran todas el hueso correcto')
+    const textoElegido = incorrecta.textContent
+    await user.click(incorrecta)
+    await user.click(screen.getByRole('button', { name: /^responder$/i }))
+
+    const grupoTrasResponder = screen.getByRole('group', { name: /qué hueso es/i })
+    const elegidaAhora = within(grupoTrasResponder)
+      .getAllByRole('button')
+      .find((o) => o.textContent?.includes(textoElegido ?? ''))
+    expect(elegidaAhora).toHaveTextContent('✗')
+  })
+
+  it('nunca hay dos botones de acción a la vez, ni antes ni después de responder', async () => {
+    const user = userEvent.setup()
+    render(
+      <TestQuestion bones={catalog} store={almacenFalso()} renderScene={renderScenaSustituida} />,
+    )
+    expect(
+      screen.getAllByRole('button', { name: /^(responder|siguiente pregunta)$/i }),
+    ).toHaveLength(1)
+
+    const grupo = screen.getByRole('group', { name: /qué hueso es/i })
+    const [primeraOpcion] = within(grupo).getAllByRole('button')
+    if (!primeraOpcion) throw new Error('no había ninguna opción para elegir')
+    await user.click(primeraOpcion)
+    await user.click(screen.getByRole('button', { name: /^responder$/i }))
+
+    expect(
+      screen.getAllByRole('button', { name: /^(responder|siguiente pregunta)$/i }),
+    ).toHaveLength(1)
+    expect(screen.getByRole('button', { name: /^siguiente pregunta$/i })).toBeInTheDocument()
+  })
 })
 
 describe('TestQuestion y el registro de progreso', () => {

@@ -51,6 +51,16 @@ interface Props {
 
 type Resultado = 'pendiente' | 'correcto' | 'incorrecto'
 
+type EstadoOpcion = 'neutra' | 'seleccionada' | 'acierto' | 'error'
+
+/** Las clases de cada estado de una opción. Los tokens de acierto/error son de e9.1. */
+const CLASE_POR_ESTADO: Record<EstadoOpcion, string> = {
+  neutra: 'bg-superficie text-tinta hover:bg-acento-suave',
+  seleccionada: 'bg-acento text-panel',
+  acierto: 'bg-acierto text-panel',
+  error: 'bg-error text-panel',
+}
+
 /**
  * El flujo pregunta → respuesta → resultado → siguiente pregunta (`RF-04`,
  * `RF-05`). Qué escena mostrar es responsabilidad de quien lo monta —
@@ -89,6 +99,18 @@ export function TestQuestion({
     anotar(seleccionId === bone.id)
   }
 
+  /**
+   * Cómo se ve una opción: neutra o marcada mientras se elige, calificada
+   * una vez que hay resultado. La correcta siempre pasa a acierto, la haya
+   * tocado o no; la elegida pasa a error solo si no era la correcta.
+   */
+  const estadoOpcion = (opcion: Bone): EstadoOpcion => {
+    if (resultado === 'pendiente') return seleccionId === opcion.id ? 'seleccionada' : 'neutra'
+    if (opcion.id === bone.id) return 'acierto'
+    if (opcion.id === seleccionId) return 'error'
+    return 'neutra'
+  }
+
   const siguiente = () => {
     const siguienteBone = pickTestableBone(bones, { excluirId: bone.id, progress: store.read() })
     setBone(siguienteBone)
@@ -114,8 +136,8 @@ export function TestQuestion({
         className="absolute inset-x-4 bottom-4 rounded-tarjeta border-2 border-tinta bg-panel p-4 shadow-dura"
         data-testid="barra-respuesta"
       >
-        {resultado === 'pendiente' ? (
-          answerFormat === 'open' ? (
+        {answerFormat === 'open' ? (
+          resultado === 'pendiente' ? (
             <form onSubmit={responder} className="flex gap-2">
               <label className="flex-1">
                 <span className="sr-only">¿Qué hueso es?</span>
@@ -135,53 +157,67 @@ export function TestQuestion({
               </button>
             </form>
           ) : (
-            <div className="flex flex-col gap-3">
-              <fieldset className="m-0 grid grid-cols-3 gap-2 border-0 p-0">
-                <legend className="sr-only">¿Qué hueso es?</legend>
-                {opciones.map((opcion) => (
-                  <button
-                    key={opcion.id}
-                    type="button"
-                    aria-pressed={seleccionId === opcion.id}
-                    onClick={() => setSeleccionId(opcion.id)}
-                    className={`min-h-tactil rounded-full border-2 border-tinta px-2 font-semibold text-sm ${
-                      seleccionId === opcion.id
-                        ? 'bg-acento text-panel'
-                        : 'bg-superficie text-tinta hover:bg-acento-suave'
-                    }`}
-                  >
-                    {shortName(opcion.es)}
-                  </button>
-                ))}
-              </fieldset>
+            <div className="flex items-center gap-4">
+              <div role="status">
+                <p className="font-semibold text-sm">
+                  {resultado === 'correcto' ? 'Correcto' : 'Incorrecto'}
+                </p>
+                {resultado === 'incorrecto' && (
+                  <p className="text-tinta-suave text-sm">
+                    {bone.es} / {bone.la}
+                  </p>
+                )}
+              </div>
               <button
                 type="button"
-                onClick={responderOpcion}
-                disabled={seleccionId === null}
-                className="min-h-tactil rounded-full border-2 border-tinta bg-acento px-4 font-semibold text-panel text-sm shadow-dura hover:bg-acento-fuerte disabled:cursor-default disabled:border-tinta-suave disabled:bg-panel disabled:text-tinta-suave disabled:shadow-none"
+                onClick={siguiente}
+                className="min-h-tactil rounded-suave border-2 border-tinta px-4 text-sm hover:bg-acento-suave"
               >
-                Responder
+                Siguiente pregunta
               </button>
             </div>
           )
         ) : (
-          <div className="flex items-center gap-4">
-            <div role="status">
-              <p className="font-semibold text-sm">
-                {resultado === 'correcto' ? 'Correcto' : 'Incorrecto'}
-              </p>
-              {resultado === 'incorrecto' && (
-                <p className="text-tinta-suave text-sm">
-                  {bone.es} / {bone.la}
+          <div className="flex flex-col gap-3">
+            <fieldset className="m-0 grid grid-cols-3 gap-2 border-0 p-0">
+              <legend className="sr-only">¿Qué hueso es?</legend>
+              {opciones.map((opcion) => {
+                const estado = estadoOpcion(opcion)
+                return (
+                  <button
+                    key={opcion.id}
+                    type="button"
+                    aria-pressed={seleccionId === opcion.id}
+                    disabled={resultado !== 'pendiente'}
+                    onClick={() => setSeleccionId(opcion.id)}
+                    className={`min-h-tactil rounded-full border-2 border-tinta px-2 font-semibold text-sm [hyphens:auto] ${CLASE_POR_ESTADO[estado]}`}
+                  >
+                    {estado === 'acierto' && '✓ '}
+                    {estado === 'error' && '✗ '}
+                    {shortName(opcion.es)}
+                  </button>
+                )
+              })}
+            </fieldset>
+            {resultado !== 'pendiente' && (
+              <div role="status">
+                <p className="font-semibold text-sm">
+                  {resultado === 'correcto' ? 'Correcto' : 'Incorrecto'}
                 </p>
-              )}
-            </div>
+                {resultado === 'incorrecto' && (
+                  <p className="text-tinta-suave text-sm">
+                    {bone.es} / {bone.la}
+                  </p>
+                )}
+              </div>
+            )}
             <button
               type="button"
-              onClick={siguiente}
-              className="min-h-tactil rounded-suave border-2 border-tinta px-4 text-sm hover:bg-acento-suave"
+              onClick={resultado === 'pendiente' ? responderOpcion : siguiente}
+              disabled={resultado === 'pendiente' && seleccionId === null}
+              className="min-h-tactil rounded-full border-2 border-tinta bg-acento px-4 font-semibold text-panel text-sm shadow-dura hover:bg-acento-fuerte disabled:cursor-default disabled:border-tinta-suave disabled:bg-panel disabled:text-tinta-suave disabled:shadow-none"
             >
-              Siguiente pregunta
+              {resultado === 'pendiente' ? 'Responder' : 'Siguiente pregunta'}
             </button>
           </div>
         )}
