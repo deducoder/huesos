@@ -1,6 +1,6 @@
 import { OrbitControls, useGLTF } from '@react-three/drei'
 import { Canvas, type ThreeEvent } from '@react-three/fiber'
-import { Suspense, useLayoutEffect, useMemo } from 'react'
+import { Suspense, useLayoutEffect, useMemo, useRef } from 'react'
 import { Box3, Color, type Mesh, MeshStandardMaterial, type Object3D, Vector3 } from 'three'
 import type { Bone } from '../data/bone'
 import { FixTouchAction } from './FixTouchAction'
@@ -57,6 +57,12 @@ function SkeletonHalf({ bones, selected, half, onPick }: HalfProps) {
     const clon = scene.clone(true)
     return half === 'mirrored' ? stripMidline(clon) : clon
   }, [scene, half])
+  // El color del activo, por material propio. Teñir no tiene un neutro al
+  // que volver —a diferencia de `emissive`, que vuelve a negro— así que hace
+  // falta guardar contra qué restaurar. Un `WeakMap` propio, en vez de
+  // `userData` (tipado `any` en three.js), es lo que evita un `as` sin red:
+  // el compilador sigue sabiendo que esto es un `Color` o nada.
+  const coloresBase = useRef(new WeakMap<MeshStandardMaterial, Color>())
 
   useLayoutEffect(() => {
     copia.traverse((objeto: Object3D) => {
@@ -66,19 +72,18 @@ function SkeletonHalf({ bones, selected, half, onPick }: HalfProps) {
       if (Array.isArray(material) || !(material instanceof MeshStandardMaterial)) return
       // Cada copia necesita su propio material: compartirlo resaltaría ambos lados.
       if (!malla.userData.ownMaterial) {
-        malla.material = material.clone()
+        const clonado = material.clone()
+        malla.material = clonado
         malla.userData.ownMaterial = true
-        // El color del activo, guardado antes de que el resaltado lo pise:
-        // teñir no tiene un neutro al que volver, a diferencia de `emissive`
-        // (que vuelve a negro). Sin esto no habría a qué restaurar.
-        malla.userData.baseColor = material.color.clone()
+        coloresBase.current.set(clonado, material.color.clone())
       }
       const propio = malla.material as MeshStandardMaterial
       // El nombre llega ya saneado por el cargador; `boneIdForMesh` normaliza
       // ambos lados, y la mitad decide el lado del hueso par.
       const esteHueso = boneIdForMesh(bones, malla.name, half)
       const resaltado = esteHueso !== null && esteHueso === selected
-      propio.color = resaltado ? colorDeSeleccion() : (malla.userData.baseColor as Color)
+      const base = coloresBase.current.get(propio)
+      propio.color = resaltado ? colorDeSeleccion() : (base ?? propio.color)
     })
   }, [copia, selected, bones, half])
 
