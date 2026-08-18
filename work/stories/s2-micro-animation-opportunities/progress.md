@@ -13,3 +13,14 @@ anticipado en el plan. Resuelto con dos comentarios `biome-ignore` puntuales
 quitar el `!important` — quitarlo habría dejado la garantía dependiente del
 orden de cascada de Tailwind, que es justo lo que esta regla existe para
 evitar. Gate: verde, sin advertencias.
+
+## T2 · Acordeón de fichas: apertura/cierre animados, sin fuga de foco
+
+Reescrito `FichasAccordion.test.tsx:12` (RED confirmado antes del cambio: 3
+tests fallando) para afirmar `inert` en vez de ausencia del DOM, más un test
+nuevo para la transición de la flecha. `FichasAccordion.tsx`: el contenido de
+cada categoría deja de desmontarse condicionalmente, queda siempre montado
+dentro de un contenedor `grid-rows-[0fr]/[1fr]` con `inert={!expandida}` y
+`data-testid="fichas-contenido-{categoría}"`; la flecha gana
+`transition-transform`. Gate: verde, 353/353 (los 9 tests previos del
+archivo siguen pasando sin tocarlos, más 1 nuevo). Sin desviaciones del plan.
