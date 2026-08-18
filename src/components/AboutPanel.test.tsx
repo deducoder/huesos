@@ -35,6 +35,17 @@ describe('AboutPanel', () => {
     expect(screen.getByText(/no garantizan su exactitud/i)).toBeInTheDocument()
   })
 
+  it('acredita a quién desarrolló la aplicación (pedido en la verificación manual)', () => {
+    render(<AboutPanel onClose={vi.fn()} />)
+    expect(screen.getByText(/desarrollado por dedu/i)).toBeInTheDocument()
+  })
+
+  it('dice sin ambigüedad que no hay rastreo ni fines de lucro', () => {
+    render(<AboutPanel onClose={vi.fn()} />)
+    expect(screen.getByText(/sin rastreo/i)).toBeInTheDocument()
+    expect(screen.getByText(/sin fines de lucro/i)).toBeInTheDocument()
+  })
+
   it('al montar, el foco entra al panel', () => {
     render(<AboutPanel onClose={vi.fn()} />)
     expect(screen.getByRole('dialog')).toHaveFocus()

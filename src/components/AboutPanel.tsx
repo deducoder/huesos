@@ -73,6 +73,12 @@ export function AboutPanel({ onClose }: { onClose: () => void }) {
             Los autores del modelo no garantizan su exactitud anatómica.
           </p>
         </section>
+
+        <section className="mt-4">
+          <p className="text-tinta-suave text-sm">
+            Sin rastreo. Sin fines de lucro. Desarrollado por DEDU · 2026.
+          </p>
+        </section>
       </div>
     </div>
   )
