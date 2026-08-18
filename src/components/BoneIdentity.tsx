@@ -1,7 +1,8 @@
 import { type Bone, isUnpaired } from '../data/bone'
 import { catalog } from '../data/catalog'
 import { isSideIrrelevant } from '../domain/side-pairing'
-import { REGION_LABEL, SIDE_LABEL } from './labels'
+import { shortName, sideLabel } from './bone-name'
+import { REGION_LABEL } from './labels'
 import { REGION_ACCENT } from './region-accent'
 
 interface Props {
@@ -41,7 +42,7 @@ export function BoneIdentity({ bone, onViewDetail }: Props) {
   return (
     <section className="p-6" aria-labelledby="identidad-hueso">
       <h2 id="identidad-hueso" className="font-display font-semibold text-2xl text-tinta">
-        {bone.es}
+        {shortName(bone.es)}
       </h2>
       <p className="mt-1 text-lg italic" style={{ color: acento.text }}>
         {bone.la}
@@ -60,7 +61,7 @@ export function BoneIdentity({ bone, onViewDetail }: Props) {
             <>
               <dt className="sr-only">Lado</dt>
               <dd className="w-fit rounded-full border-2 border-tinta bg-panel px-3 py-1 font-semibold">
-                {SIDE_LABEL[bone.side]}
+                {sideLabel(bone.side, bone.gender)}
               </dd>
             </>
           )}
@@ -98,7 +99,8 @@ export function BoneIdentity({ bone, onViewDetail }: Props) {
       {/* Un lector de pantalla anuncia el cambio sin tener que ir a buscar el panel. */}
       <p role="status" aria-live="polite" className="sr-only">
         {bone.es}
-        {bone.side !== null && !ocultarLado ? ` ${SIDE_LABEL[bone.side]}` : ''}, {bone.la}
+        {bone.side !== null && !ocultarLado ? ` ${sideLabel(bone.side, bone.gender)}` : ''},{' '}
+        {bone.la}
       </p>
     </section>
   )

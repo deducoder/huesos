@@ -117,3 +117,20 @@ accesible habría pasado en verde.
 «tibia derecho», «falange media del quinto dedo del pie derecho») y ahora
 concuerdan. Un grep de las siete familias femeninas sobre `e2e/` y `src/`
 confirma que no queda ninguno.
+
+## T6 · El título de la ficha y el panel de identidad
+
+**Done.** Título corto en `BoneSheet` y en `BoneIdentity`, lado concordado en
+las dos filas «Lado», y el anuncio `role="status"` del panel de identidad con
+el nombre íntegro.
+
+- **RED:** 5 en rojo, tres de la ficha y dos del panel.
+- **GREEN:** `shortName` en los dos títulos, `sideLabel` en los dos lados, y
+  una fila «Nombre completo» nueva en la ficha.
+- **Gate:** `./scripts/check` verde — 310 tests.
+
+**La fila «Nombre completo» aparece solo cuando el acortado quitó algo.**
+Comparar el corto con el `es` en minúsculas distingue los 75 nombres que la
+derivación cambia de los 45 que solo capitaliza; en un fémur, una fila que
+repitiera «fémur» debajo del título «Fémur» no informaría de nada. Es la única
+decisión de esta tarea que el design no traía escrita.

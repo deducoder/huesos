@@ -95,4 +95,18 @@ describe('el panel de identidad del hueso', () => {
     const datos = screen.getAllByRole('definition').map((d) => d.textContent)
     expect(datos).toContain('derecho')
   })
+
+  it('titula con el nombre corto y concuerda el lado con el género', () => {
+    render(<BoneIdentity bone={hueso('clavicle-right')} />)
+    expect(screen.getByRole('heading', { name: 'Clavícula' })).toBeVisible()
+    expect(screen.getByText('derecha')).toBeVisible()
+  })
+
+  // El anuncio de la región viva no es un botón estrecho: lleva el nombre
+  // del catálogo entero, como el resto de lo que oye un lector de pantalla.
+  it('anuncia el nombre completo, sin acortar', () => {
+    render(<BoneIdentity bone={hueso('hand-proximal-phalanx-2-right')} />)
+    const anuncio = screen.getByRole('status')
+    expect(anuncio).toHaveTextContent('falange proximal del segundo dedo de la mano derecha')
+  })
 })

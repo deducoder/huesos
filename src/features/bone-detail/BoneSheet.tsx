@@ -1,4 +1,5 @@
-import { REGION_LABEL, SIDE_LABEL } from '../../components/labels'
+import { shortName, sideLabel } from '../../components/bone-name'
+import { REGION_LABEL } from '../../components/labels'
 import { REGION_ACCENT } from '../../components/region-accent'
 import { type Bone, isUnpaired } from '../../data/bone'
 import { catalog } from '../../data/catalog'
@@ -34,7 +35,7 @@ export function BoneSheet({ bone }: { bone: Bone }) {
   return (
     <section className="px-5 pt-5 pb-6" aria-labelledby="ficha-hueso">
       <h2 id="ficha-hueso" className="font-display font-semibold text-[27px] text-tinta">
-        {bone.es}
+        {shortName(bone.es)}
       </h2>
       <p className="mt-1 text-[15px] italic" style={{ color: acento.text }}>
         {bone.la}
@@ -51,8 +52,14 @@ export function BoneSheet({ bone }: { bone: Bone }) {
         </Fila>
         {bone.side !== null && !ocultarLado && (
           <Fila etiqueta="Lado">
-            <span className="font-semibold">{SIDE_LABEL[bone.side]}</span>
+            <span className="font-semibold">{sideLabel(bone.side, bone.gender)}</span>
           </Fila>
+        )}
+        {/* El título va acortado para caber en un teléfono (ADR-014). Lo que
+            el acortado quita reaparece acá, y solo cuando quitó algo: repetir
+            el mismo nombre dos veces no informa de nada. */}
+        {shortName(bone.es).toLowerCase() !== bone.es.toLowerCase() && (
+          <Fila etiqueta="Nombre completo">{bone.es}</Fila>
         )}
         {isUnpaired(bone) && <Fila etiqueta="Lateralidad">impar</Fila>}
         {bone.synonyms.length > 0 && <Fila etiqueta="También">{bone.synonyms.join(' · ')}</Fila>}
