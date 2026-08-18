@@ -63,3 +63,5 @@
 - [emissive no puede superar a un material ya claro](emissive-cannot-outshine-a-light-base.md) — teñir el color dio el doble que el tope teórico de emitir luz.
 - [El estado externo de tipo laxo pide su propio store](loosely-typed-external-state-needs-its-own-store.md) — un WeakMap propio evita heredar el `any` de `userData` y el `as` que lo acompaña.
 - [Mantener contenido viejo montado puede duplicar texto](keeping-old-content-mounted-can-duplicate-text.md) — una búsqueda sin acotar deja de ser inequívoca cuando dos vistas conviven en vez de excluirse.
+- [Copiar un patrón es copiar todo su paquete](copying-a-pattern-means-copying-its-whole-package.md) — el mecanismo principal no basta; las piezas de caso límite viven al lado, documentadas, y hay que leerlas también.
+- [Los grupos anidados necesitan actualizar la matriz del padre](nested-groups-need-parent-matrix-updates.md) — updateMatrixWorld nunca propaga hacia arriba; un patrón que funciona sin envoltura extra puede fallar con una.

@@ -73,4 +73,49 @@ describe('la escena del esqueleto', () => {
     // presente — no sería un tinte: seguiría sumando luz sobre el tinte.
     expect(fuente).not.toMatch(/emissiveIntensity/)
   })
+
+  it('reporta la caja del hueso señalado reutilizando la resolución por mitad', () => {
+    // e9.4: el mismo `esteHueso` que ya decide el resaltado de color decide
+    // qué malla expandir — no una segunda comparación que podría reintroducir
+    // el bug de b2.1 (mallas compartidas entre pares, comparadas por nombre).
+    expect(fuente).toMatch(/onSelectedBox\?\.\(/)
+    expect(fuente).not.toMatch(/malla\.name === selected/)
+  })
+
+  it('actualiza la matriz mundial desde el padre, no desde la propia copia', () => {
+    // Hallazgo de la verificación manual (e9.4): `updateMatrixWorld` propaga
+    // hacia abajo, nunca hacia arriba. Llamarlo sobre `copia` en vez de sobre
+    // su padre —el `<group>` con `offset`/`scale` de `CenteredSkeleton`—
+    // deja la caja calculada contra la matriz identidad en el primer commit:
+    // el esqueleto entero fuera de cámara en la primera pregunta de una
+    // carga fresca, reproducido y confirmado con la traslación de esa
+    // matriz en `[0, 0, 0]` antes del arreglo.
+    expect(fuente).toMatch(/copia\.parent\?\.updateMatrixWorld\(true\)/)
+    expect(fuente).not.toMatch(/(?<!parent\?\.)\bcopia\.updateMatrixWorld\(/)
+  })
+
+  it('la cámara es controlada, no la prop estática que solo se lee al montar', () => {
+    // b2.2: `<Canvas camera={{...}}>` fija la posición una sola vez; un
+    // encuadre que cambia con la selección necesita <PerspectiveCamera>
+    // (mismo componente que IsolatedBoneScene.tsx ya usa para lo mismo).
+    expect(fuente).not.toMatch(/<Canvas\s*\n?\s*camera=\{\{/)
+    expect(fuente).toMatch(/<PerspectiveCamera/)
+  })
+
+  it('encuadra con frameObject, no con distanceToFit solo, cuando hay zoom', () => {
+    expect(fuente).toMatch(/frameObject\(/)
+    // Sin `zoom`, la reserva tiene que caer a 0 — no a `undefined`, que
+    // rompería el encuadre por defecto que usa ExploreView.
+    expect(fuente).toMatch(/zoom\?\.reservedBottom \?\? 0/)
+  })
+
+  it('acerca el plano cercano, igual que IsolatedBoneScene, para no recortar huesos chicos', () => {
+    // Hallazgo de la verificación manual (e9.4): con el `near` por defecto
+    // de three.js (0.1), una cuña del tarso midió `distance: 0.0588` —
+    // detrás del plano de recorte, invisible. No era la "primera pregunta":
+    // cualquier hueso chico da lo mismo, y `pickTestableBone` sortea al
+    // azar cuál sale primero. Mismo arreglo que `IsolatedBoneScene.tsx` ya
+    // tiene, por el mismo motivo (verificado en e4.4 con una falange).
+    expect(fuente).toMatch(/near=\{0\.001\}/)
+  })
 })
