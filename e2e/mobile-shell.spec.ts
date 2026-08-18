@@ -1,4 +1,5 @@
-import { expect, type Page, test } from '@playwright/test'
+import { expect, type Locator, type Page, test } from '@playwright/test'
+import { PNG } from 'pngjs'
 
 /**
  * Lo que solo se ve en una pantalla de teléfono.
@@ -331,4 +332,317 @@ test('desde Explorar recién cargada, el «atrás» del sistema abandona el siti
   await page.goBack()
 
   expect(page.url(), 'el historial propio estaba agotado').not.toContain('localhost:4173')
+})
+
+/**
+ * Cuántos píxeles de **hueso** hay en cada banda del lienzo.
+ *
+ * El fondo es `--color-lienzo` (#20242b, luminancia ~35) y el hueso un beige
+ * muy claro: medido sobre capturas reales, el histograma es bimodal con
+ * cúmulos en 32 y en 224, así que 90 separa los dos sin zona gris. La banda
+ * lateral es del 2 % del ancho — 8 px de 390 —, dentro del `inset-x-4` (16 px)
+ * de la tarjeta flotante, así que mide hueso y nunca tarjeta.
+ */
+function huesoPorBanda(captura: Buffer) {
+  const { width: w, height: h, data } = PNG.sync.read(captura)
+  const banda = Math.max(2, Math.round(w * 0.02))
+  let izquierda = 0
+  let derecha = 0
+  let total = 0
+  for (let y = 0; y < h; y++) {
+    for (let x = 0; x < w; x++) {
+      const i = (w * y + x) << 2
+      const luminancia =
+        0.2126 * (data[i] ?? 0) + 0.7152 * (data[i + 1] ?? 0) + 0.0722 * (data[i + 2] ?? 0)
+      if (luminancia <= 90) continue
+      total++
+      if (x < banda) izquierda++
+      else if (x >= w - banda) derecha++
+    }
+  }
+  return { izquierda, derecha, total }
+}
+
+/** Abre la ficha completa de un hueso desde el acordeón de Fichas. */
+async function abrirFicha(page: Page, categoria: string, hueso: string) {
+  await page.goto('/')
+  await page.getByRole('button', { name: /^fichas$/i }).click()
+  await page.getByRole('button', { name: new RegExp(`^${categoria}`, 'i') }).click()
+  await page.getByRole('button', { name: hueso, exact: true }).click()
+  const lienzo = page.locator('canvas').first()
+  await expect(lienzo).toBeVisible()
+  await page.waitForTimeout(1800)
+  return lienzo
+}
+
+test('un hueso ancho entra entero en el lienzo de la ficha', async ({ page }) => {
+  // La clavícula y el atlas son los dos huesos más anchos respecto de su alto
+  // de las 144 mallas del modelo (ratios 4,26 y 4,34). El fémur —el hueso con
+  // el que uno probaría por instinto— es alto y estrecho (0,26) y no expone
+  // nada: medido antes del arreglo, daba 0 píxeles en los bordes mientras la
+  // clavícula daba 475/717 y el atlas 1236/1232.
+  for (const [categoria, hueso] of [
+    ['cintura escapular', 'clavícula derecho'],
+    ['columna vertebral', 'atlas'],
+  ] as const) {
+    const lienzo = await abrirFicha(page, categoria, hueso)
+    const { izquierda, derecha } = huesoPorBanda(await lienzo.screenshot())
+    expect(izquierda, `${hueso}: hueso pegado al borde izquierdo`).toBeLessThan(50)
+    expect(derecha, `${hueso}: hueso pegado al borde derecho`).toBeLessThan(50)
+  }
+})
+
+test('el hueso alto y estrecho sigue viéndose como antes', async ({ page }) => {
+  // No-regresión: arreglar el caso ancho no puede encoger ni recortar el que
+  // ya funcionaba.
+  const lienzo = await abrirFicha(page, 'miembro inferior', 'fémur derecho')
+  const { izquierda, derecha, total } = huesoPorBanda(await lienzo.screenshot())
+  expect(izquierda + derecha, 'el fémur nunca tocó los bordes').toBeLessThan(50)
+  expect(total, 'y sigue ocupando una parte sustancial del lienzo').toBeGreaterThan(20_000)
+})
+
+test('el hueso más chico del modelo se sigue viendo, y el que no tiene geometría no monta lienzo', async ({
+  page,
+}) => {
+  // Dos no-regresiones que el encuadre nuevo podría romper sin que nada más
+  // avise. La falange media del quinto dedo del pie mide 0,0084 unidades: es
+  // la más chica de las 144 mallas, y la que obliga a la cámara a acercarse
+  // por debajo del plano cercano por defecto de three.js. Sin el `near`
+  // de e4.4, el lienzo queda en blanco sin ningún error.
+  const lienzo = await abrirFicha(
+    page,
+    'miembro inferior',
+    'falange media del quinto dedo del pie derecho',
+  )
+  const { total } = huesoPorBanda(await lienzo.screenshot())
+  expect(total, 'la falange más chica se ve').toBeGreaterThan(1_000)
+
+  // Y el hioides es uno de los siete huesos que el modelo no representa
+  // (ADR-006): su ficha explica la ausencia y no monta ninguna escena.
+  await page.goto('/')
+  await page.getByRole('button', { name: /^fichas$/i }).click()
+  await page.getByRole('button', { name: /^hioides/i }).click()
+  await page.getByRole('button', { name: 'hioides', exact: true }).click()
+  await expect(page.getByText(/no está en el modelo 3D/i)).toBeVisible()
+  await expect(page.locator('canvas')).toHaveCount(0)
+})
+
+/**
+ * Cuánto hueso queda a la vista y cuánto detrás de la tarjeta flotante.
+ *
+ * La tarjeta se oculta **solo para la captura**, sin tocar el layout: es
+ * blanca, así que contaría como hueso y taparía justo lo que hay que medir.
+ * Mismo truco que `explore.spec.ts` usa para no contaminar su diferencia de
+ * píxeles con el texto de la tarjeta de identidad.
+ */
+async function huesoSobreYBajoLaTarjeta(page: Page, lienzo: Locator) {
+  const cajaLienzo = await lienzo.boundingBox()
+  const cajaTarjeta = await page.getByTestId('tarjeta-ficha').boundingBox()
+  expect(cajaLienzo, 'el lienzo está en la página').not.toBeNull()
+  expect(cajaTarjeta, 'la tarjeta está en la página').not.toBeNull()
+
+  await page.getByTestId('tarjeta-ficha').evaluate((t) => {
+    t.style.visibility = 'hidden'
+  })
+  const captura = await lienzo.screenshot()
+  await page.getByTestId('tarjeta-ficha').evaluate((t) => {
+    t.style.visibility = ''
+  })
+
+  const { width: w, height: h, data } = PNG.sync.read(captura)
+  // Dónde empieza la tarjeta, en píxeles de la captura del lienzo.
+  const escala = h / (cajaLienzo?.height ?? h)
+  const corte = ((cajaTarjeta?.y ?? 0) - (cajaLienzo?.y ?? 0)) * escala
+
+  let visible = 0
+  let tapado = 0
+  let primeraFila = h
+  let ultimaFila = -1
+  for (let y = 0; y < h; y++) {
+    for (let x = 0; x < w; x++) {
+      const i = (w * y + x) << 2
+      const luminancia =
+        0.2126 * (data[i] ?? 0) + 0.7152 * (data[i + 1] ?? 0) + 0.0722 * (data[i + 2] ?? 0)
+      if (luminancia <= 90) continue
+      if (y < corte) visible++
+      else tapado++
+      if (y < primeraFila) primeraFila = y
+      if (y > ultimaFila) ultimaFila = y
+    }
+  }
+  // Qué fracción de la franja libre recorre el hueso de arriba abajo. Es una
+  // medida más honesta que el área: dice si el hueso aprovecha el sitio que
+  // tiene, y no cambia porque el hueso sea más o menos macizo.
+  const recorrido = ultimaFila < 0 ? 0 : (ultimaFila - primeraFila) / Math.max(corte, 1)
+  // Cuánta franja libre queda desaprovechada por debajo del hueso. Es lo que
+  // distingue medir la tarjeta de suponerla: con una reserva fija, una ficha
+  // corta deja un hueco que nadie usa.
+  const huecoBajoElHueso =
+    ultimaFila < 0 ? 1 : (Math.max(corte, 1) - ultimaFila) / Math.max(corte, 1)
+  return { visible, tapado, recorrido, huecoBajoElHueso }
+}
+
+test('el hueso queda donde la tarjeta no lo tapa', async ({ page }) => {
+  // El caso extremo aquí es el fémur, no la clavícula: es el hueso ALTO, el
+  // que ocupa el lienzo de arriba abajo y por tanto el que más queda detrás
+  // de la tarjeta. Medido antes del arreglo: 47,9 % visible, 52,1 % tapado.
+  // La clavícula, en cambio, daba 100 % — los dos defectos de esta historia
+  // tienen cada uno su propio caso extremo, y no son el mismo hueso.
+  const lienzo = await abrirFicha(page, 'miembro inferior', 'fémur derecho')
+  const { visible, tapado, recorrido } = await huesoSobreYBajoLaTarjeta(page, lienzo)
+
+  const porcentaje = (100 * visible) / (visible + tapado)
+  expect(porcentaje, 'porcentaje del fémur que se ve').toBeGreaterThan(90)
+  // Y no vale «arreglarlo» encogiendo el hueso hasta que quepa en cualquier
+  // parte. El fémur es el hueso más largo del cuerpo: tiene que seguir
+  // recorriendo la mayor parte de la franja que la tarjeta le deja.
+  expect(recorrido, 'fracción de la franja libre que recorre el fémur').toBeGreaterThan(0.7)
+})
+
+test('la reserva sale del alto real de la tarjeta, no de su máximo declarado', async ({ page }) => {
+  // La tarjeta declara `max-h-[45vh]`, pero su alto real depende de cuánto
+  // tenga escrito cada hueso. El fémur trae «Articula con» y «Dato clínico»
+  // y llena la tarjeta; la tibia no trae ni eso ni sinónimos, y su ficha es
+  // de las más cortas del catálogo. Los dos son huesos largos de la pierna,
+  // de proporciones parecidas, así que lo que cambia entre ellos es la
+  // tarjeta y no la geometría.
+  //
+  // Si la reserva fuera el 45 % fijo, la ficha corta desperdiciaría toda la
+  // franja que su tarjeta no llega a ocupar. Medirla es lo que hace que el
+  // hueso llegue hasta donde empieza la tarjeta en los dos casos.
+  const conFichaLarga = await huesoSobreYBajoLaTarjeta(
+    page,
+    await abrirFicha(page, 'miembro inferior', 'fémur derecho'),
+  )
+  const conFichaCorta = await huesoSobreYBajoLaTarjeta(
+    page,
+    await abrirFicha(page, 'miembro inferior', 'tibia derecho'),
+  )
+
+  expect(conFichaLarga.huecoBajoElHueso, 'hueco bajo el fémur, de ficha larga').toBeLessThan(0.2)
+  expect(conFichaCorta.huecoBajoElHueso, 'hueco bajo la tibia, de ficha corta').toBeLessThan(0.2)
+})
+
+/**
+ * Cuánto hueso toca cada banda de margen del lienzo, y el hueso total.
+ *
+ * `corte` es donde empieza lo que flota encima (la tarjeta): por debajo no se
+ * mide, porque ahí el hueso no debería estar y ya lo vigila otra prueba. La
+ * banda es el 3 % de cada dimensión — el margen del encuadre es del 15 %
+ * repartido, así que 3 % por lado es holgura real, no ruido de antialiasing.
+ */
+function aireAlrededor(captura: Buffer, corte: number) {
+  const { width: w, height: h, data } = PNG.sync.read(captura)
+  const bandaX = Math.max(2, Math.round(w * 0.03))
+  const bandaY = Math.max(2, Math.round(corte * 0.03))
+  const fondo = Math.min(corte, h)
+  let izquierda = 0
+  let derecha = 0
+  let arriba = 0
+  let abajo = 0
+  let total = 0
+  for (let y = 0; y < fondo; y++) {
+    for (let x = 0; x < w; x++) {
+      const i = (w * y + x) << 2
+      const luminancia =
+        0.2126 * (data[i] ?? 0) + 0.7152 * (data[i + 1] ?? 0) + 0.0722 * (data[i + 2] ?? 0)
+      if (luminancia <= 90) continue
+      total++
+      if (x < bandaX) izquierda++
+      if (x >= w - bandaX) derecha++
+      if (y < bandaY) arriba++
+      if (y >= fondo - bandaY) abajo++
+    }
+  }
+  return { izquierda, derecha, arriba, abajo, total }
+}
+
+/** Dónde empieza la tarjeta flotante, en píxeles de la captura del lienzo. */
+async function corteDeLaTarjeta(page: Page, lienzo: Locator) {
+  const cajaLienzo = await lienzo.boundingBox()
+  const cajaTarjeta = await page.getByTestId('tarjeta-ficha').boundingBox()
+  return (cajaTarjeta?.y ?? 0) - (cajaLienzo?.y ?? 0)
+}
+
+/** Arrastra sobre el lienzo, como un dedo girando el hueso. */
+async function girar(page: Page, lienzo: Locator, dx: number, dy: number) {
+  const caja = await lienzo.boundingBox()
+  const x = (caja?.x ?? 0) + (caja?.width ?? 0) / 2
+  const y = (caja?.y ?? 0) + (caja?.height ?? 0) / 3
+  await page.mouse.move(x, y)
+  await page.mouse.down()
+  await page.mouse.move(x + dx, y + dy, { steps: 15 })
+  await page.mouse.up()
+  await page.waitForTimeout(700)
+}
+
+/** Captura el lienzo con la tarjeta oculta, que si no cuenta como hueso. */
+async function capturarSinTarjeta(page: Page, lienzo: Locator) {
+  await page.getByTestId('tarjeta-ficha').evaluate((t) => {
+    t.style.visibility = 'hidden'
+  })
+  const captura = await lienzo.screenshot()
+  await page.getByTestId('tarjeta-ficha').evaluate((t) => {
+    t.style.visibility = ''
+  })
+  return captura
+}
+
+test('el hueso deja aire a los cuatro lados del lienzo', async ({ page }) => {
+  // No basta con que no se salga: tiene que quedar holgura por los cuatro
+  // costados, o el hueso se lee como recortado aunque técnicamente entre.
+  // Medido tras el arreglo: 0 píxeles en las cuatro bandas para el fémur y
+  // 13 en una sola para la clavícula, sobre un margen de encuadre del 15 %.
+  for (const [categoria, hueso] of [
+    ['miembro inferior', 'fémur derecho'],
+    ['cintura escapular', 'clavícula derecho'],
+    ['columna vertebral', 'atlas'],
+  ] as const) {
+    const lienzo = await abrirFicha(page, categoria, hueso)
+    const corte = await corteDeLaTarjeta(page, lienzo)
+    const aire = aireAlrededor(await capturarSinTarjeta(page, lienzo), corte)
+
+    expect(aire.total, `${hueso}: se ve`).toBeGreaterThan(1_000)
+    expect(aire.izquierda, `${hueso}: aire a la izquierda`).toBeLessThan(50)
+    expect(aire.derecha, `${hueso}: aire a la derecha`).toBeLessThan(50)
+    expect(aire.arriba, `${hueso}: aire arriba`).toBeLessThan(50)
+    expect(aire.abajo, `${hueso}: aire abajo, sobre la tarjeta`).toBeLessThan(50)
+  }
+})
+
+test('girar el hueso no lo saca del encuadre', async ({ page }) => {
+  // La regresión que apareció probando en el teléfono, y que ninguna prueba
+  // de «algo cambió al arrastrar» habría detectado: el hueso puede salirse
+  // del encuadre y seguir cambiando píxeles. Con el punto de giro desplazado
+  // junto a la cámara, girar en HORIZONTAL apenas se notaba —el eje estaba
+  // cerca— pero girar en VERTICAL describía un arco grande y lo expulsaba.
+  // Por eso el eje vertical va primero.
+  const lienzo = await abrirFicha(page, 'miembro inferior', 'fémur derecho')
+  const corte = await corteDeLaTarjeta(page, lienzo)
+
+  for (const [dx, dy, eje] of [
+    [0, 180, 'vertical'],
+    [0, -260, 'vertical, al otro lado'],
+    [200, 0, 'horizontal'],
+  ] as const) {
+    await girar(page, lienzo, dx, dy)
+    const aire = aireAlrededor(await capturarSinTarjeta(page, lienzo), corte)
+
+    expect(aire.total, `tras girar en ${eje}: el hueso sigue a la vista`).toBeGreaterThan(1_000)
+    expect(aire.izquierda + aire.derecha, `tras girar en ${eje}: no toca los lados`).toBeLessThan(
+      50,
+    )
+    expect(aire.arriba, `tras girar en ${eje}: no toca arriba`).toBeLessThan(50)
+    expect(aire.abajo, `tras girar en ${eje}: no se mete bajo la tarjeta`).toBeLessThan(50)
+  }
+})
+
+test('el lienzo de la ficha conserva sus propios gestos', async ({ page }) => {
+  // Mismo defecto que e7.2 encontró en un teléfono real: sin
+  // `touch-action: none` el navegador reclama el arrastre vertical para hacer
+  // scroll y la rotación nunca llega a los controles. `OrbitControls` lo pone
+  // al conectar y lo pierde al reconectar, de ahí el vigilante compartido.
+  const lienzo = await abrirFicha(page, 'miembro inferior', 'fémur derecho')
+  const gestos = await lienzo.evaluate((c) => getComputedStyle(c).touchAction)
+  expect(gestos, 'touch-action del lienzo de la ficha').toBe('none')
 })

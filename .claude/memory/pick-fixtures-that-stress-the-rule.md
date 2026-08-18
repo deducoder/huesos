@@ -33,3 +33,16 @@ razonar a mano. Relacionado: [[verify-extreme-sizes-not-just-typical-ones]]
 (mismo patrón, aplicado ahí a rangos de tamaño de UI en vez de a la
 elección de fixtures de dominio) y
 [[manual-verification-keeps-finding-real-things]].
+
+**Extensión (e9.3, huesos-mono): un fixture crítico por defecto, no uno
+por historia.** La historia arreglaba dos defectos con un mismo síntoma —el
+hueso se sale del lienzo— y cada uno tenía su propio caso extremo, medidos
+sobre las 144 mallas del modelo. Encuadrar por ancho: la **clavícula**
+(ratio ancho/alto 4,26) y el **atlas** (4,34), que se salían por los lados.
+Quedar tapado por la tarjeta: el **fémur** (ratio 0,26), el hueso alto, que
+quedaba 52 % oculto mientras la clavícula daba 100 % visible. Elegir "el
+fixture difícil de la historia" y usarlo para las dos pruebas habría dejado
+uno de los dos defectos sin cubrir, en cualquiera de las dos direcciones.
+Preguntar el "¿cuál le da menos margen?" **una vez por defecto**, no una vez
+por historia.
+

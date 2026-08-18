@@ -504,3 +504,49 @@ próxima sesión que no lo lea la pierde.
 **Destino:** aparcado, con dueño en la épica de consolidación visual, junto
 a los 14 literales hexadecimales fuera de `@theme` y su gate. Las dos
 decisiones son sobre el mismo sistema y comparten el mismo ADR-007.
+
+## 2026-08-18 · El lado no concuerda en género con el hueso (e9.3, gemba)
+
+`SIDE_LABEL` (`src/components/labels.ts`) es `{ left: 'izquierdo', right:
+'derecho' }`, masculino fijo, y `accessibleName` lo concatena al nombre sin
+mirar el género. Los botones dicen **«clavícula derecho»**, «escápula
+derecho», «tibia derecho», «costilla derecho», «falange distal … derecho».
+Verificado en el navegador real: es el texto visible y también el nombre
+accesible, así que un lector de pantalla lo pronuncia igual.
+
+**Por qué no se corrigió acá:** e9.3 es encuadre y rotación de la escena 3D.
+Esto es contenido de la capa de etiquetas y toca los mismos archivos que
+e9.5 va a reescribir — corregirlo desde acá obligaría a e9.5 a resolver el
+conflicto sobre un archivo que ya estaría a medio camino.
+
+**Destino:** entra en **e9.5** (nombres cortos y normalización de la
+escritura), que ya tiene la capitalización en su alcance y toca
+`labels.ts`, `BoneNavigator` y `FichasAccordion`. El género del lado sale
+del propio hueso, no del lado: hay que decidir de dónde se deriva —una marca
+en el catálogo, o la terminación del nombre— y esa decisión es de su diseño.
+Ojo con los localizadores de `e2e/`, que buscan «fémur derecho» por nombre
+accesible exacto.
+
+## 2026-08-18 · El modo test de hueso aislado no reserva sitio para su barra (e9.3, quality-review)
+
+`BoneTestView` pasa `reservedBottom={0}` a `IsolatedBoneScene`, pero su barra
+de respuesta —`data-testid="barra-respuesta"`, `inset-x-4 bottom-4` con las
+tres opciones más el botón— **sí flota sobre el lienzo**, igual que la
+tarjeta de la ficha. El hueso se centra detrás de ella por el mismo motivo
+que motivó esta historia.
+
+**Por qué no se corrigió acá:** el alto de esa barra hay que medirlo donde
+vive, que es `TestQuestion`, y ese componente es el objeto entero de **e9.2**
+—cambia su estado posterior a la respuesta, y con él el alto de la barra—.
+Tocarlo desde e9.3 obligaría a e9.2 a resolver el conflicto sobre un archivo
+a medio camino, y la medición habría que rehacerla igual con la barra nueva.
+
+**Por qué el 0 es honesto y no un descuido:** la prop es requerida a
+propósito, así que pasar un valor es una decisión visible en el código y no
+un default silencioso. `0` deja el comportamiento anterior, que es el que
+esa vista ya tenía.
+
+**Destino:** **e9.2**, que entra a `src/features/test/` y ya lleva la deuda
+de las props opcionales. El patrón a reutilizar es `useFraccionCubierta` en
+`BoneDetailView`: un `ResizeObserver` sobre el elemento flotante, medido
+después del layout.
