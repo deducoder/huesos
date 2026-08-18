@@ -7,22 +7,19 @@ metadata:
   modified: 2026-08-17
 ---
 
-Last session: **2026-08-17** — b2.3 cerrado y enviado (el espejado duplicaba 36
-de las 144 mallas del modelo), kit de skills de diseño instalado y versionado, y
-E7 «mobile-first redesign» abierta, diseñada y planificada con 10 historias.
+Last session: **2026-08-17** — E7 «mobile-first redesign» cerrada entera:
+e7.9 (escritorio), e7.10 (`should-perf-007` medido), `epic-review` (encontró
+y cerró un hallazgo real: color 3D fuera del sistema de tokens), y
+`epic-close` (docs.md, epic etiquetada `epic/e7-complete`). Push a remoto
+diferido a propósito, no por olvido.
 
-Full handoff: `work/sessions/2026-08-17-b2.3-and-e7-design.md` (read it in full
-via `session-start`).
+Full handoff: `work/sessions/2026-08-17-e7-close.md` (read it in full via
+`session-start`).
 
-Next action: **arrancar e7.1, tokens y shell** — `/gemba:story-start`, rama
-`story/e7.1/tokens-and-shell` desde `main`. Es la única historia de E7 sin la
-que ninguna otra puede empezar.
-
-El `session-start` de este repositorio afirma que la comparación de caché no
-aplica porque las skills se ejecutan desde `.claude/skills/`. Es falso y ya está
-en el parking lot: todas las de la sesión anterior se cargaron desde
-`~/.claude/plugins/cache/gemba/gemba/`, con el snapshot cambiando a mitad de
-sesión. No saltar esa comprobación por lo que diga la skill.
+Next action: **decidir el destino de e7.11/e7.12/e7.13** — el rediseño de
+Claude Design (navbar, acordeón de Fichas, test de opción múltiple), hoy
+aparcado en `records/parking-lot.md`. Abrir una épica propia con
+`epic-start`, o dejarlo aparcado a propósito — sin decidir aún.
 
 Overwritten on every `session-close`; this is a pointer, the handoff is the
 source of truth.
