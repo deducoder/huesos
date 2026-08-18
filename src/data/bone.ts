@@ -32,6 +32,14 @@ interface BoneCore {
   la: string
   /** Otras formas que un estudiante podría escribir. Puede estar vacía, nunca ausente. */
   synonyms: string[]
+  /**
+   * Género gramatical de `es`. Lo necesita el lado, que concuerda con el
+   * hueso: «clavícula derecha», «fémur derecho» (ADR-015). No se puede
+   * derivar de la terminación —«falange» acaba en -e y es femenino,
+   * «cornete» acaba en -e y es masculino— ni del término latino, que sigue
+   * su propia declinación.
+   */
+  gender: 'm' | 'f'
   region: BoneRegion
   /** Identificador en la Foundational Model of Anatomy, cuando se conoce. */
   fma?: string
