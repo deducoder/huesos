@@ -88,6 +88,35 @@
   /* La display va solo en títulos; el cuerpo conserva la pila del sistema,
      que no cuesta ninguna descarga. */
   --font-display: "Fredoka", ui-sans-serif, system-ui, sans-serif;
+
+  /* s2: vocabulario mínimo de motion, mismo mecanismo que ya gobierna color
+     y radio (ADR-007) — ningún componente escribe una duración o curva a
+     mano. */
+  --duration-rapida: 140ms; /* prensado, retroalimentación inmediata */
+  --duration-base: 220ms; /* color, fondo, panel de resultado */
+  --duration-panel: 300ms; /* tarjetas y overlays que entran */
+  --ease-salida: cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+/*
+ * s2: sin esto, cualquier transición nueva se percibe igual con
+ * `prefers-reduced-motion` activo. Global y a cero (no "más suave"): es la
+ * versión más simple de afirmar con un solo test, y ninguna de las
+ * transiciones de esta historia es tan larga como para que "más suave"
+ * cambie la experiencia de forma perceptible.
+ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    /* biome-ignore lint/complexity/noImportantStyles: la garantía es "ninguna
+       transición se percibe" sin importar la especificidad ni el orden en
+       que Tailwind emita las utilidades de duración — el patrón estándar
+       para esta regla exige !important. */
+    transition-duration: 0.01ms !important;
+    /* biome-ignore lint/complexity/noImportantStyles: mismo motivo de arriba */
+    animation-duration: 0.01ms !important;
+  }
 }
 
 /*
