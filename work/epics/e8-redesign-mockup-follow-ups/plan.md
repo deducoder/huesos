@@ -49,6 +49,7 @@ end-to-end.
 | e8.4 | done | M | 5 tareas (T1-T4 + fix de quality-review) — encontró y corrigió 2 specs e2e rotos, no anticipados en el plan |
 | e8.2 | done | M | 4 tareas, sin agregados — corrigió una capa mal ubicada en el design.md de la épica antes de implementar |
 | e8.1 | done | S | 2 tareas, sin agregados — cortó menú y flotante de scope (sin destino / cambio mayor no justificado), encontró que jsdom sobrecomputa el landmark `banner` |
+| e8.5 | done | — (fuera del plan) | 18 commits en dos sesiones, ceremonia informal a pedido del usuario — nació al comparar capturas contra el mockup y ver que la fidelidad visual de e8.1-e8.4 era menor de lo que sus `scope.md` transmitían; dejó abierto el único punto de su alcance con un ADR detrás (Fredoka → Baloo 2, ADR-008) |
 
 ## Sequencing risks
 
