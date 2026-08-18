@@ -1,11 +1,19 @@
-import { OrbitControls, useGLTF } from '@react-three/drei'
-import { Canvas, type ThreeEvent } from '@react-three/fiber'
-import { Suspense, useLayoutEffect, useMemo, useRef } from 'react'
-import { Box3, Color, type Mesh, MeshStandardMaterial, type Object3D, Vector3 } from 'three'
+import { OrbitControls, PerspectiveCamera, useGLTF } from '@react-three/drei'
+import { Canvas, type ThreeEvent, useThree } from '@react-three/fiber'
+import { useCallback, useLayoutEffect, useMemo, useRef, useState, Suspense } from 'react'
+import {
+  Box3,
+  Color,
+  type Mesh,
+  MeshStandardMaterial,
+  type Object3D,
+  type PerspectiveCamera as PerspectiveCameraImpl,
+  Vector3,
+} from 'three'
 import type { Bone } from '../data/bone'
 import { FixTouchAction } from './FixTouchAction'
 import skeletonUrl from '../data/skeleton.glb?url'
-import { distanceToFit } from '../domain/framing'
+import { distanceToFit, frameObject } from '../domain/framing'
 import { boneIdForMesh, type SceneHalf } from '../domain/mesh-lookup'
 import { stripMidline } from '../domain/mirroring'
 
@@ -148,6 +156,22 @@ const FOV = 45
  */
 const TARGET_HEIGHT = 1.7
 
+/** El encuadre de la cámara: distancia, descentrado y a qué punto mirar. */
+interface Framing {
+  distance: number
+  viewOffsetY: number
+  center: Vector3
+}
+
+/** El encuadre del esqueleto completo, sin selección — el de siempre. */
+function encuadrePorDefecto(): Framing {
+  return {
+    distance: distanceToFit(TARGET_HEIGHT, FOV),
+    viewOffsetY: 0,
+    center: new Vector3(0, 0, 0),
+  }
+}
+
 /**
  * El esqueleto completo: el modelo y el espejo de su parte lateral, centrados
  * en el origen.
@@ -156,9 +180,14 @@ const TARGET_HEIGHT = 1.7
  * `Y ≈ 1.7`— y desplazado en X porque su parte lateral es un solo hemicuerpo.
  * Se mide con `Box3` en vez de descontar valores fijos, para que cambiar el
  * activo no vuelva a romper el encuadre (b2.2).
+ *
+ * Sin `zoom` (`ExploreView`), el encuadre es siempre el de por defecto. Con
+ * `zoom` y una selección cuya malla aparece en alguna mitad, la cámara se
+ * acerca a esa zona — el modo test de esqueleto completo (e9.4).
  */
-function CenteredSkeleton({ bones, selected, onPick }: CenteredProps) {
+function CenteredSkeleton({ bones, selected, onPick, zoom, onFramed }: CenteredProps) {
   const { scene } = useGLTF(skeletonUrl, DRACO_PATH)
+  const size = useThree((estado) => estado.size)
 
   const { offset, scale } = useMemo(() => {
     const caja = new Box3().setFromObject(scene)
@@ -170,10 +199,59 @@ function CenteredSkeleton({ bones, selected, onPick }: CenteredProps) {
     return { offset: new Vector3(0, -centro.y * escala, -centro.z * escala), scale: escala }
   }, [scene])
 
+  // Cada mitad reporta su propia caja del hueso seleccionado (T1); acá se
+  // combinan. Refs, no estado: `useLayoutEffect` de un hijo corre antes que
+  // el del padre en el mismo commit, así que cuando el efecto de abajo lee
+  // estas refs ya están escritas por las dos mitades de esta misma pasada.
+  const cajaOriginal = useRef<Box3 | null>(null)
+  const cajaMirrored = useRef<Box3 | null>(null)
+  const onCajaOriginal = useCallback((caja: Box3 | null) => {
+    cajaOriginal.current = caja
+  }, [])
+  const onCajaMirrored = useCallback((caja: Box3 | null) => {
+    cajaMirrored.current = caja
+  }, [])
+
+  // `selected` no se lee dentro del efecto, pero es la señal de que hay que
+  // recalcular: las cajas son refs que las dos mitades ya escribieron en
+  // este mismo commit (su `useLayoutEffect` corre antes que el de este
+  // padre), y mutar una ref no dispara este efecto por sí solo.
+  // biome-ignore lint/correctness/useExhaustiveDependencies: ver el comentario de arriba
+  useLayoutEffect(() => {
+    const caja = cajaOriginal.current ?? cajaMirrored.current
+    if (!zoom || !caja) {
+      onFramed(encuadrePorDefecto())
+      return
+    }
+    const tamano = caja.getSize(new Vector3())
+    const centro = caja.getCenter(new Vector3())
+    const encuadre = frameObject(
+      { width: Math.max(tamano.x, tamano.z, 0.001), height: Math.max(tamano.y, 0.001) },
+      {
+        fovDegrees: FOV,
+        aspect: size.width / Math.max(size.height, 1),
+        reservedBottom: zoom?.reservedBottom ?? 0,
+      },
+    )
+    onFramed({ ...encuadre, center: centro })
+  }, [selected, zoom, size.width, size.height, onFramed])
+
   return (
     <group position={offset} scale={scale}>
-      <SkeletonHalf bones={bones} selected={selected} half="original" onPick={onPick} />
-      <SkeletonHalf bones={bones} selected={selected} half="mirrored" onPick={onPick} />
+      <SkeletonHalf
+        bones={bones}
+        selected={selected}
+        half="original"
+        onPick={onPick}
+        onSelectedBox={onCajaOriginal}
+      />
+      <SkeletonHalf
+        bones={bones}
+        selected={selected}
+        half="mirrored"
+        onPick={onPick}
+        onSelectedBox={onCajaMirrored}
+      />
     </group>
   )
 }
@@ -182,6 +260,43 @@ interface CenteredProps {
   bones: readonly Bone[]
   selected: string | null
   onPick: (id: string) => void
+  zoom?: { reservedBottom: number }
+  onFramed: (framing: Framing) => void
+}
+
+/**
+ * La cámara del esqueleto, con la proyección descentrada en vez de la cámara
+ * desplazada — mismo mecanismo que `CamaraEncuadrada` en
+ * `IsolatedBoneScene.tsx` (e9.3): `setViewOffset` mantiene el punto de
+ * órbita en el objeto real, en vez de dejarlo flotando por debajo de él.
+ */
+function CamaraDelEsqueleto({ framing }: { framing: Framing }) {
+  const camaraRef = useRef<PerspectiveCameraImpl>(null)
+  const size = useThree((estado) => estado.size)
+
+  const posicion = useMemo<[number, number, number]>(
+    () => [framing.center.x, framing.center.y, framing.center.z + framing.distance],
+    [framing],
+  )
+
+  useLayoutEffect(() => {
+    const camara = camaraRef.current
+    if (!camara) return
+    if (framing.viewOffsetY === 0) camara.clearViewOffset()
+    else {
+      camara.setViewOffset(
+        size.width,
+        size.height,
+        0,
+        framing.viewOffsetY * size.height,
+        size.width,
+        size.height,
+      )
+    }
+    camara.updateProjectionMatrix()
+  }, [framing, size.width, size.height])
+
+  return <PerspectiveCamera ref={camaraRef} makeDefault fov={FOV} position={posicion} />
 }
 
 /** Lo que se dibuja mientras el modelo llega: nada visible, sin romper la escena. */
@@ -208,6 +323,15 @@ interface Props {
    * todo consumidor de esta escena — el modo test (`e4.2`) no lo monta.
    */
   accessibleHint?: string
+  /**
+   * Si se pasa, la cámara se acerca a la zona del hueso `selected` en vez
+   * de mostrar el esqueleto entero (e9.4, modo test de esqueleto completo).
+   * `reservedBottom` va agrupado adentro a propósito: no hay forma de
+   * activar el zoom sin declarar cuánto tapa lo que flota encima, mismo
+   * criterio que `IsolatedBoneScene` ya exige. Ausente: comportamiento de
+   * hoy sin cambios — el caso de `ExploreView`.
+   */
+  zoom?: { reservedBottom: number }
 }
 
 export function SkeletonScene({
@@ -215,19 +339,32 @@ export function SkeletonScene({
   selected,
   onPick,
   accessibleHint = PISTA_POR_DEFECTO,
+  zoom,
 }: Props) {
+  const [framing, setFraming] = useState<Framing>(encuadrePorDefecto)
+  const onFramed = useCallback((f: Framing) => setFraming(f), [])
+
   return (
     <div className="relative h-full w-full">
-      <Canvas
-        camera={{ position: [0, 0, distanceToFit(TARGET_HEIGHT, FOV)], fov: FOV }}
-        aria-label="Esqueleto humano en 3D"
-      >
+      <Canvas aria-label="Esqueleto humano en 3D">
         <ambientLight intensity={0.8} />
         <directionalLight position={[2, 4, 3]} intensity={1.2} />
         <Suspense fallback={<LoadingNotice />}>
-          <CenteredSkeleton bones={bones} selected={selected} onPick={onPick} />
+          <CenteredSkeleton
+            bones={bones}
+            selected={selected}
+            onPick={onPick}
+            zoom={zoom}
+            onFramed={onFramed}
+          />
         </Suspense>
-        <OrbitControls enablePan enableZoom makeDefault target={[0, 0, 0]} />
+        <CamaraDelEsqueleto framing={framing} />
+        <OrbitControls
+          enablePan
+          enableZoom
+          makeDefault
+          target={[framing.center.x, framing.center.y, framing.center.z]}
+        />
         <FixTouchAction />
       </Canvas>
       <p className="sr-only">{accessibleHint}</p>

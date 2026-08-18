@@ -81,4 +81,19 @@ describe('la escena del esqueleto', () => {
     expect(fuente).toMatch(/onSelectedBox\?\.\(/)
     expect(fuente).not.toMatch(/malla\.name === selected/)
   })
+
+  it('la cámara es controlada, no la prop estática que solo se lee al montar', () => {
+    // b2.2: `<Canvas camera={{...}}>` fija la posición una sola vez; un
+    // encuadre que cambia con la selección necesita <PerspectiveCamera>
+    // (mismo componente que IsolatedBoneScene.tsx ya usa para lo mismo).
+    expect(fuente).not.toMatch(/<Canvas\s*\n?\s*camera=\{\{/)
+    expect(fuente).toMatch(/<PerspectiveCamera/)
+  })
+
+  it('encuadra con frameObject, no con distanceToFit solo, cuando hay zoom', () => {
+    expect(fuente).toMatch(/frameObject\(/)
+    // Sin `zoom`, la reserva tiene que caer a 0 — no a `undefined`, que
+    // rompería el encuadre por defecto que usa ExploreView.
+    expect(fuente).toMatch(/zoom\?\.reservedBottom \?\? 0/)
+  })
 })
