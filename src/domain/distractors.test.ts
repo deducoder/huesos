@@ -73,8 +73,9 @@ describe('pickDistractors — caso límite: región sin suficientes huesos pregu
 
 describe('pickDistractors — sin el hermano anatómico', () => {
   // clavicle-right y clavicle-left comparten el mismo `es` ("clavícula"): el
-  // lado no está en el nombre, se agrega aparte en la vista (BoneNavigator,
-  // accessibleName). Si el hermano aparece como distractor, la opción múltiple
+  // lado no está en el nombre, se agrega aparte en la vista (`fullName` y
+  // `visibleName`, en `bone-name.ts`). Si el hermano aparece como distractor,
+  // la opción múltiple
   // muestra dos botones con el mismo texto — hallazgo de la verificación
   // manual (T3).
   const claviculaDerecha = catalog.find((b) => b.id === 'clavicle-right')

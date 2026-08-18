@@ -159,3 +159,22 @@ ahora se muestra.
 cada opción contra el conjunto de los 120 nombres cortos. Mostrar el `es` del
 catálogo falla siempre, incluso en los 45 nombres que la derivación no acorta,
 porque el corto va capitalizado y el `es` no.
+
+## T8 · Barrido: `SIDE_LABEL` y las dos copias de `accessibleName`
+
+**Done.** `SIDE_LABEL` fuera de `labels.ts`, junto con el `Side` que solo ella
+importaba. Las dos copias de `accessibleName` ya se habían ido con T4 y T5.
+
+- **Sin RED propio**, como el plan preveía: es supresión de código muerto y el
+  instrumento es el compilador más el grep de huérfanos.
+- **Chequeo de huérfanos:** `grep -rn "SIDE_LABEL\|accessibleName" src/ e2e/`
+  devuelve solo las menciones dentro de `bone-name.ts`, que son históricas y
+  documentan a qué sustituyen.
+- **Gate:** `./scripts/check` verde — 312 tests.
+
+**El grep encontró algo que el compilador no podía ver:** un comentario de
+`distractors.test.ts:77` explicaba por qué nunca se elige al hermano
+anatómico citando «BoneNavigator, accessibleName» — una función que ya no
+existe. El razonamiento seguía siendo correcto y la referencia había muerto;
+ahora apunta a `fullName`/`visibleName`. Un `tsc` verde no distingue un
+comentario cierto de uno que señala al vacío.
