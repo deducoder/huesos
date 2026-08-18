@@ -468,3 +468,21 @@ sin la función y ningún test lo nota.
 pasan — un cambio de una línea por llamador, pero toca tres componentes y
 sus pruebas, así que merece su propia tarea en la próxima historia que
 entre a `src/features/test/`.
+
+## 2026-08-17 · Dos presentaciones del mismo hueso, con cinco campos repetidos (E8, architecture-review)
+
+`BoneIdentity` (105 líneas, panel de Explorar) y `BoneSheet` (83 líneas,
+ficha completa) muestran los mismos cinco campos —`es`, `la`, región, lado,
+sinónimos— con el mismo criterio de `ocultarLado` y el mismo `REGION_ACCENT`,
+en dos formas visuales distintas: píldoras comprimidas junto a la escena
+frente a filas etiqueta/valor en una pantalla propia.
+
+La duplicación es deliberada y está documentada en el encabezado de
+`BoneSheet`: unificarlas con una prop `variant` haría que cada ajuste visual
+de Explorar tuviera que pensarse dos veces, y e8.5 fue una historia entera de
+ajustes visuales de Explorar.
+
+**Destino:** aparcado como umbral, no como deuda. Si aparece una **tercera**
+presentación del mismo hueso, extraer el criterio compartido (`ocultarLado`,
+la resolución de acento, el orden de los campos) a una función de vista y
+dejar que cada presentación se quede solo con su marcado.
