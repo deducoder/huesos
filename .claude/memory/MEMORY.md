@@ -65,3 +65,6 @@
 - [Mantener contenido viejo montado puede duplicar texto](keeping-old-content-mounted-can-duplicate-text.md) — una búsqueda sin acotar deja de ser inequívoca cuando dos vistas conviven en vez de excluirse.
 - [Copiar un patrón es copiar todo su paquete](copying-a-pattern-means-copying-its-whole-package.md) — el mecanismo principal no basta; las piezas de caso límite viven al lado, documentadas, y hay que leerlas también.
 - [Los grupos anidados necesitan actualizar la matriz del padre](nested-groups-need-parent-matrix-updates.md) — updateMatrixWorld nunca propaga hacia arriba; un patrón que funciona sin envoltura extra puede fallar con una.
+- [git checkout no es un revert seguro de trabajo sin commitear](git-checkout-is-not-a-safe-revert-of-uncommitted-work.md) — vuelve al último commit, no a "hace un momento"; mutar antes de commitear puede borrar el GREEN entero.
+- [Una capa fuera del enrutamiento sigue necesitando un dueño de sincronía](a-layer-outside-routing-still-needs-a-sync-owner.md) — el panel de e9.7 no era un `Modo` a propósito, y por eso nadie lo cerraba ante un «atrás» real.
+- [El ADR se escribe cuando el diseño lo nombra, no en la revisión](write-the-adr-when-the-design-names-it-not-at-review.md) — si `design.md` ya declara la decisión con alternativas rechazadas, esperar a `quality-review` es un paso tarde.

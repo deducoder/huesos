@@ -54,6 +54,16 @@ describe('la aplicación, de punta a punta', () => {
     ).not.toBeInTheDocument()
   })
 
+  it('en modo ficha, la cabecera es una caja redondeada como el resto (e9.7)', async () => {
+    const user = userEvent.setup()
+    render(<App />)
+
+    await user.click(screen.getByRole('button', { name: /^fémur derecho$/i }))
+    await user.click(screen.getByRole('button', { name: /ver ficha completa/i }))
+
+    expect(screen.getByTestId('cabecera')).toHaveClass('rounded-suave', 'shadow-dura')
+  })
+
   it('lleva a la ficha completa y vuelve conservando la selección', async () => {
     const user = userEvent.setup()
     render(<App />)
@@ -241,5 +251,68 @@ describe('la aplicación, de punta a punta', () => {
       expect(screen.getByRole('button', { name: /^miembro inferior/i })).toBeInTheDocument()
     })
     expect(screen.queryByTestId('escena-sustituida')).not.toBeInTheDocument()
+  })
+
+  describe('el menú (e9.7)', () => {
+    it('el botón de menú abre el panel de privacidad y créditos', async () => {
+      const user = userEvent.setup()
+      render(<App />)
+
+      await user.click(screen.getByRole('button', { name: /menú/i }))
+
+      expect(screen.getByRole('dialog')).toBeInTheDocument()
+    })
+
+    it('cerrarlo deja la vista de fondo igual que antes de abrirlo', async () => {
+      const user = userEvent.setup()
+      render(<App />)
+
+      await user.click(screen.getByRole('button', { name: /menú/i }))
+      await user.click(screen.getByRole('button', { name: /cerrar/i }))
+
+      expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+      expect(screen.getByRole('button', { name: /^fémur derecho$/i })).toBeInTheDocument()
+    })
+
+    it('abrir y cerrar el panel no toca el historial (no es un modo, ADR-013)', async () => {
+      const user = userEvent.setup()
+      render(<App />)
+
+      const largoAntes = window.history.length
+      await user.click(screen.getByRole('button', { name: /menú/i }))
+      await user.click(screen.getByRole('button', { name: /cerrar/i }))
+
+      expect(window.history.length).toBe(largoAntes)
+    })
+
+    it('en modo ficha, la cabecera no muestra el botón de menú', async () => {
+      const user = userEvent.setup()
+      render(<App />)
+
+      await user.click(screen.getByRole('button', { name: /^fémur derecho$/i }))
+      await user.click(screen.getByRole('button', { name: /ver ficha completa/i }))
+
+      expect(screen.queryByRole('button', { name: /menú/i })).not.toBeInTheDocument()
+    })
+
+    it('el «atrás» del sistema cierra el panel, no solo cambia la vista de fondo', async () => {
+      // Hallazgo de la verificación manual (e9.7): el panel es estado
+      // local, ajeno al historial por diseño — pero eso significaba que
+      // sobrevivía a una navegación real del sistema, quedando montado
+      // encima de una vista que ya no era la que estaba cuando se abrió.
+      const user = userEvent.setup()
+      render(<App />)
+
+      await user.click(screen.getByRole('button', { name: /^fichas$/i }))
+      await user.click(screen.getByRole('button', { name: /menú/i }))
+      expect(screen.getByRole('dialog')).toBeInTheDocument()
+
+      window.history.back()
+
+      await waitFor(() => {
+        expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+      })
+      expect(screen.getByRole('button', { name: /^fémur derecho$/i })).toBeInTheDocument()
+    })
   })
 })
