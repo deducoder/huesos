@@ -49,3 +49,22 @@ test('en Explorar, la tarjeta de identidad no se estira a lo ancho del lienzo', 
   expect(cajaTarjeta, 'la tarjeta de identidad no está en la página').not.toBeNull()
   expect(cajaTarjeta?.width ?? 0, 'ancho de la tarjeta').toBeLessThan(caja.width * 0.5)
 })
+
+test('en Fichas, la fila de un par no se estira a lo ancho del viewport', async ({ page }) => {
+  await page.goto('/')
+  await page.getByRole('button', { name: 'Fichas', exact: true }).click()
+
+  const fila = page.getByRole('button', { name: /^hueso parietal derecho$/i })
+  await expect(fila).toBeVisible()
+
+  // El nombre y las píldoras comparten una `<li>`: el ancho de esa fila es lo
+  // que la falta de un `max-width` en el contenedor estira a lo ancho del
+  // viewport (el `flex-1` del nombre crece hasta llenarla, empujando las
+  // píldoras al borde — un `boundingBox()` del propio `<span>` del nombre no
+  // lo vería, porque el texto queda alineado a la izquierda de esa misma
+  // caja ya crecida).
+  const filaAncestro = fila.locator('xpath=ancestor::li[1]')
+  const cajaFila = await filaAncestro.boundingBox()
+  expect(cajaFila, 'la fila del par no está en la página').not.toBeNull()
+  expect(cajaFila?.width ?? 0, 'ancho de la fila').toBeLessThan(700)
+})
