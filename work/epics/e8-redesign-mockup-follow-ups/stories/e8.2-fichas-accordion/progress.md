@@ -31,3 +31,36 @@ del colapso inicial; desactivar la rama de par-sin-geometría rompió el
 test de "Oído medio". Las dos detectaron la regresión.
 
 Gate: `./scripts/check` verde (266 tests, lint/format/types limpios).
+
+## T3 · Reemplazar `BoneNavigator` en `App.tsx` — y su fallout real
+
+`App.tsx` monta `<FichasAccordion>` en el modo `'fichas'`. RED confirmado
+en los 3 tests de `App.test.tsx` que clicaban "fémur derecho" sin
+expandir nada — actualizados para expandir "Miembro inferior" primero,
+mismo patrón que `BoneNavigator.test.tsx` ya usa.
+
+El grep de `e2e/` hecho **antes** de esta tarea (en `plan.md`) encontró
+los 3 puntos exactos que iban a romper, y los 3 rompieron efectivamente
+al correr `check-integration`:
+
+1. `desktop-scale-up.spec.ts`, "en Fichas, la fila de un par..." —
+   reescrito para medir el botón de categoría directamente (`w-full`
+   dentro del `md:max-w-2xl` de `App.tsx`) en vez del rodeo por
+   `xpath=ancestor::li[1]` que el layout viejo necesitaba.
+2. `mobile-shell.spec.ts`, "las filas del navegador..." — reescrito para
+   expandir "Miembro inferior" y "Cráneo" antes de medir.
+3. `mobile-shell.spec.ts`, "el nombre más largo..." — **encontré algo que
+   el grep no había anticipado**: el test buscaba el nombre del hueso
+   *sin* el lado (`getByText(..., {exact: true})`), porque
+   `BoneNavigator` mostraba el nombre común una sola vez, separado de las
+   píldoras de lado. `FichasAccordion` usa `accessibleName` (nombre +
+   lado en un solo string) en cada etiqueta — el texto exacto sin lado ya
+   no existe como nodo propio. Cambiado a búsqueda por substring
+   (`exact` por defecto). El guardia de regresión de alto total
+   (`≤ 6.208px`, contra la lista plana de antes de e7.4) se **retira, no
+   se porta** — con categorías colapsadas por defecto ya no protege nada
+   real, según lo previsto en `plan.md`.
+
+Suite de integración completa: 21/21 en verde
+(`./scripts/check-integration`), incluido `explore.spec.ts` sin tocarse
+— ADR-010/ADR-011 se sostuvieron. Gate rápido verde (266 tests).
