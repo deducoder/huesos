@@ -51,3 +51,6 @@
 - [Un criterio no debe exigir que un archivo quede intacto](acceptance-criteria-shouldnt-name-an-untouched-file.md) — describe el medio, no el fin, y se rompe con el cambio legítimo.
 - [Puntero de la última sesión](session-pointer.md) — 2026-08-18: E8 cerrada y pusheada (211 commits, E7 incluida); sin work item en curso, toca elegir E9.
 - [No matar el dev server ni el túnel](never-kill-the-dev-server-or-tunnel.md) — el usuario prueba en su teléfono por ahí; los `vite preview` huérfanos son otra cosa.
+- [El andamiaje de test puede ser código de producción que falta](test-scaffolding-may-be-missing-production-code.md) — si hay que limpiar estado global entre tests, preguntar quién debería sembrarlo al arrancar.
+- [Los criterios negativos son los que se quedan sin prueba](negative-criteria-are-the-ones-left-untested.md) — cortar tareas por mecanismo deja fuera los MUST NOT y los caminos de salida.
+- [Validar un discriminante con un Record, no con una lista](validate-a-discriminant-with-a-record-not-a-list.md) — la unión exige exhaustividad; la lista acepta la omisión en silencio.
