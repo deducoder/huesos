@@ -15,8 +15,16 @@ import { stripMidline } from '../domain/mirroring'
  */
 const DRACO_PATH = '/draco/'
 
-/** El resaltado del hueso elegido. Acompaña al panel y a la lista; nunca informa solo. */
-const HIGHLIGHT = new Color('#38bdf8')
+/**
+ * El resaltado del hueso elegido, leído de `--color-acento` (ADR-007) en vez
+ * de un hex propio: es el mismo "selección" que la píldora del navegador y el
+ * panel de identidad usan, y `three.js` no puede referenciar un token CSS por
+ * su cuenta — hay que resolverlo a mano contra el elemento raíz.
+ */
+function colorDeSeleccion(): Color {
+  const valor = getComputedStyle(document.documentElement).getPropertyValue('--color-acento')
+  return new Color(valor.trim())
+}
 
 interface HalfProps {
   bones: readonly Bone[]
@@ -65,7 +73,7 @@ function SkeletonHalf({ bones, selected, half, onPick }: HalfProps) {
       // ambos lados, y la mitad decide el lado del hueso par.
       const esteHueso = boneIdForMesh(bones, malla.name, half)
       const resaltado = esteHueso !== null && esteHueso === selected
-      propio.emissive = resaltado ? HIGHLIGHT : new Color('#000000')
+      propio.emissive = resaltado ? colorDeSeleccion() : new Color('#000000')
       propio.emissiveIntensity = resaltado ? 0.6 : 0
     })
   }, [copia, selected, bones, half])

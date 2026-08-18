@@ -51,4 +51,12 @@ describe('la escena del esqueleto', () => {
     expect(fuente).toMatch(/const esteHueso = boneIdForMesh\(bones, malla\.name, half\)/)
     expect(fuente).not.toMatch(/malla\.name === selected/)
   })
+
+  it('toma el color de resaltado del token de diseño, no de un hex fijo', () => {
+    // epic-review e7: `--color-acento` (ADR-007) es "selección" en toda la
+    // aplicación, pero el resaltado 3D seguía con el `#38bdf8` de antes del
+    // rediseño — dos azules distintos para el mismo concepto.
+    expect(fuente).not.toMatch(/#38bdf8/)
+    expect(fuente).toMatch(/--color-acento/)
+  })
 })
