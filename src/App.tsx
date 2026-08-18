@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { FichasAccordion } from './components/FichasAccordion'
 import { REGION_ACCENT } from './components/region-accent'
 import { catalog } from './data/catalog'
@@ -13,8 +13,10 @@ import { SkeletonTestView } from './features/test/SkeletonTestView'
  * Qué vista está montada, sin router (ADR-003): la aplicación no necesita
  * enlaces profundos por hueso todavía, y esto evita una dependencia nueva.
  *
- * `origen` en el modo `'ficha'` decide a dónde vuelve "Volver": si se llegó
- * desde `ExploreView` (e3.2) o desde la lista sin escena (e3.3, `RF-03`).
+ * A dónde vuelve "Volver" desde una ficha no es un campo del modo sino la
+ * entrada anterior del historial (ADR-013): a `'ficha'` solo se llega
+ * empujando desde `'explorar'` o desde `'fichas'`, así que retroceder acierta
+ * el origen por construcción.
  *
  * `'test-elegir'` es la pestaña "Test" antes de elegir variante (e4.5);
  * `'test-esqueleto'`/`'test-hueso'` montan `RF-04`/`RF-05` respectivamente.
@@ -22,10 +24,57 @@ import { SkeletonTestView } from './features/test/SkeletonTestView'
 type Modo =
   | { tipo: 'explorar' }
   | { tipo: 'fichas' }
-  | { tipo: 'ficha'; boneId: string; origen: 'explorar' | 'fichas' }
+  | { tipo: 'ficha'; boneId: string }
   | { tipo: 'test-elegir' }
   | { tipo: 'test-esqueleto' }
   | { tipo: 'test-hueso' }
+
+/**
+ * El modo de arranque. Es una función y no una constante de módulo: un
+ * objeto compartido devuelto como estado inicial convierte en global y
+ * permanente cualquier mutación que un consumidor le haga.
+ */
+function modoInicial(): Modo {
+  return { tipo: 'explorar' }
+}
+
+/** Los modos que no llevan más dato que su propio nombre. */
+type ModoSinDatos = Exclude<Modo, { tipo: 'ficha' }>['tipo']
+
+/**
+ * Un `Record` sobre la unión y no una lista: si `Modo` gana una variante sin
+ * dato y nadie la agrega acá, **falta una clave y el compilador lo dice**.
+ * Una lista de cadenas aceptaría la omisión en silencio, que es el problema
+ * conocido de un validador que re-codifica a mano la forma de su tipo.
+ */
+const MODOS_SIN_DATOS: Record<ModoSinDatos, true> = {
+  explorar: true,
+  fichas: true,
+  'test-elegir': true,
+  'test-esqueleto': true,
+  'test-hueso': true,
+}
+
+/**
+ * Valida lo que llega en `popstate`.
+ *
+ * `PopStateEvent.state` es `any` por definición del DOM y `must-type-004`
+ * prohíbe `as` para silenciarlo, así que la forma se comprueba en tiempo de
+ * ejecución — mismo patrón que `esProgresoDeHueso` aplica en
+ * `src/storage/progress-store.ts` a lo que viene de `localStorage`.
+ *
+ * Una entrada ajena —otra aplicación del mismo origen, o una versión
+ * anterior de esta tras un despliegue— no es un error: se cae al modo de
+ * arranque, igual que ante una recarga, en vez de dejar la vista
+ * desincronizada de la entrada del historial.
+ */
+function esModo(valor: unknown): valor is Modo {
+  if (typeof valor !== 'object' || valor === null || !('tipo' in valor)) return false
+  const { tipo } = valor
+  if (typeof tipo !== 'string') return false
+  if (tipo === 'ficha') return 'boneId' in valor && typeof valor.boneId === 'string'
+  return Object.hasOwn(MODOS_SIN_DATOS, tipo)
+}
 
 const PESTANIAS = ['explorar', 'fichas', 'test-elegir'] as const
 type Pestania = (typeof PESTANIAS)[number]
@@ -231,11 +280,33 @@ function ElegirVarianteDeTest({
 }
 
 export function App() {
-  const [modo, setModo] = useState<Modo>({ tipo: 'explorar' })
+  const [modo, setModo] = useState<Modo>(modoInicial)
   // El estado de selección vive acá, no dentro de `ExploreView`: al volver
   // de la ficha completa tiene que sobrevivir, y solo quien decide qué
   // vista montar puede garantizarlo.
   const [selected, setSelected] = useState<SelectionId>(null)
+
+  /**
+   * El historial transporta el modo (ADR-013): cada transición empuja una
+   * entrada con su `Modo` de destino, y el «atrás» del sistema la restituye.
+   * No hay router ni URLs — `pushState` va sin tercer argumento a propósito.
+   */
+  const navegar = (siguiente: Modo) => {
+    window.history.pushState(siguiente, '')
+    setModo(siguiente)
+  }
+
+  useEffect(() => {
+    // La entrada de arranque no trae `state` propio. Sembrarla hace que
+    // retroceder hasta ella restituya Explorar explícitamente, en vez de
+    // llegar al `popstate` con `null` y caer al respaldo.
+    window.history.replaceState(modoInicial(), '')
+    const alRetroceder = (evento: PopStateEvent) => {
+      setModo(esModo(evento.state) ? evento.state : modoInicial())
+    }
+    window.addEventListener('popstate', alRetroceder)
+    return () => window.removeEventListener('popstate', alRetroceder)
+  }, [])
 
   return (
     <main className="relative flex h-dvh flex-col bg-superficie text-tinta">
@@ -249,7 +320,7 @@ export function App() {
         >
           <button
             type="button"
-            onClick={() => setModo({ tipo: modo.origen })}
+            onClick={() => window.history.back()}
             className="min-h-tactil rounded-full border-2 border-tinta bg-panel px-4 font-semibold text-sm text-tinta hover:bg-acento-suave"
           >
             ← Volver
@@ -266,7 +337,7 @@ export function App() {
         >
           <h1 className="sr-only font-display">huesos-mono</h1>
           <LogoIcono />
-          <Pestanas modo={modo} onCambiar={(tipo) => setModo({ tipo })} />
+          <Pestanas modo={modo} onCambiar={(tipo) => navegar({ tipo })} />
           <MenuIcono />
         </header>
       )}
@@ -275,27 +346,25 @@ export function App() {
           <ExploreView
             selected={selected}
             onSelect={(id) => setSelected((actual) => toggleSelection(actual, id))}
-            onViewDetail={(id) => setModo({ tipo: 'ficha', boneId: id, origen: 'explorar' })}
+            onViewDetail={(id) => navegar({ tipo: 'ficha', boneId: id })}
           />
         )}
         {modo.tipo === 'fichas' && (
           <div className="h-full overflow-y-auto pt-2 pb-2 md:mx-auto md:max-w-2xl">
             <FichasAccordion
               bones={catalog}
-              onSelect={(id) => setModo({ tipo: 'ficha', boneId: id, origen: 'fichas' })}
+              onSelect={(id) => navegar({ tipo: 'ficha', boneId: id })}
             />
           </div>
         )}
         {modo.tipo === 'ficha' && <BoneDetailView boneId={modo.boneId} />}
         {modo.tipo === 'test-elegir' && (
-          <ElegirVarianteDeTest onElegir={(tipo) => setModo({ tipo })} />
+          <ElegirVarianteDeTest onElegir={(tipo) => navegar({ tipo })} />
         )}
         {modo.tipo === 'test-esqueleto' && (
-          <SkeletonTestView onCambiarModo={() => setModo({ tipo: 'test-elegir' })} />
+          <SkeletonTestView onCambiarModo={() => window.history.back()} />
         )}
-        {modo.tipo === 'test-hueso' && (
-          <BoneTestView onCambiarModo={() => setModo({ tipo: 'test-elegir' })} />
-        )}
+        {modo.tipo === 'test-hueso' && <BoneTestView onCambiarModo={() => window.history.back()} />}
       </div>
     </main>
   )
