@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react'
 import { useEffect, useState } from 'react'
+import { AboutPanel } from './components/AboutPanel'
 import { FichasAccordion } from './components/FichasAccordion'
 import { REGION_ACCENT } from './components/region-accent'
 import { catalog } from './data/catalog'
@@ -161,15 +162,25 @@ function LogoIcono() {
   )
 }
 
-function MenuIcono() {
+/**
+ * A diferencia de `LogoIcono`, este sí tiene destino (e9.7): abre
+ * `AboutPanel`. Mismo cuadrado flotante que el resto de los íconos de la
+ * cabecera, pero un `<button>` real en vez de un `<div aria-hidden>`.
+ */
+function MenuIcono({ onClick }: { onClick: () => void }) {
   return (
-    <IconoCuadrado>
+    <button
+      type="button"
+      onClick={onClick}
+      aria-label="Menú: privacidad y créditos"
+      className="flex h-tactil w-tactil flex-none shrink-0 items-center justify-center self-center rounded-suave border-2 border-tinta bg-panel text-tinta shadow-dura"
+    >
       <svg width="18" height="14" viewBox="0 0 18 14" aria-hidden="true">
         <rect width="18" height="2.6" rx="1.3" fill="currentColor" />
         <rect y="5.7" width="18" height="2.6" rx="1.3" fill="currentColor" />
         <rect y="11.4" width="18" height="2.6" rx="1.3" fill="currentColor" />
       </svg>
-    </IconoCuadrado>
+    </button>
   )
 }
 
@@ -285,6 +296,9 @@ export function App() {
   // de la ficha completa tiene que sobrevivir, y solo quien decide qué
   // vista montar puede garantizarlo.
   const [selected, setSelected] = useState<SelectionId>(null)
+  // Local, no un `Modo`: el panel es una capa encima de la vista actual, no
+  // una transición — no pasa por `navegar` y no toca `window.history`.
+  const [menuAbierto, setMenuAbierto] = useState(false)
 
   /**
    * El historial transporta el modo (ADR-013): cada transición empuja una
@@ -338,7 +352,7 @@ export function App() {
           <h1 className="sr-only font-display">huesos-mono</h1>
           <LogoIcono />
           <Pestanas modo={modo} onCambiar={(tipo) => navegar({ tipo })} />
-          <MenuIcono />
+          <MenuIcono onClick={() => setMenuAbierto(true)} />
         </header>
       )}
       <div className="min-h-0 flex-1">
@@ -366,6 +380,7 @@ export function App() {
         )}
         {modo.tipo === 'test-hueso' && <BoneTestView onCambiarModo={() => window.history.back()} />}
       </div>
+      {menuAbierto && <AboutPanel onClose={() => setMenuAbierto(false)} />}
     </main>
   )
 }
