@@ -86,7 +86,7 @@ Updated by `story-close` as each story lands — the only cross-artifact write.
 |-------|:------:|:----:|:------:|
 | e9.6 | done | M | M — 4 tareas planeadas, 6 commits de código y prueba |
 | e9.3 | done | M | M + un rediseño a mitad de T4: el punto de órbita, encontrado en el teléfono |
-| e9.5 | todo | L | — |
+| e9.5 | done | L | L — 9 tareas, 11 commits; el riesgo declarado (T4) salió con una línea y el que dolió fue un test que exigía el defecto |
 | e9.1 | todo | S | — |
 | e9.2 | todo | M | — |
 | e9.4 | todo | M | — |
