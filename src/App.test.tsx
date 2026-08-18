@@ -224,4 +224,22 @@ describe('la aplicación, de punta a punta', () => {
     })
     expect(screen.queryByTestId('escena-aislada-sustituida')).not.toBeInTheDocument()
   })
+  it('el «atrás» del sistema vuelve de la ficha a Fichas cuando se entró por ahí', async () => {
+    const user = userEvent.setup()
+    render(<App />)
+
+    await user.click(screen.getByRole('button', { name: /^fichas$/i }))
+    await user.click(screen.getByRole('button', { name: /^miembro inferior/i }))
+    await user.click(screen.getByRole('button', { name: /^fémur derecho$/i }))
+    expect(screen.getByTestId('escena-aislada-sustituida')).toBeInTheDocument()
+
+    window.history.back()
+
+    // Fichas, no Explorar: el origen lo decide la entrada anterior del
+    // historial, que es lo que sustituyó al campo `origen` del modo.
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: /^miembro inferior/i })).toBeInTheDocument()
+    })
+    expect(screen.queryByTestId('escena-sustituida')).not.toBeInTheDocument()
+  })
 })

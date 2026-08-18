@@ -97,3 +97,28 @@ código mutado, no un build viejo.
 prueba nueva en 484 ms. `should-perf-007` sigue dentro de presupuesto
 (mediana 4,6 ms; el máximo de 34,8 ms es la primera muestra, el
 calentamiento de siempre). `./scripts/check` verde.
+
+## Finalización
+
+**Un criterio del scope estaba sin cubrir.** Al repasar la aceptación de
+punta a punta apareció que el **primer** escenario —«abrí la ficha desde
+Fichas · atrás · vuelvo a Fichas», sin pasar por «← Volver»— no tenía
+prueba: los casos de T1 y T2 cubrían el retroceso desde Explorar, desde el
+test, el `state` inválido y la no-reentrada, pero no ese. Se agregó.
+
+Se comprobó que **puede** fallar antes de darlo por bueno: con la mutación
+«todo retroceso cae a Explorar» (`setModo(modoInicial())` incondicional) se
+pone rojo, junto con otros dos. Una prueba escrita después del código y
+nunca vista fallar no es una red.
+
+**Chequeo de tests huérfanos:** los importadores de `App` que esta historia
+no tocó son `tests/privacy-runtime.test.tsx` y `src/main.tsx`; los de
+`TestQuestion`, sus tres suites de test. Leídos y ejecutados dirigidamente:
+4 archivos, 31 pruebas, verde. `privacy-runtime` monta `<App />` y navega,
+así que ahora empuja entradas de historial — y sigue sin registrar una sola
+petición de red, que es la confirmación de que la History API no toca
+`must-privacy-006`.
+
+**Estado:** `./scripts/check` verde (37 archivos, 278 pruebas) y
+`./scripts/check-integration` verde (22 de 22). Pendiente T4, la prueba
+manual en el teléfono, que es la única que puede cerrar la historia.
