@@ -53,6 +53,12 @@
   --color-acento: #2f5fe0; /* selección — 5.48 con texto panel encima */
   --color-acento-suave: #dce6ff; /* fondo del estado activo — 14.61 con tinta */
   --color-acento-fuerte: #1f41a8; /* el acento bajo el puntero — 8.82 con panel */
+
+  /* El resultado del test (e9.2 los consume; declarados acá para no elegir
+     la paleta dos veces). El color nunca es el único indicador de acierto o
+     error — must-a11y-005 exige texto o forma además. */
+  --color-acierto: #15803d; /* 5.02 con texto panel encima */
+  --color-error: #b91c1c; /* 6.47 con texto panel encima */
   /* La superficie del lienzo 3D. Oscura dentro de un tema claro, y no por
      gusto: el hueso del modelo es un beige muy claro, así que sobre blanco
      pierde contorno — comprobado con capturas en e7.2. Es la salida
