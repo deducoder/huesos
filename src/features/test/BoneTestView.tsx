@@ -18,6 +18,7 @@ export function BoneTestView({ onCambiarModo }: { onCambiarModo?: () => void }) 
         <IsolatedBoneScene
           bones={catalog}
           boneId={boneId}
+          reservedBottom={0}
           accessibleLabel="Un hueso está señalado, aislado del resto del esqueleto. Elegí su nombre entre las 3 opciones."
         />
       )}

@@ -57,7 +57,7 @@ export function BoneDetailView({ boneId }: Props) {
         {bone.meshName === null ? (
           <AusenciaEnElModelo />
         ) : (
-          <IsolatedBoneScene bones={catalog} boneId={boneId} />
+          <IsolatedBoneScene bones={catalog} boneId={boneId} reservedBottom={0} />
         )}
       </div>
       <div className="absolute inset-x-4 bottom-4 max-h-[45vh] overflow-y-auto rounded-tarjeta border-2 border-tinta bg-panel shadow-dura md:inset-x-auto md:left-4 md:right-auto md:w-full md:max-w-sm">

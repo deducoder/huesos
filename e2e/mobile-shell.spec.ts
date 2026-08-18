@@ -1,4 +1,5 @@
 import { expect, type Page, test } from '@playwright/test'
+import { PNG } from 'pngjs'
 
 /**
  * Lo que solo se ve en una pantalla de teléfono.
@@ -331,4 +332,97 @@ test('desde Explorar recién cargada, el «atrás» del sistema abandona el siti
   await page.goBack()
 
   expect(page.url(), 'el historial propio estaba agotado').not.toContain('localhost:4173')
+})
+
+/**
+ * Cuántos píxeles de **hueso** hay en cada banda del lienzo.
+ *
+ * El fondo es `--color-lienzo` (#20242b, luminancia ~35) y el hueso un beige
+ * muy claro: medido sobre capturas reales, el histograma es bimodal con
+ * cúmulos en 32 y en 224, así que 90 separa los dos sin zona gris. La banda
+ * lateral es del 2 % del ancho — 8 px de 390 —, dentro del `inset-x-4` (16 px)
+ * de la tarjeta flotante, así que mide hueso y nunca tarjeta.
+ */
+function huesoPorBanda(captura: Buffer) {
+  const { width: w, height: h, data } = PNG.sync.read(captura)
+  const banda = Math.max(2, Math.round(w * 0.02))
+  let izquierda = 0
+  let derecha = 0
+  let total = 0
+  for (let y = 0; y < h; y++) {
+    for (let x = 0; x < w; x++) {
+      const i = (w * y + x) << 2
+      const luminancia =
+        0.2126 * (data[i] ?? 0) + 0.7152 * (data[i + 1] ?? 0) + 0.0722 * (data[i + 2] ?? 0)
+      if (luminancia <= 90) continue
+      total++
+      if (x < banda) izquierda++
+      else if (x >= w - banda) derecha++
+    }
+  }
+  return { izquierda, derecha, total }
+}
+
+/** Abre la ficha completa de un hueso desde el acordeón de Fichas. */
+async function abrirFicha(page: Page, categoria: string, hueso: string) {
+  await page.goto('/')
+  await page.getByRole('button', { name: /^fichas$/i }).click()
+  await page.getByRole('button', { name: new RegExp(`^${categoria}`, 'i') }).click()
+  await page.getByRole('button', { name: hueso, exact: true }).click()
+  const lienzo = page.locator('canvas').first()
+  await expect(lienzo).toBeVisible()
+  await page.waitForTimeout(1800)
+  return lienzo
+}
+
+test('un hueso ancho entra entero en el lienzo de la ficha', async ({ page }) => {
+  // La clavícula y el atlas son los dos huesos más anchos respecto de su alto
+  // de las 144 mallas del modelo (ratios 4,26 y 4,34). El fémur —el hueso con
+  // el que uno probaría por instinto— es alto y estrecho (0,26) y no expone
+  // nada: medido antes del arreglo, daba 0 píxeles en los bordes mientras la
+  // clavícula daba 475/717 y el atlas 1236/1232.
+  for (const [categoria, hueso] of [
+    ['cintura escapular', 'clavícula derecho'],
+    ['columna vertebral', 'atlas'],
+  ] as const) {
+    const lienzo = await abrirFicha(page, categoria, hueso)
+    const { izquierda, derecha } = huesoPorBanda(await lienzo.screenshot())
+    expect(izquierda, `${hueso}: hueso pegado al borde izquierdo`).toBeLessThan(50)
+    expect(derecha, `${hueso}: hueso pegado al borde derecho`).toBeLessThan(50)
+  }
+})
+
+test('el hueso alto y estrecho sigue viéndose como antes', async ({ page }) => {
+  // No-regresión: arreglar el caso ancho no puede encoger ni recortar el que
+  // ya funcionaba.
+  const lienzo = await abrirFicha(page, 'miembro inferior', 'fémur derecho')
+  const { izquierda, derecha, total } = huesoPorBanda(await lienzo.screenshot())
+  expect(izquierda + derecha, 'el fémur nunca tocó los bordes').toBeLessThan(50)
+  expect(total, 'y sigue ocupando una parte sustancial del lienzo').toBeGreaterThan(20_000)
+})
+
+test('el hueso más chico del modelo se sigue viendo, y el que no tiene geometría no monta lienzo', async ({
+  page,
+}) => {
+  // Dos no-regresiones que el encuadre nuevo podría romper sin que nada más
+  // avise. La falange media del quinto dedo del pie mide 0,0084 unidades: es
+  // la más chica de las 144 mallas, y la que obliga a la cámara a acercarse
+  // por debajo del plano cercano por defecto de three.js. Sin el `near`
+  // de e4.4, el lienzo queda en blanco sin ningún error.
+  const lienzo = await abrirFicha(
+    page,
+    'miembro inferior',
+    'falange media del quinto dedo del pie derecho',
+  )
+  const { total } = huesoPorBanda(await lienzo.screenshot())
+  expect(total, 'la falange más chica se ve').toBeGreaterThan(1_000)
+
+  // Y el hioides es uno de los siete huesos que el modelo no representa
+  // (ADR-006): su ficha explica la ausencia y no monta ninguna escena.
+  await page.goto('/')
+  await page.getByRole('button', { name: /^fichas$/i }).click()
+  await page.getByRole('button', { name: /^hioides/i }).click()
+  await page.getByRole('button', { name: 'hioides', exact: true }).click()
+  await expect(page.getByText(/no está en el modelo 3D/i)).toBeVisible()
+  await expect(page.locator('canvas')).toHaveCount(0)
 })
