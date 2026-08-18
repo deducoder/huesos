@@ -404,3 +404,21 @@ completo, ADR-010 no gobierna la lista visible de Fichas — ver ADR-011,
 que documenta la corrección.
 
 **Destino:** ya no aparcado — en curso bajo E8.
+
+## 2026-08-17 · `count` de `pickDistractors` sin ejercitar (e8.3, architecture-review)
+
+`DistractorOptions.count` (`src/domain/distractors.ts`) documenta cuántos
+distractores devolver, pero ningún llamador ni ningún test lo usa con un
+valor distinto del default (2) — solo el `sorteo` inyectado tiene
+cobertura de opción no-default.
+
+Se relaciona con un hallazgo de `quality-review` sobre la misma historia:
+el guard `preguntables.length < count` no contempla que la exclusión de
+hermanos dentro del bucle puede consumir el pool más rápido que `count` —
+con `count=2` es inalcanzable, sin probarse con un `count` mayor queda sin
+verificar.
+
+**Destino:** aparcado. Si `e8.4` (o alguna historia futura) necesita un
+`count` distinto de 2, agregar ahí el test que ejercite ese valor —
+cierra los dos hallazgos a la vez. Si nunca se necesita, es candidato a
+simplificar quitando el parámetro (YAGNI).
