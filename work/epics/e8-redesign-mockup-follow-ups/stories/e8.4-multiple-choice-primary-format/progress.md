@@ -48,3 +48,16 @@ desde T1. Mutación forzada (`anotar(seleccionId === bone.id)` →
 `anotar(true)`) confirmó que el test del fallo lo detecta.
 
 Gate: `./scripts/check` verde (252 tests, lint/format/types limpios).
+
+## T3 · Guardrail `must-data-010` y corrección de la pista accesible
+
+RED confirmado en ambas vistas antes de tocar el texto fuente: los tests
+nuevos (`SkeletonTestView.test.tsx`, `BoneTestView.test.tsx`) fallaban
+contra "Escribí su nombre en el campo de respuesta" / "...Escribí su
+nombre...". Corregido a "Elegí su nombre entre las 3 opciones" /
+"...Elegí su nombre entre las 3 opciones." — GREEN inmediato. Fila
+`must-data-010` agregada a `governance/guardrails.md`, distinguiendo
+explícitamente su alcance del de `must-data-003` (que sigue intacto,
+gobernando el formato escrito oculto).
+
+Gate: `./scripts/check` verde (254 tests, lint/format/types limpios).
