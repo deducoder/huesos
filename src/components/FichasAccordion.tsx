@@ -76,12 +76,26 @@ export function FichasAccordion({ bones, onSelect }: Props) {
                 {cat.category}
                 <span className="ml-2 font-normal text-tinta/70">{total}</span>
               </span>
-              <span aria-hidden="true" className={expandida ? 'rotate-180' : ''}>
+              <span
+                aria-hidden="true"
+                className={`transition-transform duration-base ease-salida ${expandida ? 'rotate-180' : ''}`}
+              >
                 ⌄
               </span>
             </button>
-            {expandida && (
-              <div className="mt-2 flex flex-col gap-3">
+            {/* s2: siempre montado, no `{expandida && (...)}` — es lo que le
+                da a la transición un estado inicial y uno final que
+                interpolar. `inert` es la pieza que evita que un botón de
+                una categoría colapsada siga siendo alcanzable por teclado
+                pese a medir cero de alto. */}
+            <div
+              inert={!expandida}
+              data-testid={`fichas-contenido-${cat.category}`}
+              className={`grid transition-[grid-template-rows] duration-panel ease-salida ${
+                expandida ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'
+              }`}
+            >
+              <div className="flex min-h-0 flex-col gap-3 overflow-hidden">
                 {cat.regions.map((grupo) => {
                   const acentoGrupo = REGION_ACCENT[grupo.region]
                   return (
@@ -180,7 +194,7 @@ export function FichasAccordion({ bones, onSelect }: Props) {
                   )
                 })}
               </div>
-            )}
+            </div>
           </div>
         )
       })}
