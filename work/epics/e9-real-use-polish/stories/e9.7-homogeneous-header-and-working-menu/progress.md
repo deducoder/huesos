@@ -106,3 +106,59 @@ bg-panel shadow-dura`.
   Commiteado antes de mutar esta vez (lección de T3), así que
   `git restore` fue seguro.
 - **Gate:** `./scripts/check` verde — 343 tests.
+
+## T5 · Verificación manual — primera pasada
+
+Recorrido en el teléfono, sobre el dev server + túnel ya corriendo (no se
+tocó, per memoria "no matar el dev server ni el túnel"). Resultado por
+punto:
+
+1. Abrir el menú desde las 4 vistas: confirmado, funciona (la primera
+   respuesta llegó con un typo del teléfono, aclarado con el humano antes
+   de seguir).
+2. Contenido legible: confirmado, con un pedido explícito — agregar
+   crédito de desarrollo y una leyenda de no-rastreo/sin fines de lucro.
+   No estaba en el mínimo declarado por el scope, pero el scope permite
+   más ("como mínimo" los cuatro ítems) y no contradice ningún Must NOT.
+   Pasa a T7.
+3. Cerrar por botón/Escape/backdrop: confirmado, funciona.
+4. **Hallazgo real** — el "atrás" del sistema navegaba la vista de fondo
+   pero el panel se quedaba montado encima, sobre una vista distinta a la
+   que estaba cuando se abrió ("el card privacidad no se quita, se
+   sostiene, reaccionan las pantallas de atrás"). Viola el "Done when"
+   del scope sobre el comportamiento de "atrás". Pasa a T6.
+5. Cabecera de ficha redondeada: confirmado.
+
+## T6 · El «atrás» del sistema cierra el panel, no solo cambia la vista de fondo
+
+**Done.** El handler `alRetroceder` de `App` ahora también llama a
+`setMenuAbierto(false)`, además de fijar `modo`.
+
+- **RED:** navegar a una vista real, abrir el panel, disparar
+  `window.history.back()`, esperar que el diálogo desaparezca —
+  reproducido en rojo real antes del arreglo, con el `waitFor` agotando
+  su plazo porque el diálogo nunca se iba.
+- **GREEN:** una línea en el handler existente.
+- **Mutación forzada:** quitar `setMenuAbierto(false)` reproduce
+  exactamente el timeout original. Commiteado antes de mutar;
+  `git restore` fue seguro.
+- **Gate:** `./scripts/check` verde — 344 tests.
+
+## T7 · Crédito de la aplicación y leyenda de no-rastreo/sin fines de lucro
+
+**Done.** Una sección nueva en `AboutPanel`, debajo de la de Modelo 3D:
+"Sin rastreo. Sin fines de lucro. Desarrollado por DEDU · 2026."
+
+- **RED:** dos afirmaciones — el texto de crédito y la leyenda de
+  rastreo/lucro — confirmadas en rojo real (`getByText` sin match).
+- **GREEN:** el párrafo agregado.
+- **Mutación forzada:** borrar solo la leyenda de rastreo/lucro (dejando
+  el crédito) rompe esa aserción puntual, no la del crédito — confirma
+  que las dos pruebas vigilan textos distintos, no el mismo párrafo por
+  casualidad. Commiteado antes de mutar; `git restore` fue seguro.
+- **Gate:** `./scripts/check` verde — 346 tests.
+
+## T5 · Verificación manual — segunda pasada
+
+Pendiente: recorrer de nuevo los puntos 4 (atrás con el panel abierto) y 2
+(contenido nuevo) tras T6/T7, antes de cerrar la historia.
