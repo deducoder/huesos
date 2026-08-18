@@ -53,7 +53,7 @@ export function TestQuestion({ bones, store, renderScene }: Props) {
   }
 
   return (
-    <div className="flex h-full flex-col">
+    <div className="flex h-full flex-col md:mx-auto md:max-w-3xl">
       <div className="min-h-0 flex-1">{renderScene(bone.id)}</div>
       <div className="border-tinta border-t p-4">
         {resultado === 'pendiente' ? (

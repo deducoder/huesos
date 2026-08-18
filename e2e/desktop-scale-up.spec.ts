@@ -68,3 +68,17 @@ test('en Fichas, la fila de un par no se estira a lo ancho del viewport', async 
   expect(cajaFila, 'la fila del par no está en la página').not.toBeNull()
   expect(cajaFila?.width ?? 0, 'ancho de la fila').toBeLessThan(700)
 })
+
+test('en el modo test de hueso aislado, la barra de respuesta no se estira a lo ancho del viewport', async ({
+  page,
+}) => {
+  await page.goto('/')
+  await page.getByRole('button', { name: 'Test', exact: true }).click()
+  await page.getByRole('button', { name: 'Hueso aislado', exact: true }).click()
+
+  const barra = page.locator('form').first()
+  await expect(barra).toBeVisible()
+  const caja = await barra.boundingBox()
+  expect(caja, 'la barra de respuesta no está en la página').not.toBeNull()
+  expect(caja?.width ?? 0, 'ancho de la barra de respuesta').toBeLessThan(800)
+})
