@@ -22,3 +22,23 @@ buena porque los tests pasen: cubren 4 casos de 120. Se leyeron **los 120
 nombres únicos con su género asignado**, uno a uno, antes de commitear — 70
 femeninos y 50 masculinos, todos correctos. El reparto por lado es 47 de los 86
 nombres con lado, más 23 impares (22 vértebras y la mandíbula).
+
+## T2 · La derivación del nombre corto, con su gate sobre el catálogo real
+
+**Done.** `src/components/bone-name.ts` con `shortName` y
+`TECHO_NOMBRE_CORTO = 26`; seis pruebas, tres de derivación y tres de gate.
+
+- **RED:** el primer rojo fue el `import` de un módulo inexistente —«no
+  tests»—, que **no prueba nada**: ninguna aserción llegó a evaluarse. Se
+  escribió un stub que devuelve su argumento y se volvió a mirar: **5 de 6 en
+  rojo, y la de unicidad en verde**. Es la demostración empírica de por qué el
+  plan exigía la tercera afirmación: con la derivación desactivada, el techo y
+  la unicidad se cumplen solos —los nombres del catálogo ya son únicos— y solo
+  «se aplica de verdad a la familia que la motiva» lo atrapa.
+- **GREEN:** tabla de 17 ordinales, elisión de «del … dedo de la mano/del pie»
+  y capitalización.
+- **Gate:** `./scripts/check` verde — 38 archivos, 295 tests.
+
+**Lo que el plan no anticipó:** que el propio RED necesitaba un andamiaje para
+ser observable. Un módulo que no existe da rojo por razones que no dicen nada
+del comportamiento; el stub identidad convierte ese rojo en información.
