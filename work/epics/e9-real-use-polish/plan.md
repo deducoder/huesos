@@ -84,7 +84,7 @@ Updated by `story-close` as each story lands — the only cross-artifact write.
 
 | Story | Status | Est. | Actual |
 |-------|:------:|:----:|:------:|
-| e9.6 | todo | M | — |
+| e9.6 | done | M | M — 4 tareas planeadas, 6 commits de código y prueba |
 | e9.3 | todo | M | — |
 | e9.5 | todo | L | — |
 | e9.1 | todo | S | — |
