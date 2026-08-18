@@ -41,3 +41,5 @@
 - [epic-review atrapa lo que ninguna historia toca a la vez](epic-review-catches-what-no-single-story-touches.md) — un color 3D quedó fuera del sistema de tokens nueve historias enteras hasta la relectura del scope contra el código real.
 - [Elegir fixtures que estresen la regla](pick-fixtures-that-stress-the-rule.md) — el ejemplo cómodo (región grande) no atrapó el bug; la región chica y pareada sí lo habría hecho desde T1.
 - [El nombre en español de un hueso no lleva el lado](bone-es-name-omits-side.md) — `clavicle-right`/`clavicle-left` comparten `es`; mostrarlo solo puede duplicar etiquetas entre pares.
+- [Un servidor reutilizado miente aunque el comando reconstruya](reused-server-lies-even-with-fresh-build-command.md) — `reuseExistingServer` ignora el `build` si el puerto ya está ocupado por un proceso sobrante.
+- [Cambiar el formato por defecto pide un grep de e2e](default-format-change-needs-an-e2e-grep.md) — `./scripts/check` no ve la suite de Playwright; nombrarlo como tarea, no esperar a tropezar con él.
