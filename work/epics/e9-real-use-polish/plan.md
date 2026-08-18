@@ -50,21 +50,28 @@ porque es la de menor incertidumbre — un panel de contenido fijo. Ser la
 
 ## Milestones
 
-- [ ] **Walking skeleton** — e9.6 — el «atrás» del teléfono vuelve de una
+- [x] **Walking skeleton** — e9.6 — el «atrás» del teléfono vuelve de una
       ficha a su origen sin abandonar el sitio, verificado con
       `page.goBack()` en Playwright **y** a mano en el dispositivo. Demo:
       abrir el fémur desde Fichas y volver con el gesto del sistema.
-- [ ] **Core MVP** — e9.6, e9.3, e9.5, e9.1 (4/7) — los tres roces más
+- [x] **Core MVP** — e9.6, e9.3, e9.5, e9.1 (4/7) — los tres roces más
       graves resueltos. Demo: recorrido en el teléfono con nombres cortos
       y distinguibles, el coxal entrando entero en el lienzo y girando con
       el dedo, y el «atrás» recorriendo la aplicación.
-- [ ] **E2E integration checkpoint** — tras e9.4, antes de e9.7 —
+- [x] **E2E integration checkpoint** — tras e9.4, antes de e9.7 —
       `./scripts/check-integration` completo con servidor recién
       construido, más un recorrido manual en el teléfono. No es ceremonia:
       e9.6 y e9.3 producen comportamiento que **ninguna prueba unitaria
       observa**, y e9.5 cruza cuatro componentes que ninguna historia toca
       a la vez. Las costuras entre historias solo aparecen acá.
-- [ ] **Feature complete** — e9.2, e9.4 (6/7) — los nueve puntos salvo el
+      **Hecho 2026-08-18**: puertos 4173-4175 comprobados libres antes de
+      correr —el build fue real, no un servidor reutilizado—,
+      `./scripts/check-integration` **32 de 32**, `should-perf-007`
+      mediana 3,9 ms. Recorrido manual en el teléfono con las seis
+      historias mergeadas juntas por primera vez: Explorar → Fichas →
+      ficha → «atrás» del sistema → las dos variantes de test, acertando
+      y errando. Confirmado por el humano sin hallazgos.
+- [x] **Feature complete** — e9.2, e9.4 (6/7) — los nueve puntos salvo el
       menú.
 - [ ] **Epic complete** — e9.7 más los criterios de `scope.md`:
       atribución legible desde la interfaz, gate de unicidad en verde,
