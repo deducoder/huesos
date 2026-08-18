@@ -73,3 +73,27 @@ sostenía sigue vigilado sin el campo.
 biome colapsa a una línea el `&&` de `BoneTestView` ahora que el callback
 es más corto. Corregido con `npm run format`, no bypaseado. Verde después:
 37 archivos, 276 pruebas.
+
+## T3 · La prueba de navegador, que es la que de verdad observa esto
+
+**Hecho.** Un caso nuevo en `e2e/mobile-shell.spec.ts` (viewport 390×844,
+que es donde vive el gesto): abre la ficha del fémur desde Explorar,
+`page.goBack()`, comprueba que sigue en el sitio y que el fémur conserva
+`aria-pressed="true"`; luego entra al test de esqueleto y retrocede a la
+elección de variante.
+
+**Precondición del plan, revisada:** no hizo falta matar nada. Playwright
+usa 4173 y estaba libre; los dos `vite preview --port 4180` huérfanos y el
+`cloudflared` viejo apuntando a 4173 no ocupan ese puerto. El dev server de
+5173 y su túnel siguen vivos e intactos.
+
+**Verificación — mutación forzada:** con el `pushState` de `navegar`
+comentado, el caso se pone rojo (*element(s) not found*, 15,5 s). Se
+comprobó antes que 4173 estaba libre, para que Playwright reconstruyera en
+vez de reutilizar un servidor con el bundle anterior — el rojo mide el
+código mutado, no un build viejo.
+
+**Gates:** `./scripts/check-integration` verde, 22 de 22 en 2,3 min, con la
+prueba nueva en 484 ms. `should-perf-007` sigue dentro de presupuesto
+(mediana 4,6 ms; el máximo de 34,8 ms es la primera muestra, el
+calentamiento de siempre). `./scripts/check` verde.

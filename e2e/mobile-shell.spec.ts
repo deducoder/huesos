@@ -288,3 +288,31 @@ test('las opciones y sus botones usan el mínimo táctil, sin desbordar', async 
   expect(cajaSiguiente?.height ?? 0, 'alto de "Siguiente pregunta"').toBeGreaterThanOrEqual(44)
   expect(cajaSiguiente?.width ?? 0, 'ancho de "Siguiente pregunta"').toBeGreaterThanOrEqual(44)
 })
+
+test('el «atrás» del sistema recorre la aplicación en vez de abandonarla', async ({ page }) => {
+  // La razón de ser de esta prueba: `popstate` en jsdom no reproduce el gesto
+  // de un teléfono, así que el verde de la suite unitaria no dice nada sobre
+  // el comportamiento real. Acá el retroceso lo ejecuta el navegador.
+  await esperarExplorar(page)
+  await elegirFemurDerecho(page)
+  await page.getByRole('button', { name: /ver ficha completa/i }).click()
+  await expect(page.getByRole('button', { name: /volver/i })).toBeVisible()
+
+  await page.goBack()
+
+  // De vuelta en Explorar, dentro del sitio y con la selección viva: vive en
+  // `App` y no en la entrada del historial, justamente para sobrevivir a esto.
+  await expect(page.getByRole('button', { name: /^test$/i })).toBeVisible()
+  await expect(page.getByRole('button', { name: 'fémur derecho', exact: true })).toHaveAttribute(
+    'aria-pressed',
+    'true',
+  )
+
+  // Y desde una variante de test, el gesto devuelve a la elección de variante.
+  await page.getByRole('button', { name: /^test$/i }).click()
+  await page.getByRole('button', { name: /esqueleto completo/i }).click()
+  await expect(page.getByRole('button', { name: /responder/i })).toBeVisible()
+
+  await page.goBack()
+  await expect(page.getByRole('button', { name: /esqueleto completo/i })).toBeVisible()
+})
