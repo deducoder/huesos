@@ -124,3 +124,48 @@ ellos es el alto de la tarjeta. Con la reserva fija, la tibia desperdicia el
 antes: 10 265 px visibles frente a los 20 560 que se veían cuando la otra
 mitad quedaba tapada. Es el precio de encuadrar en la franja libre, y es una
 decisión que se mira en el teléfono, no en un número.
+
+## T4 · El hueso se puede girar sin robarle el scroll a la página
+
+**Hecho.** `FixTouchAction` salió de `SkeletonScene.tsx` a su propio archivo
+con su comentario íntegro, y ahora lo montan las dos escenas.
+`IsolatedBoneScene` monta `<OrbitControls>` de solo rotación.
+
+**El usuario encontró un bug que mi diseño había metido y mi prueba no
+podía ver.** Probando en el teléfono: la rotación horizontal funcionaba, la
+vertical sacaba el hueso del encuadre. La causa era mía — para subir el
+hueso por encima de la tarjeta había bajado la cámara **y su punto de
+mira**, dejando el centro de giro `shiftY` por debajo del hueso. En
+horizontal apenas se nota, porque el eje pasa cerca; en vertical el hueso
+describe un arco grande y se va.
+
+**La corrección: descentrar la proyección, no mover la cámara.**
+`camera.setViewOffset` renderiza una subventana del frustum del mismo
+tamaño pero corrida —un desplazamiento de lente—, así que el hueso se
+dibuja arriba mientras la cámara sigue apuntando a su centro real y la
+órbita queda intacta en los dos ejes. En consecuencia `frameObject` dejó de
+devolver `shiftY` en unidades de mundo y devuelve `viewOffsetY` como
+fracción del alto: media reserva.
+
+**Mi prueba de rotación no observaba lo que decía observar.** Afirmaba «al
+arrastrar cambian más de 2 000 píxeles» y daba ~90 para arrastres de 120 px
+en horizontal, 150 en vertical y 200 en diagonal — el mismo número en los
+tres, o sea ruido. Aunque hubiera funcionado, «algo cambió» **jamás** habría
+detectado este bug: un hueso puede salirse del encuadre y seguir cambiando
+píxeles. Se descartó y se reemplazó por lo que el usuario hizo con el dedo:
+girar y mirar si el hueso sigue dentro.
+
+**Y el criterio que pidió el usuario:** aire a los cuatro lados, no solo
+«que no se salga». Un hueso pegado al borde se lee como recortado aunque
+técnicamente entre. Bandas del 3 % por lado, medido: 0 píxeles en las cuatro
+para el fémur y el atlas, 13 en una sola para la clavícula.
+
+**Verificación — mutación forzada, la que importaba:** reponiendo el bug del
+anclaje (cámara y target bajados juntos, sin descentrar la proyección), la
+prueba nueva se pone roja en el **primer giro vertical**, con 681 píxeles de
+hueso metidos bajo la tarjeta. Es el defecto que se encontró a mano, ahora
+con red.
+
+**Gates:** `./scripts/check` verde. `./scripts/check-integration` verde,
+**31 de 31**. `should-perf-007` en mediana 4,0 ms — los controles no mueven
+el presupuesto, como el diseño anticipaba.

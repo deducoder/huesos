@@ -1,7 +1,14 @@
-import { PerspectiveCamera, useGLTF } from '@react-three/drei'
+import { OrbitControls, PerspectiveCamera, useGLTF } from '@react-three/drei'
 import { Canvas, useThree } from '@react-three/fiber'
 import { Suspense, useCallback, useLayoutEffect, useMemo, useRef, useState } from 'react'
-import { Box3, type Group, type Mesh, type Object3D, Vector3 } from 'three'
+import {
+  Box3,
+  type Group,
+  type Mesh,
+  type Object3D,
+  type PerspectiveCamera as PerspectiveCameraImpl,
+  Vector3,
+} from 'three'
 import type { Bone } from '../data/bone'
 import skeletonUrl from '../data/skeleton.glb?url'
 import { frameObject } from '../domain/framing'
@@ -9,6 +16,7 @@ import { visibleForIsolation } from '../domain/isolation'
 import { stripMidline } from '../domain/mirroring'
 import type { SceneHalf } from '../domain/mesh-lookup'
 import { findBone } from '../domain/selection'
+import { FixTouchAction } from './FixTouchAction'
 
 const DRACO_PATH = '/draco/'
 const FOV = 45
@@ -16,7 +24,7 @@ const FOV = 45
 /** Encuadre calculado para lo que quedó visible, o `null` mientras no hay nada que mostrar. */
 interface Framing {
   distance: number
-  shiftY: number
+  viewOffsetY: number
   center: Vector3
 }
 
@@ -102,6 +110,58 @@ function IsolatedGroup({ bones, boneId, reservedBottom, onFramed }: GroupProps) 
   )
 }
 
+/**
+ * La cámara del hueso, con la proyección descentrada en vez de la cámara
+ * desplazada.
+ *
+ * `setViewOffset` renderiza una subventana del frustum del mismo tamaño que
+ * el total pero corrida — un desplazamiento de lente. El hueso se dibuja más
+ * arriba, fuera de lo que la tarjeta tapa, mientras la cámara sigue mirando a
+ * su centro. Es lo que permite que `OrbitControls` gire alrededor del hueso y
+ * no de un punto vacío por debajo de él.
+ */
+function CamaraEncuadrada({ framing }: { framing: Framing }) {
+  const camaraRef = useRef<PerspectiveCameraImpl>(null)
+  const size = useThree((estado) => estado.size)
+
+  const posicion = useMemo<[number, number, number]>(
+    () => [framing.center.x, framing.center.y, framing.center.z + framing.distance],
+    [framing],
+  )
+
+  useLayoutEffect(() => {
+    const camara = camaraRef.current
+    if (!camara) return
+    if (framing.viewOffsetY === 0) camara.clearViewOffset()
+    else {
+      // Correr la ventana hacia abajo dentro del frustum sube el contenido.
+      camara.setViewOffset(
+        size.width,
+        size.height,
+        0,
+        framing.viewOffsetY * size.height,
+        size.width,
+        size.height,
+      )
+    }
+    camara.updateProjectionMatrix()
+  }, [framing, size.width, size.height])
+
+  return (
+    <PerspectiveCamera
+      ref={camaraRef}
+      makeDefault
+      fov={FOV}
+      // El plano cercano por defecto de three.js (0.1) recorta huesos
+      // diminutos: `frameObject` acerca la cámara por debajo de esa distancia
+      // para una falange, y el lienzo queda en blanco sin ningún error —
+      // verificado en e4.4 con "falange proximal del quinto dedo de la mano".
+      near={0.001}
+      position={posicion}
+    />
+  )
+}
+
 interface Props {
   bones: readonly Bone[]
   /** El `id` del hueso a aislar. Un `id` sin geometría en el modelo no muestra nada. */
@@ -152,29 +212,30 @@ export function IsolatedBoneScene({ bones, boneId, reservedBottom, accessibleLab
             reservedBottom={reservedBottom}
             onFramed={onFramed}
           />
+          {framing && <CamaraEncuadrada framing={framing} />}
           {framing && (
-            // Sin `lookAt`: con rotación por defecto, la cámara ya mira hacia
-            // -Z, así que colocarla en el mismo X/Y del centro y desplazada
-            // en Z alcanza el centro sin necesitar orientarla a mano.
-            <PerspectiveCamera
+            // Solo rotación: el encuadre ya decide cuánto se ve, y añadir zoom
+            // o desplazamiento es alcance que el scope excluye.
+            //
+            // El objetivo es el **centro real del hueso**, sin descontar nada.
+            // Descontarle el desplazamiento —como hizo la primera versión—
+            // dejaba el punto de giro por debajo del hueso: girar en
+            // horizontal apenas se notaba, pero girar en vertical lo sacaba
+            // del encuadre. Encontrado a mano en el teléfono, no por la
+            // suite. Lo que descentra la imagen es la proyección, no la
+            // cámara, así que la órbita queda intacta.
+            <OrbitControls
+              enableRotate
+              enableZoom={false}
+              enablePan={false}
               makeDefault
-              fov={FOV}
-              // El plano cercano por defecto de three.js (0.1) recorta huesos
-              // diminutos: `distanceToFit` acerca la cámara por debajo de esa
-              // distancia para una falange, y el lienzo queda en blanco sin
-              // ningún error — verificado en e4.4 con "falange proximal del
-              // quinto dedo de la mano".
-              near={0.001}
-              // Bajar la cámara sube el hueso en pantalla, que es como se esquiva
-              // lo que flota sobre el lienzo sin recortar el lienzo mismo.
-              position={[
-                framing.center.x,
-                framing.center.y - framing.shiftY,
-                framing.center.z + framing.distance,
-              ]}
+              target={[framing.center.x, framing.center.y, framing.center.z]}
             />
           )}
         </Suspense>
+        {/* Los controles reasignan `touch-action` al reconectar, en un momento
+            que varía; el vigilante lo corrige cada vez (e7.2, e7.10). */}
+        <FixTouchAction />
       </Canvas>
     </div>
   )

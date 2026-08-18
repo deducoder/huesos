@@ -18,11 +18,18 @@ export interface Framing {
   /** A qué distancia ponerla sobre el eje Z. */
   distance: number
   /**
-   * Cuánto **bajarla** para que el objeto suba a la franja que se ve. Bajar
-   * la cámara sube el objeto en pantalla; es la forma de esquivar una
-   * tarjeta que flota sobre el lienzo sin recortar el lienzo mismo.
+   * Cuánto descentrar la **proyección** hacia abajo, en fracción del alto del
+   * lienzo, para que el objeto se dibuje en la franja que se ve.
+   *
+   * No es un desplazamiento de la cámara, y la diferencia es todo el asunto:
+   * bajar la cámara —y con ella su punto de mira— deja el centro de giro por
+   * debajo del objeto, y al girar en vertical el objeto describe un arco
+   * grande y se sale del encuadre. Verificado a mano en el teléfono. Con un
+   * descentrado de proyección la cámara sigue apuntando al centro real del
+   * objeto, así que la órbita es correcta en los dos ejes y el objeto se
+   * dibuja igual de arriba.
    */
-  shiftY: number
+  viewOffsetY: number
 }
 
 /** Lo que el lienzo aporta al encuadre: su campo, su forma y lo que tiene tapado. */
@@ -73,8 +80,7 @@ export function frameObject(
   const porAncho = distanceToFit(size.width / aspecto, view.fovDegrees, margin)
   const distance = Math.max(porAltura, porAncho)
 
-  // La franja libre está centrada media reserva más arriba que el lienzo, y
-  // media altura visible es `distance * tan(fov/2)`.
-  const mediaAlturaVisible = distance * Math.tan((view.fovDegrees * Math.PI) / 180 / 2)
-  return { distance, shiftY: reserva * mediaAlturaVisible }
+  // La franja libre está centrada media reserva más arriba que el lienzo, así
+  // que la proyección se descentra esa misma media reserva.
+  return { distance, viewOffsetY: reserva / 2 }
 }

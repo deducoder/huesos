@@ -522,3 +522,128 @@ test('la reserva sale del alto real de la tarjeta, no de su máximo declarado', 
   expect(conFichaLarga.huecoBajoElHueso, 'hueco bajo el fémur, de ficha larga').toBeLessThan(0.2)
   expect(conFichaCorta.huecoBajoElHueso, 'hueco bajo la tibia, de ficha corta').toBeLessThan(0.2)
 })
+
+/**
+ * Cuánto hueso toca cada banda de margen del lienzo, y el hueso total.
+ *
+ * `corte` es donde empieza lo que flota encima (la tarjeta): por debajo no se
+ * mide, porque ahí el hueso no debería estar y ya lo vigila otra prueba. La
+ * banda es el 3 % de cada dimensión — el margen del encuadre es del 15 %
+ * repartido, así que 3 % por lado es holgura real, no ruido de antialiasing.
+ */
+function aireAlrededor(captura: Buffer, corte: number) {
+  const { width: w, height: h, data } = PNG.sync.read(captura)
+  const bandaX = Math.max(2, Math.round(w * 0.03))
+  const bandaY = Math.max(2, Math.round(corte * 0.03))
+  const fondo = Math.min(corte, h)
+  let izquierda = 0
+  let derecha = 0
+  let arriba = 0
+  let abajo = 0
+  let total = 0
+  for (let y = 0; y < fondo; y++) {
+    for (let x = 0; x < w; x++) {
+      const i = (w * y + x) << 2
+      const luminancia =
+        0.2126 * (data[i] ?? 0) + 0.7152 * (data[i + 1] ?? 0) + 0.0722 * (data[i + 2] ?? 0)
+      if (luminancia <= 90) continue
+      total++
+      if (x < bandaX) izquierda++
+      if (x >= w - bandaX) derecha++
+      if (y < bandaY) arriba++
+      if (y >= fondo - bandaY) abajo++
+    }
+  }
+  return { izquierda, derecha, arriba, abajo, total }
+}
+
+/** Dónde empieza la tarjeta flotante, en píxeles de la captura del lienzo. */
+async function corteDeLaTarjeta(page: Page, lienzo: Locator) {
+  const cajaLienzo = await lienzo.boundingBox()
+  const cajaTarjeta = await page.getByTestId('tarjeta-ficha').boundingBox()
+  const escala = 1
+  return ((cajaTarjeta?.y ?? 0) - (cajaLienzo?.y ?? 0)) * escala
+}
+
+/** Arrastra sobre el lienzo, como un dedo girando el hueso. */
+async function girar(page: Page, lienzo: Locator, dx: number, dy: number) {
+  const caja = await lienzo.boundingBox()
+  const x = (caja?.x ?? 0) + (caja?.width ?? 0) / 2
+  const y = (caja?.y ?? 0) + (caja?.height ?? 0) / 3
+  await page.mouse.move(x, y)
+  await page.mouse.down()
+  await page.mouse.move(x + dx, y + dy, { steps: 15 })
+  await page.mouse.up()
+  await page.waitForTimeout(700)
+}
+
+/** Captura el lienzo con la tarjeta oculta, que si no cuenta como hueso. */
+async function capturarSinTarjeta(page: Page, lienzo: Locator) {
+  await page.getByTestId('tarjeta-ficha').evaluate((t) => {
+    t.style.visibility = 'hidden'
+  })
+  const captura = await lienzo.screenshot()
+  await page.getByTestId('tarjeta-ficha').evaluate((t) => {
+    t.style.visibility = ''
+  })
+  return captura
+}
+
+test('el hueso deja aire a los cuatro lados del lienzo', async ({ page }) => {
+  // No basta con que no se salga: tiene que quedar holgura por los cuatro
+  // costados, o el hueso se lee como recortado aunque técnicamente entre.
+  // Medido tras el arreglo: 0 píxeles en las cuatro bandas para el fémur y
+  // 13 en una sola para la clavícula, sobre un margen de encuadre del 15 %.
+  for (const [categoria, hueso] of [
+    ['miembro inferior', 'fémur derecho'],
+    ['cintura escapular', 'clavícula derecho'],
+    ['columna vertebral', 'atlas'],
+  ] as const) {
+    const lienzo = await abrirFicha(page, categoria, hueso)
+    const corte = await corteDeLaTarjeta(page, lienzo)
+    const aire = aireAlrededor(await capturarSinTarjeta(page, lienzo), corte)
+
+    expect(aire.total, `${hueso}: se ve`).toBeGreaterThan(1_000)
+    expect(aire.izquierda, `${hueso}: aire a la izquierda`).toBeLessThan(50)
+    expect(aire.derecha, `${hueso}: aire a la derecha`).toBeLessThan(50)
+    expect(aire.arriba, `${hueso}: aire arriba`).toBeLessThan(50)
+    expect(aire.abajo, `${hueso}: aire abajo, sobre la tarjeta`).toBeLessThan(50)
+  }
+})
+
+test('girar el hueso no lo saca del encuadre', async ({ page }) => {
+  // La regresión que apareció probando en el teléfono, y que ninguna prueba
+  // de «algo cambió al arrastrar» habría detectado: el hueso puede salirse
+  // del encuadre y seguir cambiando píxeles. Con el punto de giro desplazado
+  // junto a la cámara, girar en HORIZONTAL apenas se notaba —el eje estaba
+  // cerca— pero girar en VERTICAL describía un arco grande y lo expulsaba.
+  // Por eso el eje vertical va primero.
+  const lienzo = await abrirFicha(page, 'miembro inferior', 'fémur derecho')
+  const corte = await corteDeLaTarjeta(page, lienzo)
+
+  for (const [dx, dy, eje] of [
+    [0, 180, 'vertical'],
+    [0, -260, 'vertical, al otro lado'],
+    [200, 0, 'horizontal'],
+  ] as const) {
+    await girar(page, lienzo, dx, dy)
+    const aire = aireAlrededor(await capturarSinTarjeta(page, lienzo), corte)
+
+    expect(aire.total, `tras girar en ${eje}: el hueso sigue a la vista`).toBeGreaterThan(1_000)
+    expect(aire.izquierda + aire.derecha, `tras girar en ${eje}: no toca los lados`).toBeLessThan(
+      50,
+    )
+    expect(aire.arriba, `tras girar en ${eje}: no toca arriba`).toBeLessThan(50)
+    expect(aire.abajo, `tras girar en ${eje}: no se mete bajo la tarjeta`).toBeLessThan(50)
+  }
+})
+
+test('el lienzo de la ficha conserva sus propios gestos', async ({ page }) => {
+  // Mismo defecto que e7.2 encontró en un teléfono real: sin
+  // `touch-action: none` el navegador reclama el arrastre vertical para hacer
+  // scroll y la rotación nunca llega a los controles. `OrbitControls` lo pone
+  // al conectar y lo pierde al reconectar, de ahí el vigilante compartido.
+  const lienzo = await abrirFicha(page, 'miembro inferior', 'fémur derecho')
+  const gestos = await lienzo.evaluate((c) => getComputedStyle(c).touchAction)
+  expect(gestos, 'touch-action del lienzo de la ficha').toBe('none')
+})

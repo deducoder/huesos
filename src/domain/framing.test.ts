@@ -50,16 +50,29 @@ describe('frameObject: encuadre que conoce el ancho, el aspecto y lo que la tarj
     expect(distance).toBeCloseTo(distanceToFit(FEMUR.height, 45, 1), 5)
   })
 
-  it('sin nada reservado abajo, no desplaza la cámara', () => {
-    expect(frameObject(CLAVICULA, TELEFONO, 1).shiftY).toBe(0)
+  it('sin nada reservado abajo, no descentra la proyección', () => {
+    expect(frameObject(CLAVICULA, TELEFONO, 1).viewOffsetY).toBe(0)
   })
 
-  it('con la tarjeta tapando abajo, aleja la cámara y sube el objeto', () => {
+  it('con la tarjeta tapando abajo, aleja la cámara y descentra la proyección', () => {
     const sinTarjeta = frameObject(FEMUR, TELEFONO, 1)
     const conTarjeta = frameObject(FEMUR, { ...TELEFONO, reservedBottom: 0.4 }, 1)
 
     expect(conTarjeta.distance).toBeGreaterThan(sinTarjeta.distance)
-    expect(conTarjeta.shiftY).toBeGreaterThan(0)
+    // Media reserva: es lo que separa el centro de la franja libre del centro
+    // del lienzo.
+    expect(conTarjeta.viewOffsetY).toBeCloseTo(0.2, 5)
+  })
+
+  it('el descentrado nunca mueve el punto al que la cámara mira', () => {
+    // La regresión que el usuario encontró en el teléfono: con el punto de
+    // giro desplazado junto a la cámara, girar en vertical sacaba el hueso
+    // del encuadre. `frameObject` describe un descentrado de proyección, no
+    // un desplazamiento de cámara — y por eso devuelve una fracción del
+    // lienzo y no unidades de mundo.
+    const { viewOffsetY } = frameObject(FEMUR, { ...TELEFONO, reservedBottom: 0.4 }, 1)
+    expect(viewOffsetY).toBeLessThan(0.5)
+    expect(Number.isFinite(viewOffsetY)).toBe(true)
   })
 
   it('en una pantalla apaisada la misma clavícula necesita menos distancia', () => {
@@ -86,10 +99,10 @@ describe('frameObject: encuadre que conoce el ancho, el aspecto y lo que la tarj
   })
 
   it('no devuelve valores absurdos ante un objeto nulo', () => {
-    const { distance, shiftY } = frameObject({ width: 0, height: 0 }, TELEFONO, 1)
+    const { distance, viewOffsetY } = frameObject({ width: 0, height: 0 }, TELEFONO, 1)
     expect(Number.isFinite(distance)).toBe(true)
     expect(distance).toBeGreaterThan(0)
-    expect(Number.isFinite(shiftY)).toBe(true)
+    expect(Number.isFinite(viewOffsetY)).toBe(true)
   })
 
   it('no se va al infinito si la reserva se acerca a la pantalla entera', () => {
