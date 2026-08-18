@@ -134,6 +134,8 @@ export const catalog: Bone[] = [
     la: 'os nasale',
     synonyms: ['nasal'],
     region: 'face',
+    articulatesWith: 'Frontal, maxilar y hueso nasal contralateral',
+    clinicalNote: 'Es el hueso de la cara que se fractura con más frecuencia.',
   },
   {
     id: 'nasal-left',
@@ -143,6 +145,8 @@ export const catalog: Bone[] = [
     la: 'os nasale',
     synonyms: ['nasal'],
     region: 'face',
+    articulatesWith: 'Frontal, maxilar y hueso nasal contralateral',
+    clinicalNote: 'Es el hueso de la cara que se fractura con más frecuencia.',
   },
   {
     id: 'lacrimal-right',
@@ -568,6 +572,8 @@ export const catalog: Bone[] = [
     la: 'costa VII',
     synonyms: ['costilla 7', '7ª costilla'],
     region: 'thorax',
+    articulatesWith: 'Vértebra T7 y esternón, por cartílago costal propio',
+    clinicalNote: 'Última costilla "verdadera": llega al esternón por su propio cartílago.',
   },
   {
     id: 'rib-7-left',
@@ -577,6 +583,8 @@ export const catalog: Bone[] = [
     la: 'costa VII',
     synonyms: ['costilla 7', '7ª costilla'],
     region: 'thorax',
+    articulatesWith: 'Vértebra T7 y esternón, por cartílago costal propio',
+    clinicalNote: 'Última costilla "verdadera": llega al esternón por su propio cartílago.',
   },
   {
     id: 'rib-8-right',
@@ -723,6 +731,8 @@ export const catalog: Bone[] = [
     la: 'humerus',
     synonyms: [],
     region: 'upper-limb',
+    articulatesWith: 'Escápula (hombro), radio y cúbito (codo)',
+    clinicalNote: 'Su extremo distal forma el "hueso de la risa" sobre el nervio cubital.',
   },
   {
     id: 'humerus-left',
@@ -732,6 +742,8 @@ export const catalog: Bone[] = [
     la: 'humerus',
     synonyms: [],
     region: 'upper-limb',
+    articulatesWith: 'Escápula (hombro), radio y cúbito (codo)',
+    clinicalNote: 'Su extremo distal forma el "hueso de la risa" sobre el nervio cubital.',
   },
   {
     id: 'radius-right',
@@ -1283,6 +1295,8 @@ export const catalog: Bone[] = [
     la: 'os femoris',
     synonyms: ['hueso del muslo'],
     region: 'lower-limb',
+    articulatesWith: 'Coxal (cadera), tibia y rótula (rodilla)',
+    clinicalNote: 'Es el hueso más largo y resistente del cuerpo humano.',
   },
   {
     id: 'femur-left',
@@ -1292,6 +1306,8 @@ export const catalog: Bone[] = [
     la: 'os femoris',
     synonyms: ['hueso del muslo'],
     region: 'lower-limb',
+    articulatesWith: 'Coxal (cadera), tibia y rótula (rodilla)',
+    clinicalNote: 'Es el hueso más largo y resistente del cuerpo humano.',
   },
   {
     id: 'patella-right',

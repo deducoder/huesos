@@ -35,6 +35,20 @@ interface BoneCore {
   region: BoneRegion
   /** Identificador en la Foundational Model of Anatomy, cuando se conoce. */
   fma?: string
+  /**
+   * Con qué otros huesos se articula, en prosa (e8.5, mockup de la ficha
+   * completa). Opcional y ausente en la mayoría del catálogo: es contenido
+   * anatómico redactado, no un dato derivable del modelo ni de la región, así
+   * que solo lo llevan las entradas donde alguien lo escribió y verificó. La
+   * ficha omite la fila cuando falta, en vez de mostrarla vacía.
+   */
+  articulatesWith?: string
+  /**
+   * Un dato clínico memorable, el gancho que hace que el hueso se recuerde
+   * (e8.5). Mismo criterio que `articulatesWith`: presente solo donde se
+   * escribió, nunca inventado para rellenar la ficha.
+   */
+  clinicalNote?: string
 }
 
 /** Un hueso con geometría en `skeleton.glb`. */
