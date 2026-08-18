@@ -89,7 +89,7 @@ Updated by `story-close` as each story lands — the only cross-artifact write.
 | e9.5 | done | L | L — 9 tareas, 11 commits; el riesgo declarado (T4) salió con una línea y el que dolió fue un test que exigía el defecto |
 | e9.1 | done | S | S — el color no cambió: el mecanismo sí (emissive -> color); un fix ajeno de e9.5 encontrado y arreglado en main |
 | e9.2 | done | M | M — 4 tareas, 8 commits; dos falsos verdes propios atrapados antes de commitear, un defecto de e9.5 con causa real (no intermitencia) encontrado y arreglado |
-| e9.4 | todo | M | — |
+| e9.4 | done | M | M — 3 tareas, 2 hallazgos reales de verificación manual (plano cercano, matriz de padre sin actualizar), 10 commits |
 | e9.7 | todo | M | — |
 
 ## Sequencing risks
