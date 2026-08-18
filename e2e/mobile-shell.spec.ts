@@ -228,3 +228,14 @@ test('el lienzo de Explorar ocupa toda la pantalla disponible', async ({ page })
     altoDisponible - 2,
   )
 })
+
+test('el botón «Volver» de la ficha usa el mínimo táctil', async ({ page }) => {
+  await esperarExplorar(page)
+  await elegirFemurDerecho(page)
+  await page.getByRole('button', { name: /ver ficha completa/i }).click()
+
+  const boton = page.getByRole('button', { name: /volver/i })
+  const caja = await boton.boundingBox()
+  expect(caja?.height ?? 0, 'alto del botón "Volver"').toBeGreaterThanOrEqual(44)
+  expect(caja?.width ?? 0, 'ancho del botón "Volver"').toBeGreaterThanOrEqual(44)
+})
