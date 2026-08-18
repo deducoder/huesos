@@ -45,7 +45,7 @@ end-to-end.
 
 | Story | Status | Est. | Actual |
 |-------|:------:|:----:|:------:|
-| e8.3 | todo | XS | — |
+| e8.3 | done | XS | 4 tareas (T1, T2, T2b, T3) — T2b se agregó tras un hallazgo real de T3 |
 | e8.4 | todo | M | — |
 | e8.2 | todo | S | — |
 | e8.1 | todo | S | — |
