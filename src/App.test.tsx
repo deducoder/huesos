@@ -85,6 +85,14 @@ describe('la aplicación, de punta a punta', () => {
     )
   })
 
+  it('las 3 pestañas transicionan el color de fondo, activa o no', () => {
+    render(<App />)
+    const nav = screen.getByRole('navigation', { name: /modo de estudio/i })
+    for (const pestania of within(nav).getAllByRole('button')) {
+      expect(pestania).toHaveClass('transition-colors', 'duration-base', 'ease-salida')
+    }
+  })
+
   it('la pestaña "Fichas" muestra el acordeón de categorías sin montar la escena 3D', async () => {
     const user = userEvent.setup()
     render(<App />)

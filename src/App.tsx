@@ -119,7 +119,7 @@ function Pestanas({ modo, onCambiar }: { modo: Modo; onCambiar: (tipo: Pestania)
             type="button"
             onClick={() => onCambiar(pestania)}
             style={on ? { backgroundColor: ACENTO_PESTANIA[pestania] } : undefined}
-            className={`min-h-tactil w-20 rounded-[10px] px-1 text-center font-semibold text-sm ${
+            className={`min-h-tactil w-20 rounded-[10px] px-1 text-center font-semibold text-sm transition-colors duration-base ease-salida ${
               on ? 'text-tinta' : 'bg-transparent text-tinta-suave'
             }`}
           >
