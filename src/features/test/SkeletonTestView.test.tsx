@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react'
+import { render, screen, within } from '@testing-library/react'
 import { describe, expect, it, vi } from 'vitest'
 import { SkeletonTestView } from './SkeletonTestView'
 
@@ -29,8 +29,18 @@ describe('SkeletonTestView', () => {
     expect(screen.queryByRole('heading')).not.toBeInTheDocument()
   })
 
-  it('must-data-010: la pista accesible no dice "escribí" — el formato por defecto es opción múltiple', () => {
+  it('la pista accesible no dice "escribí" — el formato por defecto es opción múltiple', () => {
     render(<SkeletonTestView />)
     expect(document.body.textContent ?? '').not.toMatch(/escrib/i)
+  })
+
+  it('must-data-010: ninguna de las 3 opciones llega marcada como correcta antes de responder', () => {
+    render(<SkeletonTestView />)
+    const grupo = screen.getByRole('group', { name: /qué hueso es/i })
+    const opciones = within(grupo).getAllByRole('button')
+    expect(opciones).toHaveLength(3)
+    for (const opcion of opciones) {
+      expect(opcion).toHaveAttribute('aria-pressed', 'false')
+    }
   })
 })
