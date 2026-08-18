@@ -77,3 +77,7 @@ la confirmación del humano en su teléfono real.**
 
 **Falta:** el mismo recorrido en el teléfono del humano, y el modo test de
 esqueleto completo, que reutiliza el mismo componente.
+
+**Confirmado por el humano en su teléfono real, en Explorar y en el modo test
+de esqueleto completo.** El hueso seleccionado se distingue a simple vista y
+la deselección no deja tinte residual. T3 cerrada.
