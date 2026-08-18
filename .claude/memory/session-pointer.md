@@ -5,20 +5,25 @@ metadata:
   type: project
 ---
 
-Last session: **2026-08-18** — ficha completa reconstruida contra el mockup
-(componente `BoneSheet`, tarjeta flotante, campos `articulatesWith` y
-`clinicalNote`), `e8.5` cerrada y mergeada, y **E8 cerrada y publicada**:
-`epic-review` encontró un e2e de E7 que ninguna historia podía ver, `docs.md`
-escrito, tag `epic/e8-complete`, y push de 211 commits a `origin/main` — el
-remoto estaba en `epic/e6-complete`, así que E7 también viajó ahí.
+Last session: **2026-08-18** — **E9 abierta entera** (brief, scope de 7
+historias, design, plan, ADR-013 y ADR-014) y **dos historias cerradas**:
+`e9.6`, el «atrás» del sistema recorriendo la aplicación por History API sin
+router; y `e9.3`, el hueso aislado entrando entero, con aire por los cuatro
+lados y rotación. El usuario encontró en su teléfono un bug de e9.3 que la
+suite no podía ver — el punto de órbita desplazado con la cámara—, corregido
+con `setViewOffset`.
 
-Full handoff: `work/sessions/2026-08-18-e8-close.md` (read it in full via
-`session-start`).
+Full handoff: `work/sessions/2026-08-18-e9-open-back-and-framing.md` (read it
+in full via `session-start`).
 
-Next action: **decidir qué épica abre E9** — el backlog no se miró en esta
-sesión y sus filas envejecen; medirlo contra el código antes de elegir. Los
-candidatos ya nombrados: consolidar el sistema de color (aparcado dos veces,
-en E7 y E8) y la tipografía display con su ADR.
+Next action: **arrancar `e9.5`** (`story-start`) — nombres cortos y
+capitalización, con ADR-014 ya escrito y el hallazgo de concordancia de
+género («clavícula derecho») incorporado a su alcance.
+
+**Aviso de entorno:** la sesión se cerró para migrar a un entorno remoto. La
+verificación manual en teléfono, que en E9 cerró las dos historias y
+encontró un bug real, iba por un `vite` en 5173 con túnel de Cloudflare que
+allá no existe — decidir cómo se hace antes de dar una historia por cerrada.
 
 Overwritten on every `session-close`; this is a pointer, the handoff is the
 source of truth.
