@@ -239,3 +239,14 @@ test('el botón «Volver» de la ficha usa el mínimo táctil', async ({ page })
   expect(caja?.height ?? 0, 'alto del botón "Volver"').toBeGreaterThanOrEqual(44)
   expect(caja?.width ?? 0, 'ancho del botón "Volver"').toBeGreaterThanOrEqual(44)
 })
+
+test('la elección de variante de test usa el mínimo táctil', async ({ page }) => {
+  await page.goto('/')
+  await page.getByRole('button', { name: /^test$/i }).click()
+
+  for (const nombre of ['Esqueleto completo', 'Hueso aislado']) {
+    const caja = await page.getByRole('button', { name: nombre, exact: true }).boundingBox()
+    expect(caja?.height ?? 0, `alto de "${nombre}"`).toBeGreaterThanOrEqual(44)
+    expect(caja?.width ?? 0, `ancho de "${nombre}"`).toBeGreaterThanOrEqual(44)
+  }
+})
