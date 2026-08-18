@@ -30,7 +30,10 @@ describe('la aplicación, de punta a punta', () => {
 
   it('el título y las pestañas viven en la misma cabecera (e8.1)', () => {
     render(<App />)
-    const cabecera = screen.getByRole('banner')
+    // No `getByRole('banner')`: un `<header>` anidado dentro de `<main>`
+    // no expone el landmark `banner` en un navegador real (verificado con
+    // Playwright) — jsdom lo deja pasar igual, así que ese query mentiría.
+    const cabecera = screen.getByTestId('cabecera')
     expect(within(cabecera).getByRole('heading', { name: 'huesos-mono' })).toBeInTheDocument()
     expect(
       within(cabecera).getByRole('navigation', { name: /modo de estudio/i }),
@@ -44,7 +47,7 @@ describe('la aplicación, de punta a punta', () => {
     await user.click(screen.getByRole('button', { name: /^fémur derecho$/i }))
     await user.click(screen.getByRole('button', { name: /ver ficha completa/i }))
 
-    const cabecera = screen.getByRole('banner')
+    const cabecera = screen.getByTestId('cabecera')
     expect(within(cabecera).getByRole('heading', { name: 'huesos-mono' })).toBeInTheDocument()
     expect(
       within(cabecera).queryByRole('navigation', { name: /modo de estudio/i }),

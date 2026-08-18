@@ -78,7 +78,6 @@
   /* La display va solo en títulos; el cuerpo conserva la pila del sistema,
      que no cuesta ninguna descarga. */
   --font-display: "Fredoka", ui-sans-serif, system-ui, sans-serif;
-  --text-titulo: 1.75rem;
 }
 
 /*

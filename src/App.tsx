@@ -99,7 +99,10 @@ export function App() {
 
   return (
     <main className="flex h-dvh flex-col bg-superficie text-tinta">
-      <header className="flex items-stretch justify-between gap-2 border-tinta border-b-2 bg-panel px-4">
+      <header
+        data-testid="cabecera"
+        className="flex items-stretch justify-between gap-2 border-tinta border-b-2 bg-panel px-4"
+      >
         <h1 className="flex items-center font-display font-semibold text-lg">huesos-mono</h1>
         {modo.tipo !== 'ficha' && <Pestanas modo={modo} onCambiar={(tipo) => setModo({ tipo })} />}
       </header>
