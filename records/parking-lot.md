@@ -504,3 +504,25 @@ próxima sesión que no lo lea la pierde.
 **Destino:** aparcado, con dueño en la épica de consolidación visual, junto
 a los 14 literales hexadecimales fuera de `@theme` y su gate. Las dos
 decisiones son sobre el mismo sistema y comparten el mismo ADR-007.
+
+## 2026-08-18 · El lado no concuerda en género con el hueso (e9.3, gemba)
+
+`SIDE_LABEL` (`src/components/labels.ts`) es `{ left: 'izquierdo', right:
+'derecho' }`, masculino fijo, y `accessibleName` lo concatena al nombre sin
+mirar el género. Los botones dicen **«clavícula derecho»**, «escápula
+derecho», «tibia derecho», «costilla derecho», «falange distal … derecho».
+Verificado en el navegador real: es el texto visible y también el nombre
+accesible, así que un lector de pantalla lo pronuncia igual.
+
+**Por qué no se corrigió acá:** e9.3 es encuadre y rotación de la escena 3D.
+Esto es contenido de la capa de etiquetas y toca los mismos archivos que
+e9.5 va a reescribir — corregirlo desde acá obligaría a e9.5 a resolver el
+conflicto sobre un archivo que ya estaría a medio camino.
+
+**Destino:** entra en **e9.5** (nombres cortos y normalización de la
+escritura), que ya tiene la capitalización en su alcance y toca
+`labels.ts`, `BoneNavigator` y `FichasAccordion`. El género del lado sale
+del propio hueso, no del lado: hay que decidir de dónde se deriva —una marca
+en el catálogo, o la terminación del nombre— y esa decisión es de su diseño.
+Ojo con los localizadores de `e2e/`, que buscan «fémur derecho» por nombre
+accesible exacto.
