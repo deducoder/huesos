@@ -96,4 +96,14 @@ describe('la escena del esqueleto', () => {
     // rompería el encuadre por defecto que usa ExploreView.
     expect(fuente).toMatch(/zoom\?\.reservedBottom \?\? 0/)
   })
+
+  it('acerca el plano cercano, igual que IsolatedBoneScene, para no recortar huesos chicos', () => {
+    // Hallazgo de la verificación manual (e9.4): con el `near` por defecto
+    // de three.js (0.1), una cuña del tarso midió `distance: 0.0588` —
+    // detrás del plano de recorte, invisible. No era la "primera pregunta":
+    // cualquier hueso chico da lo mismo, y `pickTestableBone` sortea al
+    // azar cuál sale primero. Mismo arreglo que `IsolatedBoneScene.tsx` ya
+    // tiene, por el mismo motivo (verificado en e4.4 con una falange).
+    expect(fuente).toMatch(/near=\{0\.001\}/)
+  })
 })

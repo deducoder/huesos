@@ -89,3 +89,45 @@ e9.2 ya calcula y este componente ignoraba) y lo pasa como
 - **Mutación forzada:** quitar `zoom={{ reservedBottom }}` deja
   `capturado.zoom` en `undefined` y pone el test en rojo.
 - **Gate:** `./scripts/check` verde — 325 tests.
+
+## T4a · Hallazgo de la verificación manual: el plano cercano recortaba huesos chicos
+
+**Reportado por el humano:** «hace zoom aleatorio, a veces ni se ve el
+esqueleto en la primer pregunta … hace demasiado y colisiona, ocultando el
+hueso en la cámara».
+
+**Reproducido antes de tocar nada.** Diez preguntas seguidas, midiendo qué
+fracción del lienzo queda clara (el hueso) en cada una: la primera dio
+16,0 % — pero la captura mostraba el lienzo **completamente vacío**, no un
+encuadre ajustado. No era "la primera pregunta": `pickTestableBone` sortea
+al azar, y cualquier hueso chico habría dado lo mismo.
+
+**Causa, confirmada con un número real, no con sospecha.** Se instrumentó
+`CenteredSkeleton` con un `console.log` temporal del encuadre calculado.
+Para «cuña intermedia» (un hueso del tarso, diminuto): `distance:
+0.0588`. El plano cercano por defecto de three.js es `0.1` — la cámara
+quedaba **detrás** del hueso, que es justo lo que `IsolatedBoneScene.tsx`
+ya había resuelto con `near={0.001}` desde e4.4 (documentado ahí mismo:
+"la falange proximal del quinto dedo de la mano … el lienzo queda en
+blanco sin ningún error"). `CamaraDelEsqueleto`, el componente nuevo de
+esta historia, no lo tenía: un `IsolatedBoneScene.tsx` bien leído durante
+el diseño debería haber hecho evidente el paralelo, y no lo hizo hasta que
+apareció en el teléfono.
+
+- **RED:** una afirmación de código fuente —`near={0.001}` presente—, en
+  rojo antes del fix.
+- **GREEN:** el mismo valor, en el mismo lugar, con el mismo comentario que
+  ya cita `IsolatedBoneScene.tsx`.
+- **Verificado con volumen, no con una corrida:** 10 preguntas seguidas
+  tras el fix, ninguna por debajo de 16 % —y la de 16 % ahora **sí** muestra
+  hueso real, verificado visualmente, no solo por el número de píxeles
+  claros—. Tres capturas a mano confirmaron el rango completo: una falange
+  diminuta, una costilla, una vértebra — las tres visibles y con margen.
+- **Gate:** `./scripts/check` verde — 326 tests.
+
+**Lo que el diseño no anticipó:** el patrón que `IsolatedBoneScene.tsx`
+establece no es solo el mecanismo de la cámara controlada —eso sí se
+copió— sino también sus **compañeros de viaje**: el `near` ajustado es
+parte del mismo paquete, no un detalle aparte, y esta historia zoomea
+sobre huesos individuales exactamente igual que aquella aísla huesos
+individuales. El mismo rango de tamaños, el mismo riesgo.

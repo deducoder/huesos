@@ -296,7 +296,19 @@ function CamaraDelEsqueleto({ framing }: { framing: Framing }) {
     camara.updateProjectionMatrix()
   }, [framing, size.width, size.height])
 
-  return <PerspectiveCamera ref={camaraRef} makeDefault fov={FOV} position={posicion} />
+  return (
+    <PerspectiveCamera
+      ref={camaraRef}
+      makeDefault
+      fov={FOV}
+      // El plano cercano por defecto de three.js (0.1) recorta huesos
+      // diminutos: un hueso del tarso, encuadrado, midió `distance: 0.0588`
+      // — detrás del plano, invisible. Mismo arreglo que
+      // `IsolatedBoneScene.tsx` ya tiene y por el mismo motivo (e4.4).
+      near={0.001}
+      position={posicion}
+    />
+  )
 }
 
 /** Lo que se dibuja mientras el modelo llega: nada visible, sin romper la escena. */
