@@ -68,14 +68,17 @@ function SkeletonHalf({ bones, selected, half, onPick }: HalfProps) {
       if (!malla.userData.ownMaterial) {
         malla.material = material.clone()
         malla.userData.ownMaterial = true
+        // El color del activo, guardado antes de que el resaltado lo pise:
+        // teñir no tiene un neutro al que volver, a diferencia de `emissive`
+        // (que vuelve a negro). Sin esto no habría a qué restaurar.
+        malla.userData.baseColor = material.color.clone()
       }
       const propio = malla.material as MeshStandardMaterial
       // El nombre llega ya saneado por el cargador; `boneIdForMesh` normaliza
       // ambos lados, y la mitad decide el lado del hueso par.
       const esteHueso = boneIdForMesh(bones, malla.name, half)
       const resaltado = esteHueso !== null && esteHueso === selected
-      propio.emissive = resaltado ? colorDeSeleccion() : new Color('#000000')
-      propio.emissiveIntensity = resaltado ? 0.6 : 0
+      propio.color = resaltado ? colorDeSeleccion() : (malla.userData.baseColor as Color)
     })
   }, [copia, selected, bones, half])
 

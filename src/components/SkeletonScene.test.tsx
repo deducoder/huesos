@@ -59,4 +59,18 @@ describe('la escena del esqueleto', () => {
     expect(fuente).not.toMatch(/#38bdf8/)
     expect(fuente).toMatch(/--color-acento/)
   })
+
+  it('tiñe el material del hueso resaltado en vez de emitir luz', () => {
+    // La emisión suma luz sobre un material ya beige claro: ni el blanco
+    // puro al máximo llega a lo que teñir el color consigue con el mismo
+    // acento (design de e9.1, medido: suma 152 contra 282). El resaltado se
+    // aplica al `color` del material, no a `emissive`.
+    expect(fuente).toMatch(/propio\.color = resaltado \? colorDeSeleccion\(\)/)
+  })
+
+  it('no deja el mecanismo viejo conviviendo con el nuevo', () => {
+    // Una migración a medias — `color` nuevo y `emissiveIntensity` todavía
+    // presente — no sería un tinte: seguiría sumando luz sobre el tinte.
+    expect(fuente).not.toMatch(/emissiveIntensity/)
+  })
 })
