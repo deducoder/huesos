@@ -270,8 +270,12 @@ export function App() {
         {modo.tipo === 'test-elegir' && (
           <ElegirVarianteDeTest onElegir={(tipo) => setModo({ tipo })} />
         )}
-        {modo.tipo === 'test-esqueleto' && <SkeletonTestView />}
-        {modo.tipo === 'test-hueso' && <BoneTestView />}
+        {modo.tipo === 'test-esqueleto' && (
+          <SkeletonTestView onCambiarModo={() => setModo({ tipo: 'test-elegir' })} />
+        )}
+        {modo.tipo === 'test-hueso' && (
+          <BoneTestView onCambiarModo={() => setModo({ tipo: 'test-elegir' })} />
+        )}
       </div>
     </main>
   )
