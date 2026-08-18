@@ -43,3 +43,4 @@
 - [El nombre en español de un hueso no lleva el lado](bone-es-name-omits-side.md) — `clavicle-right`/`clavicle-left` comparten `es`; mostrarlo solo puede duplicar etiquetas entre pares.
 - [Un servidor reutilizado miente aunque el comando reconstruya](reused-server-lies-even-with-fresh-build-command.md) — `reuseExistingServer` ignora el `build` si el puerto ya está ocupado por un proceso sobrante.
 - [Cambiar el formato por defecto pide un grep de e2e](default-format-change-needs-an-e2e-grep.md) — `./scripts/check` no ve la suite de Playwright; nombrarlo como tarea, no esperar a tropezar con él.
+- [El límite dominio/vista decide dónde vive un archivo](domain-view-boundary-decides-file-placement.md) — si depende de una etiqueta en español, no va en `src/domain/` aunque se sienta "de dominio".
