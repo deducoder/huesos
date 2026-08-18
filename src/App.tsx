@@ -132,10 +132,9 @@ function Pestanas({ modo, onCambiar }: { modo: Modo; onCambiar: (tipo: Pestania)
 }
 
 /**
- * El logo y el botón de menú del mockup: cada uno su propio cuadrado
- * flotante, borde y sombra — el menú es decorativo por ahora, sin destino
- * (no hay drawer ni ajustes construidos), así que no es un `<button>`
- * clickeable que finja tener función.
+ * El cuadrado flotante del logo, borde y sombra — decorativo, `aria-hidden`.
+ * El menú ya no lo usa (e9.7): tiene destino propio y es su propio
+ * `<button>`, con el mismo aspecto pero accesible por teclado.
  */
 function IconoCuadrado({ children }: { children: ReactNode }) {
   return (
