@@ -88,3 +88,21 @@ ser un `<button>` con `onClick`; `menuAbierto` es estado local de `App`
   Revertido con `git restore` (seguro, ya commiteado) y confirmado verde
   de nuevo.
 - **Gate:** `./scripts/check` verde — 342 tests.
+
+## T4 · La cabecera de la ficha se redondea
+
+**Done.** El `<header>` de la rama `'ficha'` pasa del patrón viejo
+(`border-tinta border-b-2`, pegado al borde) al mismo lenguaje que el resto
+de las cajas flotantes: `mt-3 mb-3 mx-3.5 rounded-suave border-2 border-tinta
+bg-panel shadow-dura`.
+
+- **RED:** una aserción sobre `getByTestId('cabecera')` en modo ficha —
+  confirmada en rojo real, con las clases viejas listadas en el mensaje de
+  fallo.
+- **GREEN:** el cambio de clases, sin tocar la lógica del botón "Volver"
+  ni el `h1` `sr-only`.
+- **Mutación forzada:** revertir a la clase vieja (`border-b-2` sin
+  `rounded-suave`) reproduce el mismo mensaje de fallo que el RED original.
+  Commiteado antes de mutar esta vez (lección de T3), así que
+  `git restore` fue seguro.
+- **Gate:** `./scripts/check` verde — 343 tests.
