@@ -1,5 +1,6 @@
-import { useLayoutEffect, useRef, useState } from 'react'
+import { useRef } from 'react'
 import { IsolatedBoneScene } from '../../components/IsolatedBoneScene'
+import { useFraccionCubierta } from '../../components/useFraccionCubierta'
 import { catalog } from '../../data/catalog'
 import { findBone } from '../../domain/selection'
 import { BoneSheet } from './BoneSheet'
@@ -45,45 +46,6 @@ function AusenciaEnElModelo() {
  * lienzo**, así que tampoco hay etiqueta accesible anunciando una vista
  * tridimensional inexistente.
  */
-/**
- * Qué fracción del alto de la vista cubre la tarjeta flotante.
- *
- * Se **mide**, no se supone: la tarjeta declara `max-h-[45vh]` pero su alto
- * real depende de cuánto tenga escrito cada hueso, y reservar siempre el
- * máximo encogería el hueso sin motivo en las fichas cortas. `ResizeObserver`
- * dispara después del layout por definición, que es justo lo que hace falta
- * — medir antes da el tamaño intrínseco y no el real.
- */
-function useFraccionCubierta(
-  contenedor: React.RefObject<HTMLDivElement | null>,
-  tarjeta: React.RefObject<HTMLDivElement | null>,
-): number {
-  const [fraccion, setFraccion] = useState(0)
-
-  useLayoutEffect(() => {
-    const raiz = contenedor.current
-    const flotante = tarjeta.current
-    if (!raiz || !flotante) return
-
-    const medir = () => {
-      const alto = raiz.clientHeight
-      if (alto === 0) return
-      // Desde donde empieza la tarjeta hasta el borde inferior de la vista:
-      // todo eso queda por debajo de ella, incluido el aire de `bottom-4`.
-      const cubierto = raiz.getBoundingClientRect().bottom - flotante.getBoundingClientRect().top
-      setFraccion(Math.min(Math.max(cubierto / alto, 0), 0.9))
-    }
-
-    medir()
-    const observador = new ResizeObserver(medir)
-    observador.observe(raiz)
-    observador.observe(flotante)
-    return () => observador.disconnect()
-  }, [contenedor, tarjeta])
-
-  return fraccion
-}
-
 export function BoneDetailView({ boneId }: Props) {
   const bone = findBone(catalog, boneId)
   const contenedorRef = useRef<HTMLDivElement>(null)

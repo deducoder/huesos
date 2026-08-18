@@ -14,11 +14,11 @@ export function BoneTestView({ onCambiarModo }: { onCambiarModo: () => void }) {
       bones={catalog}
       store={progressStore}
       onCambiarModo={onCambiarModo}
-      renderScene={(boneId) => (
+      renderScene={(boneId, reservedBottom) => (
         <IsolatedBoneScene
           bones={catalog}
           boneId={boneId}
-          reservedBottom={0}
+          reservedBottom={reservedBottom}
           accessibleLabel="Un hueso está señalado, aislado del resto del esqueleto. Elegí su nombre entre las 3 opciones."
         />
       )}

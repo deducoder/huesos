@@ -433,24 +433,31 @@ test('el hueso más chico del modelo se sigue viendo, y el que no tiene geometr�
 })
 
 /**
- * Cuánto hueso queda a la vista y cuánto detrás de la tarjeta flotante.
+ * Cuánto hueso queda a la vista y cuánto detrás del elemento flotante que
+ * tapa parte del lienzo — la tarjeta de la ficha (`tarjeta-ficha`, e9.3) o
+ * la barra de respuesta del test (`barra-respuesta`, e9.2): las dos cubren
+ * el lienzo por el mismo `useFraccionCubierta`, así que se miden igual.
  *
- * La tarjeta se oculta **solo para la captura**, sin tocar el layout: es
- * blanca, así que contaría como hueso y taparía justo lo que hay que medir.
+ * El flotante se oculta **solo para la captura**, sin tocar el layout: es
+ * blanco, así que contaría como hueso y taparía justo lo que hay que medir.
  * Mismo truco que `explore.spec.ts` usa para no contaminar su diferencia de
  * píxeles con el texto de la tarjeta de identidad.
  */
-async function huesoSobreYBajoLaTarjeta(page: Page, lienzo: Locator) {
+async function huesoSobreYBajoLaTarjeta(
+  page: Page,
+  lienzo: Locator,
+  testId: 'tarjeta-ficha' | 'barra-respuesta' = 'tarjeta-ficha',
+) {
   const cajaLienzo = await lienzo.boundingBox()
-  const cajaTarjeta = await page.getByTestId('tarjeta-ficha').boundingBox()
+  const cajaTarjeta = await page.getByTestId(testId).boundingBox()
   expect(cajaLienzo, 'el lienzo está en la página').not.toBeNull()
-  expect(cajaTarjeta, 'la tarjeta está en la página').not.toBeNull()
+  expect(cajaTarjeta, `${testId} está en la página`).not.toBeNull()
 
-  await page.getByTestId('tarjeta-ficha').evaluate((t) => {
+  await page.getByTestId(testId).evaluate((t) => {
     t.style.visibility = 'hidden'
   })
   const captura = await lienzo.screenshot()
-  await page.getByTestId('tarjeta-ficha').evaluate((t) => {
+  await page.getByTestId(testId).evaluate((t) => {
     t.style.visibility = ''
   })
 
@@ -526,6 +533,40 @@ test('la reserva sale del alto real de la tarjeta, no de su máximo declarado', 
 
   expect(conFichaLarga.huecoBajoElHueso, 'hueco bajo el fémur, de ficha larga').toBeLessThan(0.2)
   expect(conFichaCorta.huecoBajoElHueso, 'hueco bajo la tibia, de ficha corta').toBeLessThan(0.2)
+})
+
+test('en el modo test de hueso aislado, el hueso queda donde la barra no lo tapa', async ({
+  page,
+}) => {
+  // A diferencia de la ficha (`abrirFicha`, con el hueso elegido a mano),
+  // acá `must-data-003` prohíbe que Playwright sepa qué hueso salió
+  // sorteado — ni por texto ni por `aria-label`, ni siquiera por
+  // `data-hueso`, que solo existe en el doble de los tests unitarios. La
+  // prueba no lo necesita: mide píxeles del lienzo, ciega al nombre, igual
+  // que `huesoSobreYBajoLaTarjeta` ya hace para la ficha.
+  //
+  // Sin poder pedir el fémur a propósito, esto es un guardia probabilístico
+  // y no uno determinista como el de la ficha: medido revirtiendo a
+  // `reservedBottom={0}` a mano, solo ~1 de cada 8 sorteos supera el 10 % de
+  // tapado que hace falta para que el umbral de abajo lo note — la mayoría
+  // de los 206 huesos ya entra holgado en el lienzo aislado incluso sin
+  // reservar nada. Con 12 intentos, la chance de que ninguno exponga el
+  // defecto si estuviera reintroducido baja a ~20 %; no es la certeza de
+  // `abrirFicha`, pero es la que el secreto del modo test permite.
+  for (let intento = 0; intento < 12; intento++) {
+    await page.goto('/')
+    await page.getByRole('button', { name: 'Test', exact: true }).click()
+    await page.getByRole('button', { name: /^hueso aislado/i }).click()
+    const lienzo = page.locator('canvas').first()
+    await expect(lienzo).toBeVisible()
+    await page.waitForTimeout(1800)
+
+    const { visible, tapado } = await huesoSobreYBajoLaTarjeta(page, lienzo, 'barra-respuesta')
+    const porcentaje = (100 * visible) / (visible + tapado)
+    expect(porcentaje, `sorteo ${intento + 1}: porcentaje visible sobre la barra`).toBeGreaterThan(
+      90,
+    )
+  }
 })
 
 /**

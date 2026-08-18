@@ -14,57 +14,90 @@ alterna entre «Responder»/«Siguiente pregunta» según `resultado`.
   desmontado sigue teniendo sus hijos en memoria, así que
   `within(grupo).getAllByRole('button')` seguía encontrando los 3 botones
   **viejos**, dando un verde que no probaba nada. Reescritos para volver a
-  consultar `screen.getByRole('group', …)` después de cada interacción: si
-  el grupo se hubiera desmontado, la consulta fallaría en vez de leer un
-  nodo huérfano. Con esa corrección, **3 de 4 en rojo** — el cuarto
-  («nunca hay dos botones de acción a la vez») ya se cumplía con el código
-  viejo por construcción (ramas mutuamente excluyentes), así que queda como
-  guardia de regresión y no como comportamiento nuevo.
+  consultar `screen.getByRole('group', …)` después de cada interacción.
+  Con esa corrección, **3 de 4 en rojo** — el cuarto («nunca hay dos
+  botones de acción a la vez») ya se cumplía con el código viejo por
+  construcción, así que queda como guardia de regresión.
 - **GREEN — un error de sintaxis a mitad de camino.** El primer reemplazo
-  dejó el ternario `answerFormat === 'open' ? … : …` incompleto porque
-  fusionó por error la rama `resultado === 'pendiente'` con la de opción
-  múltiple, rompiendo también el formato `'open'` — que el scope exige
-  dejar intacto. Se reescribió separando primero por `answerFormat` y
-  después, solo dentro de la rama `'choice'`, por `resultado`.
+  dejó el ternario `answerFormat === 'open' ? … : …` incompleto y rompió
+  también el formato `'open'`, que el scope exige dejar intacto. Se
+  reescribió separando primero por `answerFormat` y después, solo dentro de
+  la rama `'choice'`, por `resultado`.
 - **Una regresión propia, encontrada por el propio test suite.** El primer
-  intento de la rama calificada colapsó «Correcto»/«Incorrecto» y el
-  revelado de `bone.es`/`bone.la` en un solo `<p>` con un guion largo —
-  rompió `getByText(/^incorrecto$/i)`, que exige coincidencia exacta de
-  nodo. Restaurada la forma original de dos párrafos dentro de
-  `role="status"`, la misma que ya usaba (y sigue usando, sin tocar) el
-  formato `'open'`.
-- **Mutación forzada:** quitar los dos glifos (`✓ `/`✗ `) del texto visible
-  pone en rojo las 3 pruebas que dependen de ellos — confirma que el
-  indicador de acierto/error no depende solo del color (`must-a11y-005`).
+  intento colapsó «Correcto»/«Incorrecto» y el revelado en un solo `<p>`
+  con un guion largo — rompió `getByText(/^incorrecto$/i)`, que exige
+  coincidencia exacta de nodo. Restaurada la forma original de dos
+  párrafos dentro de `role="status"`.
+- **Mutación forzada:** quitar los dos glifos pone en rojo las 3 pruebas
+  que dependen de ellos — confirma que el indicador no depende solo del
+  color (`must-a11y-005`).
 - **Gate:** `./scripts/check` verde — 320 tests.
 
 ## T2 · `onViewDetail` y `onCambiarModo` pasan a requeridas
 
-**Done.** Las cinco firmas (`BoneIdentity`, `ExploreView`, `TestQuestion`,
-`BoneTestView`, `SkeletonTestView`) perdieron el `?`; las dos condiciones
-muertas (`{onViewDetail && …}`, `{onCambiarModo && …}`) se retiraron, sus
-botones se renderizan siempre.
+**Done.** Las cinco firmas perdieron el `?`; las dos condiciones muertas se
+retiraron, sus botones se renderizan siempre.
 
-- **El rojo fue el compilador, como el plan preveía**: 14 errores en
-  `BoneIdentity.test.tsx` al endurecer esa firma sola, y **30 más**
-  repartidos en `TestQuestion.test.tsx` (21), `BoneTestView.test.tsx` (5) y
-  `SkeletonTestView.test.tsx` (4) al endurecer las otras cuatro — más de lo
-  estimado, porque `TestQuestion.test.tsx` había crecido a 21 renders
-  contando los cuatro tests nuevos de T1.
+- **El rojo fue el compilador**: 14 errores en `BoneIdentity.test.tsx`, y
+  30 más repartidos en `TestQuestion.test.tsx` (21), `BoneTestView.test.tsx`
+  (5) y `SkeletonTestView.test.tsx` (4) — más de lo estimado porque
+  `TestQuestion.test.tsx` había crecido con los 4 tests de T1.
 - **Un test se borró** —`'no muestra el botón de ficha completa sin el
   callback'`— porque ya no hay ningún valor de tipo válido que deje
-  `onViewDetail` en `undefined`. Ninguna prueba de `TestQuestion.test.tsx`
-  dependía de la ausencia de «cambiar modo» (verificado por grep antes de
-  tocar nada, como el plan pedía), así que no hubo equivalente que borrar
-  ahí.
-- **Mutación forzada:** devolver el `?` a `onCambiarModo` en
-  `TestQuestion.tsx` **no produce ningún error de tipos** — confirmado con
-  `tsc --noEmit` antes y después del cambio, sin diferencia. Es exactamente
-  la protección que esta tarea instala: hoy, omitir la prop en un llamador
-  futuro sería un error de tipos; ayer, habría sido un silencio.
-- **Gate:** `./scripts/check` verde — 319 tests (320 − 1 por el test
-  retirado).
+  `onViewDetail` en `undefined`.
+- **Mutación forzada:** devolver el `?` a `onCambiarModo` **no produce
+  ningún error de tipos** — confirmado con `tsc --noEmit` antes y después,
+  sin diferencia. Es la protección exacta que esta tarea instala.
+- **Gate:** `./scripts/check` verde — 319 tests (320 − 1).
 
-**Lo que el plan no anticipó:** el volumen exacto de renders a actualizar en
-`TestQuestion.test.tsx` — el plan estimaba 17 basado en un conteo hecho
-durante el gemba de `story-start`, antes de que T1 agregara 4 tests más.
+## T3 · `BoneTestView` reserva el alto real de su barra
+
+**Done.** `useFraccionCubierta` extraído a `src/components/`, sin cambiar su
+cuerpo; `renderScene` gana un segundo parámetro `reservedBottom: number`;
+`TestQuestion` mide su propia barra y lo pasa; `BoneTestView` lo reenvía a
+`IsolatedBoneScene`; `SkeletonTestView` lo ignora sin cambio de código —una
+función tipada con 2 parámetros admite un callback que solo usa el primero.
+
+- **RED de plomería, dos partes.** (a) `BoneTestView.test.tsx`: un test
+  source-level (mismo patrón que `SkeletonScene.test.tsx`) que afirma que
+  `reservedBottom={0}` ya no aparece en el archivo. **El primer intento de
+  este test era decorativo**: afirmaba `dataset.reservedBottom !== ''`,
+  que es verdad incluso con el `0` viejo (`"0"` no es `''`) — se detectó
+  corriéndolo contra el código sin tocar y viendo que pasaba cuando debía
+  fallar. (b) `TestQuestion.test.tsx`: un `renderScene` espía que afirma
+  que recibe un segundo argumento de tipo `number` — jsdom no puede medir
+  un `ResizeObserver` real (`tests/setup.ts` ya lo documenta), así que la
+  propiedad verificable ahí es que la plomería llega, no que el número sea
+  distinto de cero.
+- **Un defecto real, no intermitencia, encontrado al correr el gate
+  completo.** `TestQuestion.test.tsx:322` (`'elegir una opción
+  incorrecta...'`) empezó a fallar ~25 % de las veces. Investigado en vez
+  de descartado: la causa es que T1 deja la grilla montada tras responder,
+  así que el botón de la opción correcta también muestra el nombre del
+  hueso (capitalizado). Para los huesos cuyo nombre corto es solo una
+  capitalización del completo —«peroné» → «Peroné», 45 de 120— buscar
+  `bone.es` en todo el documento encuentra **dos** coincidencias
+  (case-insensitive) y `getByText` revienta con «multiple elements found».
+  Depende de qué hueso sortea `pickTestableBone`, por eso parecía
+  intermitente. Arreglado acotando la búsqueda a `within(screen.getByRole(
+  'status'))`. Verificado con 20 corridas en verde tras el fix.
+- **El e2e no puede ser determinista, y se documentó por qué.** A
+  diferencia de `abrirFicha` (hueso elegido a mano), `must-data-003`
+  prohíbe que Playwright sepa qué hueso salió sorteado en el modo test —
+  ni por texto, ni por `aria-label`, ni por `data-hueso` (que solo existe
+  en el doble de los tests unitarios). El nuevo escenario de
+  `mobile-shell.spec.ts` mide píxeles ciego al nombre, y se repite 12
+  veces para compensar: medido revirtiendo a mano `reservedBottom={0}`,
+  solo ~1 de cada 8 sorteos expone el defecto lo bastante para cruzar el
+  umbral, así que un solo intento habría dado falso verde la mayoría de
+  las veces. Con 12, la chance de que ninguno lo exponga baja a ~20 %. No
+  es la certeza de un fixture elegido a mano; es la que el secreto del
+  modo test permite.
+- **Gate:** `./scripts/check` verde — 321 tests. `npx playwright test
+  mobile-shell` **23 de 23**, con los puertos 4173-4175 comprobados
+  libres antes de correr.
+
+**Lo que el plan no anticipó:** que la propia RED de la plomería podía ser
+decorativa (mismo patrón de error que en e9.1 con el gate de contraste), y
+que el defecto de «peroné» no era intermitencia de entorno sino una
+interacción real y determinista con el hueso sorteado.

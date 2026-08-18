@@ -1,6 +1,6 @@
 import { render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import { catalog } from '../../data/catalog'
 import type { ProgressRecord } from '../../domain/progress'
 import { findBone } from '../../domain/selection'
@@ -187,6 +187,25 @@ describe('TestQuestion', () => {
   })
 })
 
+describe('TestQuestion y el alto reservado de la escena', () => {
+  it('pasa a renderScene un segundo argumento numérico, no solo el id', () => {
+    const renderScene = vi.fn((boneId: string, _reservedBottom: number) => (
+      <div data-testid="escena" data-hueso={boneId} />
+    ))
+    render(
+      <TestQuestion
+        bones={catalog}
+        store={almacenFalso()}
+        renderScene={renderScene}
+        onCambiarModo={cambiarModoNoop}
+      />,
+    )
+    expect(renderScene).toHaveBeenCalled()
+    const [, reservedBottom] = renderScene.mock.calls[0] ?? []
+    expect(typeof reservedBottom).toBe('number')
+  })
+})
+
 describe('TestQuestion — modo opción múltiple (formato por defecto)', () => {
   it('no hay ningún campo de texto en el formato por defecto', () => {
     render(
@@ -304,9 +323,15 @@ describe('TestQuestion — modo opción múltiple (formato por defecto)', () => 
     await user.click(incorrecta)
     await user.click(screen.getByRole('button', { name: /^responder$/i }))
 
-    expect(screen.getByText(/^incorrecto$/i)).toBeInTheDocument()
-    expect(screen.getByText(bone.es, { exact: false })).toBeInTheDocument()
-    expect(screen.getByText(bone.la, { exact: false })).toBeInTheDocument()
+    // Acotado al aviso de resultado, no al documento entero: desde e9.2 la
+    // grilla se queda montada, y la opción correcta también muestra el
+    // nombre del hueso (capitalizado). Para los huesos cuyo nombre corto es
+    // solo una capitalización del completo (p. ej. «peroné» → «Peroné»),
+    // buscar en todo el documento encuentra dos coincidencias y revienta.
+    const aviso = screen.getByRole('status')
+    expect(within(aviso).getByText(/^incorrecto$/i)).toBeInTheDocument()
+    expect(within(aviso).getByText(bone.es, { exact: false })).toBeInTheDocument()
+    expect(within(aviso).getByText(bone.la, { exact: false })).toBeInTheDocument()
     expect(store.read()[bone.id]).toEqual({ correct: 0, incorrect: 1 })
   })
 

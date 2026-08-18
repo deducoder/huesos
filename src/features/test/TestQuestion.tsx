@@ -1,5 +1,6 @@
-import { type ReactNode, useState } from 'react'
+import { type ReactNode, useRef, useState } from 'react'
 import { shortName } from '../../components/bone-name'
+import { useFraccionCubierta } from '../../components/useFraccionCubierta'
 import type { Bone } from '../../data/bone'
 import { isCorrectAnswer } from '../../domain/answer-check'
 import { pickDistractors } from '../../domain/distractors'
@@ -36,8 +37,13 @@ interface Props {
    * exige que ningún nombre llegue al DOM antes de responder, y una firma
    * que solo acepta un `id` hace que revelarlo por accidente sea un error de
    * tipos, no un descuido de disciplina.
+   *
+   * El segundo argumento es la fracción del lienzo que la barra de respuesta
+   * cubre, medida por este mismo componente (e9.2) — quien monta una escena
+   * con `reservedBottom` (`IsolatedBoneScene`) la reenvía; quien no lo
+   * necesita (`SkeletonScene`, cuyo encuadre es objeto de e9.4) la ignora.
    */
-  renderScene: (boneId: string) => ReactNode
+  renderScene: (boneId: string, reservedBottom: number) => ReactNode
   /**
    * `'choice'` (default, ADR-012): 3 botones, el de la interfaz real. `'open'`
    * es el formato escrito original — ya no alcanzable desde ningún botón,
@@ -80,6 +86,9 @@ export function TestQuestion({
   onCambiarModo,
 }: Props) {
   const [bone, setBone] = useState<Bone>(() => pickTestableBone(bones, { progress: store.read() }))
+  const contenedorRef = useRef<HTMLDivElement>(null)
+  const barraRef = useRef<HTMLDivElement>(null)
+  const reservedBottom = useFraccionCubierta(contenedorRef, barraRef)
   const [respuesta, setRespuesta] = useState('')
   const [opciones, setOpciones] = useState<Bone[]>(() =>
     mezclar([bone, ...pickDistractors(bone, bones)]),
@@ -126,8 +135,8 @@ export function TestQuestion({
   }
 
   return (
-    <div className="relative h-full md:mx-auto md:max-w-3xl">
-      <div className="absolute inset-0 bg-lienzo">{renderScene(bone.id)}</div>
+    <div ref={contenedorRef} className="relative h-full md:mx-auto md:max-w-3xl">
+      <div className="absolute inset-0 bg-lienzo">{renderScene(bone.id, reservedBottom)}</div>
       <button
         type="button"
         onClick={onCambiarModo}
@@ -136,6 +145,7 @@ export function TestQuestion({
         ← cambiar modo
       </button>
       <div
+        ref={barraRef}
         className="absolute inset-x-4 bottom-4 rounded-tarjeta border-2 border-tinta bg-panel p-4 shadow-dura"
         data-testid="barra-respuesta"
       >

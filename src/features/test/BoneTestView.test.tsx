@@ -1,3 +1,5 @@
+import { readFileSync } from 'node:fs'
+import { resolve } from 'node:path'
 import { render, screen, within } from '@testing-library/react'
 import { describe, expect, it, vi } from 'vitest'
 import { catalog } from '../../data/catalog'
@@ -14,9 +16,11 @@ vi.mock('../../components/IsolatedBoneScene', () => ({
   IsolatedBoneScene: ({
     boneId,
     accessibleLabel,
+    reservedBottom,
   }: {
     boneId: string
     accessibleLabel?: string
+    reservedBottom: number
   }) => {
     const bone = findBone(catalog, boneId)
     const label = accessibleLabel ?? (bone ? `${bone.es}, aislado en 3D` : 'Hueso aislado en 3D')
@@ -24,6 +28,7 @@ vi.mock('../../components/IsolatedBoneScene', () => ({
       <div
         data-testid="escena-aislada-sustituida"
         data-hueso={boneId}
+        data-reserved-bottom={reservedBottom}
         role="img"
         aria-label={label}
       />
@@ -70,5 +75,19 @@ describe('BoneTestView', () => {
     render(<BoneTestView onCambiarModo={vi.fn()} />)
     expect(screen.queryByRole('navigation')).not.toBeInTheDocument()
     expect(screen.queryByRole('heading')).not.toBeInTheDocument()
+  })
+
+  // No hay forma de observar en render que `reservedBottom` mida algo real:
+  // jsdom no dispara `ResizeObserver` (`tests/setup.ts`), así que el número
+  // que `TestQuestion` calcule seguirá dando 0 acá con o sin el arreglo —
+  // afirmar `!== ''` sobre el `dataset` pasaría igual con el `0` viejo, y
+  // por eso no es la prueba. Lo que sí es observable, y es exactamente lo
+  // que cambia, es el código fuente: el mismo patrón que
+  // `SkeletonScene.test.tsx` usa para lo que jsdom no puede renderizar. La
+  // medición real la prueba el e2e nuevo de `mobile-shell.spec.ts`.
+  it('ya no pasa un 0 escrito a mano: reenvía lo que TestQuestion mida', () => {
+    const fuente = readFileSync(resolve('src/features/test/BoneTestView.tsx'), 'utf8')
+    expect(fuente).not.toMatch(/reservedBottom=\{0\}/)
+    expect(fuente).toMatch(/reservedBottom=\{reservedBottom\}/)
   })
 })
