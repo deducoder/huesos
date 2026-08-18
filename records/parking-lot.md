@@ -422,3 +422,13 @@ verificar.
 `count` distinto de 2, agregar ahí el test que ejercite ese valor —
 cierra los dos hallazgos a la vez. Si nunca se necesita, es candidato a
 simplificar quitando el parámetro (YAGNI).
+
+## 2026-08-17 · Duplicación menor en la construcción de opciones (e8.4, architecture-review)
+
+`mezclar([bone, ...pickDistractors(bone, bones)])` se repite igual en el
+inicializador de `opciones` y en `siguiente()`, dentro de
+`src/features/test/TestQuestion.tsx`.
+
+**Destino:** aparcado — 2 líneas de duplicación, no vale una tarea propia
+ahora. Extraer `construirOpciones(bone, bones)` si el patrón se repite una
+tercera vez o si el componente crece.
