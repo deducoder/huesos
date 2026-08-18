@@ -1,6 +1,12 @@
 import { describe, expect, it } from 'vitest'
 import { catalog } from '../data/catalog'
-import { TECHO_NOMBRE_CORTO, shortName } from './bone-name'
+import { TECHO_NOMBRE_CORTO, fullName, shortName, sideLabel, visibleName } from './bone-name'
+
+function hueso(id: string) {
+  const encontrado = catalog.find((b) => b.id === id)
+  if (encontrado === undefined) throw new Error(`fixture ausente: ${id}`)
+  return encontrado
+}
 
 /** Los nombres distintos del catálogo: los dos lados de un par comparten `es`. */
 const nombres = [...new Set(catalog.map((b) => b.es))]
@@ -54,5 +60,36 @@ describe('el gate del nombre corto sobre el catálogo real', () => {
     for (const es of falanges) {
       expect(shortName(es), `'${es}' salió sin derivar`).not.toBe(es)
     }
+  })
+})
+
+describe('el lado', () => {
+  it('concuerda con el género del hueso, en las cuatro combinaciones', () => {
+    expect(sideLabel('right', 'f')).toBe('derecha')
+    expect(sideLabel('left', 'f')).toBe('izquierda')
+    expect(sideLabel('right', 'm')).toBe('derecho')
+    expect(sideLabel('left', 'm')).toBe('izquierdo')
+  })
+})
+
+describe('los dos nombres que consume la vista', () => {
+  it('muestra el corto con el lado concordado', () => {
+    expect(visibleName(hueso('clavicle-right'))).toBe('Clavícula derecha')
+    expect(visibleName(hueso('femur-left'))).toBe('Fémur izquierdo')
+    expect(visibleName(hueso('hand-proximal-phalanx-2-right'))).toBe(
+      'Falange proximal 2.º mano derecha',
+    )
+  })
+
+  it('anuncia el nombre íntegro del catálogo, sin acortar ni capitalizar', () => {
+    expect(fullName(hueso('clavicle-right'))).toBe('clavícula derecha')
+    expect(fullName(hueso('hand-proximal-phalanx-2-right'))).toBe(
+      'falange proximal del segundo dedo de la mano derecha',
+    )
+  })
+
+  it('no le pone lado a un hueso impar', () => {
+    expect(visibleName(hueso('sphenoid'))).toBe('Esfenoides')
+    expect(fullName(hueso('sphenoid'))).toBe('esfenoides')
   })
 })

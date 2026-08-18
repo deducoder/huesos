@@ -42,3 +42,22 @@ nombres con lado, más 23 impares (22 vértebras y la mandíbula).
 **Lo que el plan no anticipó:** que el propio RED necesitaba un andamiaje para
 ser observable. Un módulo que no existe da rojo por razones que no dicen nada
 del comportamiento; el stub identidad convierte ese rojo en información.
+
+## T3 · El lado concuerda en género, y los dos nombres que consume la vista
+
+**Done.** `sideLabel(side, gender)`, `visibleName` y `fullName` en
+`bone-name.ts`, con fixtures tomados del catálogo real, no construidos a mano.
+
+- **RED:** 4 pruebas nuevas en rojo, las cuatro evaluando de verdad
+  (`TypeError: sideLabel is not a function`). Las cuatro combinaciones de
+  lado × género se afirman por separado: una función simétrica probada de un
+  solo lado promete la mitad.
+- **GREEN:** `sideLabel` con los dos argumentos requeridos —es lo que hará que
+  el compilador nombre a cada llamador cuando `SIDE_LABEL` se vaya en T8—,
+  `visibleName` sobre `shortName` y `fullName` sobre el `es` íntegro.
+- **Gate:** `./scripts/check` verde — 299 tests.
+
+**Decisión menor, registrada:** el género llega también a `fullName`, no solo
+al visible. La asimetría de ADR-014 es sobre el **acortado**, que es una
+concesión al ancho de una pantalla; escribir mal el género no lo pedía ninguna
+pantalla, así que un lector de pantalla oye «clavícula derecha».

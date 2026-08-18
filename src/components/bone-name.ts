@@ -1,3 +1,5 @@
+import type { Bone, Side } from '../data/bone'
+
 /**
  * El nombre de un hueso tal como se muestra y tal como se anuncia.
  *
@@ -58,4 +60,35 @@ export function shortName(es: string): string {
     .replace(/\bdel (\S+) dedo del pie\b/, '$1 pie')
   const enCifras = sinRodeo.replace(/\p{L}+/gu, (palabra) => ORDINALES[palabra] ?? palabra)
   return capitalizar(enCifras)
+}
+
+/**
+ * El lado, concordado con el género del hueso: «clavícula derecha», «fémur
+ * derecho» (ADR-015).
+ *
+ * Sustituye a la constante `SIDE_LABEL`, que era masculina fija y escribía
+ * mal 94 de los 172 huesos con lado. Los dos argumentos son requeridos a
+ * propósito: es lo que hace que el compilador nombre a cada llamador.
+ */
+export function sideLabel(side: Exclude<Side, null>, gender: Bone['gender']): string {
+  if (gender === 'f') return side === 'right' ? 'derecha' : 'izquierda'
+  return side === 'right' ? 'derecho' : 'izquierdo'
+}
+
+/** El nombre que se lee en un botón: corto, capitalizado y con su lado. */
+export function visibleName(bone: Bone): string {
+  const corto = shortName(bone.es)
+  return bone.side === null ? corto : `${corto} ${sideLabel(bone.side, bone.gender)}`
+}
+
+/**
+ * El nombre que oye un lector de pantalla: el del catálogo, íntegro y sin
+ * capitalizar, con su lado concordado.
+ *
+ * Acortar es una concesión al ancho de una pantalla, y una pantalla estrecha
+ * no es motivo para anunciar un nombre mutilado (ADR-014). El género sí llega
+ * hasta aquí: escribirlo mal no lo pedía ninguna pantalla.
+ */
+export function fullName(bone: Bone): string {
+  return bone.side === null ? bone.es : `${bone.es} ${sideLabel(bone.side, bone.gender)}`
 }
