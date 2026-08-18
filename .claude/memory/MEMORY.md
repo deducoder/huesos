@@ -45,3 +45,4 @@
 - [Cambiar el formato por defecto pide un grep de e2e](default-format-change-needs-an-e2e-grep.md) — `./scripts/check` no ve la suite de Playwright; nombrarlo como tarea, no esperar a tropezar con él.
 - [El límite dominio/vista decide dónde vive un archivo](domain-view-boundary-decides-file-placement.md) — si depende de una etiqueta en español, no va en `src/domain/` aunque se sienta "de dominio".
 - [jsdom sobrecomputa roles de landmark](jsdom-overcomputes-landmark-roles.md) — `getByRole('banner')` pasa en jsdom para un `<header>` que un navegador real ya no expone así.
+- [Puntero de la última sesión](session-pointer.md) — 2026-08-17: E8 mergeada; e8.5 (fidelidad visual, informal) en curso sin cerrar.
