@@ -41,9 +41,14 @@ export function ExploreView({ selected, onSelect, onViewDetail }: Props) {
           <SkeletonScene bones={catalog} selected={selected} onPick={onSelect} />
         </div>
         {bone && (
+          // Alto fijo, no `max-h`: e8.5 (iteración informal) — la tarjeta no
+          // varía de alto entre huesos. 412px es el contenido más alto real
+          // del catálogo (`hioides`: impar + aviso de malla ausente +
+          // sinónimo), medido con Playwright real, no una cifra redonda —
+          // ningún hueso necesita más, así que nada se recorta.
           <div
             data-testid="tarjeta-identidad"
-            className="absolute inset-x-4 bottom-4 max-h-[45vh] overflow-y-auto rounded-tarjeta border-2 border-tinta bg-panel shadow-dura md:inset-x-auto md:left-4 md:right-auto md:w-full md:max-w-sm"
+            className="absolute inset-x-4 bottom-4 h-[412px] overflow-y-auto rounded-tarjeta border-2 border-tinta bg-panel shadow-dura md:inset-x-auto md:left-4 md:right-auto md:w-full md:max-w-sm"
           >
             <button
               type="button"
