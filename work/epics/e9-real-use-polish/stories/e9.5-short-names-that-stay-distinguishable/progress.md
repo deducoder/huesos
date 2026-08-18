@@ -61,3 +61,33 @@ del comportamiento; el stub identidad convierte ese rojo en información.
 al visible. La asimetría de ADR-014 es sobre el **acortado**, que es una
 concesión al ancho de una pantalla; escribir mal el género no lo pedía ninguna
 pantalla, así que un lector de pantalla oye «clavícula derecha».
+
+## T4 · El navegador de Explorar muestra corto y anuncia completo
+
+**Done.** Texto visible corto en las filas simples, en el nombre de las filas
+pareadas y en el par colapsado; `aria-label` explícito con el nombre íntegro
+en los tres. `accessibleName` y los ids `nombreId`/`ladoId` se fueron con
+`aria-labelledby`.
+
+- **RED:** 3 en rojo — fila simple (la duodécima torácica, impar y de las que
+  el acortado toca), píldora pareada (la falange, con el nombre accesible
+  completo) y concordancia de género.
+- **GREEN:** las píldoras pasan de `aria-labelledby={nombre lado}` a
+  `aria-label={fullName(bone)}`. El riesgo que el plan marcaba como el
+  desconocido de la historia no se materializó: el fallback del span `sr-only`
+  no hizo falta.
+- **Gate:** verde a la segunda — 302 tests. La primera pasada fue **roja de
+  verdad, en un test que esta historia no había tocado**.
+
+**Lo que el plan no anticipó — un test huérfano que codificaba el defecto:**
+`ExploreView.test.tsx:139` afirmaba `/^tibia izquierdo$/i`. No es una prueba
+que se rompiera por el cambio: es una prueba que **exigía el bug**. Su vecina
+de la línea 93 era peor —`/^tibia izquierda$|^tibia izquierdo$/i`, un
+localizador que aceptaba las dos formas y por tanto no podía fallar con
+ninguna—. Las dos endurecidas a la forma correcta. Un doble que no puede
+fallar como el original no vigila nada.
+
+**Pendiente conocido:** seis localizadores de `e2e/mobile-shell.spec.ts` traen
+el género viejo («clavícula derecho», «tibia derecho», «falange media del
+quinto dedo del pie derecho»). Todavía pasan porque miran la grilla de Fichas,
+que es T5 — donde el plan ya los tiene asignados.
