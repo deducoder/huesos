@@ -330,7 +330,7 @@ export function App() {
            íconos. No hay nada que elegir hasta volver. */
         <header
           data-testid="cabecera"
-          className="flex items-center gap-3 border-tinta border-b-2 bg-panel px-5 py-3"
+          className="mt-3 mb-3 mx-3.5 flex items-center gap-3 rounded-suave border-2 border-tinta bg-panel px-5 py-3 shadow-dura"
         >
           <button
             type="button"

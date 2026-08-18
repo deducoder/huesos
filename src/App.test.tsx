@@ -54,6 +54,16 @@ describe('la aplicación, de punta a punta', () => {
     ).not.toBeInTheDocument()
   })
 
+  it('en modo ficha, la cabecera es una caja redondeada como el resto (e9.7)', async () => {
+    const user = userEvent.setup()
+    render(<App />)
+
+    await user.click(screen.getByRole('button', { name: /^fémur derecho$/i }))
+    await user.click(screen.getByRole('button', { name: /ver ficha completa/i }))
+
+    expect(screen.getByTestId('cabecera')).toHaveClass('rounded-suave', 'shadow-dura')
+  })
+
   it('lleva a la ficha completa y vuelve conservando la selección', async () => {
     const user = userEvent.setup()
     render(<App />)
