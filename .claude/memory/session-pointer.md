@@ -1,29 +1,28 @@
 ---
 name: session-pointer
 description: "Last session handoff for huesos-mono — date, next action, and handoff path"
-metadata:
+metadata: 
+  node_type: memory
   type: project
+  modified: 2026-08-18T22:39:54.693Z
+  originSessionId: 28d8bc13-d3f7-4426-8731-0c5c99d0c8bd
 ---
 
-Last session: **2026-08-18** — **E9 abierta entera** (brief, scope de 7
-historias, design, plan, ADR-013 y ADR-014) y **dos historias cerradas**:
-`e9.6`, el «atrás» del sistema recorriendo la aplicación por History API sin
-router; y `e9.3`, el hueso aislado entrando entero, con aire por los cuatro
-lados y rotación. El usuario encontró en su teléfono un bug de e9.3 que la
-suite no podía ver — el punto de órbita desplazado con la cámara—, corregido
-con `setViewOffset`.
+Last session: **2026-08-18** — E9 cerrada y empujada (116 commits), primer
+deploy en producción (`bones.deducoder.com`, Cloudflare Worker
+`bones-learning`), y un descargo de responsabilidad agregado al panel de
+menú.
 
-Full handoff: `work/sessions/2026-08-18-e9-open-back-and-framing.md` (read it
-in full via `session-start`).
+Full handoff: `work/sessions/2026-08-18-e9-close-and-deploy.md` (read it in
+full via `session-start`).
 
-Next action: **arrancar `e9.5`** (`story-start`) — nombres cortos y
-capitalización, con ADR-014 ya escrito y el hallazgo de concordancia de
-género («clavícula derecho») incorporado a su alcance.
+Next action: **confirmar el foco** — no hay épica ni historia en curso;
+`session-start` debería preguntar si arranca una épica nueva o si el
+trabajo pasa a mantenimiento del sitio ya en vivo.
 
-**Aviso de entorno:** la sesión se cerró para migrar a un entorno remoto. La
-verificación manual en teléfono, que en E9 cerró las dos historias y
-encontró un bug real, iba por un `vite` en 5173 con túnel de Cloudflare que
-allá no existe — decidir cómo se hace antes de dar una historia por cerrada.
+El código interno sigue llamándose `huesos-mono` a propósito: "Bones
+Learning" es solo el nombre público del deploy (título, Worker, dominio),
+no un rename del repositorio.
 
 Overwritten on every `session-close`; this is a pointer, the handoff is the
 source of truth.
