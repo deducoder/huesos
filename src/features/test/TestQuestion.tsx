@@ -92,7 +92,7 @@ export function TestQuestion({ bones, store, renderScene, answerFormat = 'choice
   return (
     <div className="flex h-full flex-col md:mx-auto md:max-w-3xl">
       <div className="min-h-0 flex-1">{renderScene(bone.id)}</div>
-      <div className="border-tinta border-t p-4">
+      <div className="border-tinta border-t p-4" data-testid="barra-respuesta">
         {resultado === 'pendiente' ? (
           answerFormat === 'open' ? (
             <form onSubmit={responder} className="flex gap-2">

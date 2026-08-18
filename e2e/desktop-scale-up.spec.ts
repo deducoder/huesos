@@ -76,7 +76,7 @@ test('en el modo test de hueso aislado, la barra de respuesta no se estira a lo 
   await page.getByRole('button', { name: 'Test', exact: true }).click()
   await page.getByRole('button', { name: 'Hueso aislado', exact: true }).click()
 
-  const barra = page.locator('form').first()
+  const barra = page.getByTestId('barra-respuesta')
   await expect(barra).toBeVisible()
   const caja = await barra.boundingBox()
   expect(caja, 'la barra de respuesta no está en la página').not.toBeNull()
