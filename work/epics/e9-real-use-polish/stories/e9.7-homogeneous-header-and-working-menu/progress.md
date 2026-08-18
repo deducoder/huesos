@@ -160,5 +160,15 @@ punto:
 
 ## T5 · Verificación manual — segunda pasada
 
-Pendiente: recorrer de nuevo los puntos 4 (atrás con el panel abierto) y 2
-(contenido nuevo) tras T6/T7, antes de cerrar la historia.
+Confirmado por el humano: el "atrás" del sistema cierra el panel (T6), y
+el texto nuevo de T7 se ve bien. Un ajuste de copy pedido en la misma
+pasada: quitar el inciso entre rayas «—qué acertaste y qué fallaste—» del
+aviso de privacidad, dejando "Tu progreso se guarda solo en este
+navegador." — no era un hallazgo de comportamiento, ya lo cubría la
+prueba existente (`/no sale de|solo en (este|tu) navegador/i`), así que
+fue edición directa bajo cobertura, sin RED nuevo. `./scripts/check`
+verde — 346 tests.
+
+Con esto, T5 queda cerrada: las cinco vistas recorridas, cierre por las
+tres vías, "atrás" del sistema correcto con y sin el panel abierto,
+cabecera de ficha redondeada, contenido final aprobado.

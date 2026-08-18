@@ -54,8 +54,8 @@ export function AboutPanel({ onClose }: { onClose: () => void }) {
         <section className="mt-4">
           <h3 className="font-display font-semibold text-sm">Privacidad</h3>
           <p className="mt-1 text-sm">
-            Tu progreso —qué acertaste y qué fallaste— se guarda solo en este navegador. No hay
-            cuenta, no hay servidor: no sale de tu teléfono.
+            Tu progreso se guarda solo en este navegador. No hay cuenta, no hay servidor: no sale de
+            tu teléfono.
           </p>
         </section>
 
