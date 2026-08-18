@@ -177,10 +177,12 @@ test('el nombre más largo del catálogo se lee completo, sin recortar', async (
   await page.getByRole('button', { name: /^fichas$/i }).click()
   await page.getByRole('button', { name: /^miembro superior/i }).click()
 
-  // El nombre de 44 caracteres del catálogo. No se recorta: el texto
-  // completo tiene que estar en el DOM, sin ellipsis — el acordeón (e8.2)
-  // agrega el lado al texto del botón (`accessibleName`), así que ya no
-  // aparece como nodo de texto suelto: se busca por substring, no exacto.
+  // El nombre más largo del catálogo (44 caracteres). Desde e9.5 el botón
+  // muestra su forma corta y anuncia la completa (ADR-014), así que el
+  // guardia tiene dos mitades y las dos hacen falta: que el texto visible
+  // se vea **entero**, sin ellipsis —lo que este test vigilaba desde
+  // e8.2— y que el nombre del catálogo no se haya perdido por el camino,
+  // que es lo que el acortado podría destruir sin que nada lo notara.
   //
   // e8.2 retira acá el guardia de regresión que e7.4 dejó sobre el alto
   // total del navegador (≤ 6.208 px, medido contra la lista plana de
@@ -188,8 +190,11 @@ test('el nombre más largo del catálogo se lee completo, sin recortar', async (
   // alto inicial del acordeón es trivialmente chico sin que eso proteja
   // nada — comparar contra una arquitectura de información que ya no
   // existe deja de ser una guardia real. Ver progress.md de e8.2.
-  const nombreLargo = page.getByText('falange proximal del segundo dedo de la mano')
-  await expect(nombreLargo.first()).toBeVisible()
+  const etiqueta = page
+    .getByRole('button', { name: 'falange proximal del segundo dedo de la mano derecha' })
+    .first()
+  await expect(etiqueta).toBeVisible()
+  await expect(etiqueta).toHaveText('Falange proximal 2.º mano derecha')
 })
 
 test('el panel de identidad usa el mínimo táctil y la tipografía display', async ({ page }) => {
@@ -382,7 +387,7 @@ test('un hueso ancho entra entero en el lienzo de la ficha', async ({ page }) =>
   // nada: medido antes del arreglo, daba 0 píxeles en los bordes mientras la
   // clavícula daba 475/717 y el atlas 1236/1232.
   for (const [categoria, hueso] of [
-    ['cintura escapular', 'clavícula derecho'],
+    ['cintura escapular', 'clavícula derecha'],
     ['columna vertebral', 'atlas'],
   ] as const) {
     const lienzo = await abrirFicha(page, categoria, hueso)
@@ -412,7 +417,7 @@ test('el hueso más chico del modelo se sigue viendo, y el que no tiene geometr�
   const lienzo = await abrirFicha(
     page,
     'miembro inferior',
-    'falange media del quinto dedo del pie derecho',
+    'falange media del quinto dedo del pie derecha',
   )
   const { total } = huesoPorBanda(await lienzo.screenshot())
   expect(total, 'la falange más chica se ve').toBeGreaterThan(1_000)
@@ -516,7 +521,7 @@ test('la reserva sale del alto real de la tarjeta, no de su máximo declarado', 
   )
   const conFichaCorta = await huesoSobreYBajoLaTarjeta(
     page,
-    await abrirFicha(page, 'miembro inferior', 'tibia derecho'),
+    await abrirFicha(page, 'miembro inferior', 'tibia derecha'),
   )
 
   expect(conFichaLarga.huecoBajoElHueso, 'hueco bajo el fémur, de ficha larga').toBeLessThan(0.2)
@@ -595,7 +600,7 @@ test('el hueso deja aire a los cuatro lados del lienzo', async ({ page }) => {
   // 13 en una sola para la clavícula, sobre un margen de encuadre del 15 %.
   for (const [categoria, hueso] of [
     ['miembro inferior', 'fémur derecho'],
-    ['cintura escapular', 'clavícula derecho'],
+    ['cintura escapular', 'clavícula derecha'],
     ['columna vertebral', 'atlas'],
   ] as const) {
     const lienzo = await abrirFicha(page, categoria, hueso)

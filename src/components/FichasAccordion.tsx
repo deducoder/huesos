@@ -3,26 +3,22 @@ import type { Bone } from '../data/bone'
 import { toNavigatorRows } from '../domain/navigator-rows'
 import { groupByRegion } from '../domain/regions'
 import { groupByCategory } from './categories'
-import { REGION_LABEL, SIDE_LABEL } from './labels'
+import { fullName, shortName, visibleName } from './bone-name'
+import { REGION_LABEL } from './labels'
 import { REGION_ACCENT } from './region-accent'
 
 /**
- * El nombre que oye un lector de pantalla: el hueso y, si es par, su lado.
- *
- * Duplica la función homónima de `BoneNavigator.tsx` a propósito — ADR-011
- * (`work/epics/e8-redesign-mockup-follow-ups/design.md`) decide no tocar
- * `BoneNavigator.tsx` ni una línea, así que exportarla desde ahí no es una
- * opción. Tres líneas de duplicación es el costo ya aceptado en ese ADR.
+ * El sub-nombre de un subgrupo dentro de una categoría (el texto después de
+ * "—"), capitalizado: las ocho regiones sin guion ya vienen con mayúscula
+ * inicial desde `REGION_LABEL`, y solo «neurocráneo» y «cara» quedaban en
+ * minúscula por ser la mitad derecha de «Cráneo — …».
  */
-function accessibleName(bone: Bone): string {
-  return bone.side === null ? bone.es : `${bone.es} ${SIDE_LABEL[bone.side]}`
-}
-
-/** El sub-nombre de un subgrupo dentro de una categoría (el texto después de "—"). */
 function subLabel(region: keyof typeof REGION_LABEL): string {
   const etiqueta = REGION_LABEL[region]
   const guion = etiqueta.indexOf('—')
-  return guion === -1 ? etiqueta : etiqueta.slice(guion + 1).trim()
+  if (guion === -1) return etiqueta
+  const sub = etiqueta.slice(guion + 1).trim()
+  return sub.charAt(0).toUpperCase() + sub.slice(1)
 }
 
 interface Props {
@@ -114,11 +110,12 @@ export function FichasAccordion({ bones, onSelect }: Props) {
                               <span key={bone.id}>
                                 <button
                                   type="button"
+                                  aria-label={fullName(bone)}
                                   aria-describedby={descriptionId}
                                   onClick={() => onSelect(bone.id)}
                                   className="flex min-h-16 w-full items-center rounded-suave border-2 border-tinta bg-panel/75 px-3 py-2 text-left text-sm leading-snug hover:bg-panel focus-visible:outline focus-visible:outline-2 focus-visible:outline-acento"
                                 >
-                                  {accessibleName(bone)}
+                                  {visibleName(bone)}
                                   {bone.meshName === null && <span aria-hidden="true"> ·</span>}
                                 </button>
                                 {descriptionId && (
@@ -139,11 +136,12 @@ export function FichasAccordion({ bones, onSelect }: Props) {
                               <span key={fila.right.id}>
                                 <button
                                   type="button"
+                                  aria-label={fila.name}
                                   aria-describedby={descriptionId}
                                   onClick={() => onSelect(fila.right.id)}
                                   className="flex min-h-16 w-full items-center rounded-suave border-2 border-tinta bg-panel/75 px-3 py-2 text-left text-sm leading-snug hover:bg-panel focus-visible:outline focus-visible:outline-2 focus-visible:outline-acento"
                                 >
-                                  {fila.name}
+                                  {shortName(fila.name)}
                                   <span aria-hidden="true"> ·</span>
                                 </button>
                                 <span id={descriptionId} className="sr-only">
@@ -160,11 +158,12 @@ export function FichasAccordion({ bones, onSelect }: Props) {
                               <span key={bone.id}>
                                 <button
                                   type="button"
+                                  aria-label={fullName(bone)}
                                   aria-describedby={descriptionId}
                                   onClick={() => onSelect(bone.id)}
                                   className="flex min-h-16 w-full items-center rounded-suave border-2 border-tinta bg-panel/75 px-3 py-2 text-left text-sm leading-snug hover:bg-panel focus-visible:outline focus-visible:outline-2 focus-visible:outline-acento"
                                 >
-                                  {accessibleName(bone)}
+                                  {visibleName(bone)}
                                   {bone.meshName === null && <span aria-hidden="true"> ·</span>}
                                 </button>
                                 {descriptionId && (

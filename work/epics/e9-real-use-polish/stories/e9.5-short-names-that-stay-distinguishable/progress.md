@@ -91,3 +91,29 @@ fallar como el original no vigila nada.
 el género viejo («clavícula derecho», «tibia derecho», «falange media del
 quinto dedo del pie derecho»). Todavía pasan porque miran la grilla de Fichas,
 que es T5 — donde el plan ya los tiene asignados.
+
+## T5 · La grilla de Fichas, sus subgrupos capitalizados y el guardia e2e
+
+**Done.** Etiquetas cortas con el lado concordado y `aria-label` completo;
+`subLabel` capitaliza; `accessibleName` fuera también de este archivo.
+
+- **RED:** 3 en rojo — etiqueta corta con anuncio completo, concordancia de
+  género, y «Neurocráneo»/«Cara».
+- **GREEN:** `visibleName` / `fullName` en las tres ramas de la grilla (simple,
+  par, y par sin geometría en ningún lado).
+- **Gate:** `./scripts/check` verde — 305 tests. `npx playwright test
+  mobile-shell` **22 de 22**, con los puertos 4173-4175 comprobados libres
+  antes de arrancar: un servidor sobrante habría medido un build viejo.
+
+**El guardia de e8.2 cambió de sujeto y ganó la mitad que le faltaba.** Antes
+afirmaba que el nombre de 44 caracteres estaba visible sin recortar. Ahora
+afirma las dos cosas que la separación de ADR-014 exige: que el texto visible
+es «Falange proximal 2.º mano derecha» —entero, con `toHaveText`, no por
+substring— y que el botón sigue localizándose por el nombre íntegro del
+catálogo. Con una sola de las dos mitades, acortar de más o perder el nombre
+accesible habría pasado en verde.
+
+**Tres localizadores e2e traían el género equivocado** («clavícula derecho»,
+«tibia derecho», «falange media del quinto dedo del pie derecho») y ahora
+concuerdan. Un grep de las siete familias femeninas sobre `e2e/` y `src/`
+confirma que no queda ninguno.
