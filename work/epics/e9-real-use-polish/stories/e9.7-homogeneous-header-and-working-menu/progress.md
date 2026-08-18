@@ -57,3 +57,34 @@ botón. No toca `window.history` ni `Modo`.
   prueba de cierre por teclado.
 - **Gate:** `./scripts/check` verde — 338 tests, en la rama de la historia
   con el fix de `main` ya mergeado.
+
+## T3 · `App.tsx`: el menú abre y cierra el panel sin tocar el historial
+
+**Done.** `MenuIcono` deja de ser un `<div aria-hidden>` decorativo y pasa a
+ser un `<button>` con `onClick`; `menuAbierto` es estado local de `App`
+(`useState<boolean>`), no un `Modo`.
+
+- **RED:** 4 pruebas nuevas en `App.test.tsx` (agrupadas en
+  `describe('el menú (e9.7)')`) — confirmadas en rojo real: `getByRole`
+  fallaba porque el botón "menú" no existía todavía como elemento
+  accesible.
+- **GREEN:** `MenuIcono({ onClick })`, `menuAbierto` cableado al
+  `onClick` y al render condicional de `AboutPanel` al final de `<main>`.
+  El menú ya no se monta en modo `'ficha'` porque esa rama del header
+  nunca incluyó `MenuIcono` — sin cambio adicional, la prueba de esa
+  condición pasó directo.
+- **Accidente durante la verificación, no del código:** un primer intento
+  de mutación forzada usó `git checkout -- src/App.tsx` para revertir, y
+  como T3 todavía no estaba commiteado eso borró el GREEN entero (volvió
+  al estado del merge de T2). Detectado de inmediato con `grep` antes de
+  seguir, rehecho igual que la primera vez, y commiteado antes de repetir
+  cualquier mutación — la lección concreta: mutar y revertir con
+  `git checkout`/`restore` solo es seguro sobre un commit ya hecho.
+- **Mutación forzada (ya sobre el commit):** reemplazar
+  `setMenuAbierto(true)` por `window.history.pushState(modo, ''); setMenuAbierto(true)`
+  —simulando que la apertura se implementó como una navegación real, el
+  atajo que el scope prohíbe— rompe exactamente la prueba de
+  `window.history.length`, la única de las 4: `expected 17 to be 16`.
+  Revertido con `git restore` (seguro, ya commiteado) y confirmado verde
+  de nuevo.
+- **Gate:** `./scripts/check` verde — 342 tests.
