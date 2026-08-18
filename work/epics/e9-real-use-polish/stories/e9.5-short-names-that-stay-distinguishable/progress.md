@@ -134,3 +134,28 @@ Comparar el corto con el `es` en minúsculas distingue los 75 nombres que la
 derivación cambia de los 45 que solo capitaliza; en un fémur, una fila que
 repitiera «fémur» debajo del título «Fémur» no informaría de nada. Es la única
 decisión de esta tarea que el design no traía escrita.
+
+## T7 · Las tres opciones del test
+
+**Done.** `{opcion.es}` → `{shortName(opcion.es)}`. El estado posterior a la
+respuesta no se tocó: eso es e9.2.
+
+- **RED:** 1 de 2 en rojo. El otro —«revela el nombre completo del catálogo
+  cuando se falla»— **pasó en verde desde el principio**, y se queda: es un
+  guardia, no una funcionalidad. Afirma por igualdad exacta
+  (`${bone.es} / ${bone.la}`), así que acortar el revelado lo rompe.
+- **GREEN:** una línea. Las opciones no llevan lado, y no es un olvido:
+  `pickDistractors` nunca elige al hermano del hueso preguntado ni deja dos
+  hermanos entre sí **porque el lado no está en el nombre** — añadirlo aquí
+  invalidaría esa garantía.
+- **Gate:** `./scripts/check` verde — 312 tests.
+
+**Dos tests existentes localizaban las opciones por `bone.es`** (`:208`,
+`:237`) y rompieron. Actualizados a `shortName(bone.es)`: siguen afirmando lo
+mismo —que una de las tres opciones es el hueso preguntado— sobre el texto que
+ahora se muestra.
+
+**Por qué el test nuevo es falsable para cualquier hueso sorteado:** compara
+cada opción contra el conjunto de los 120 nombres cortos. Mostrar el `es` del
+catálogo falla siempre, incluso en los 45 nombres que la derivación no acorta,
+porque el corto va capitalizado y el `es` no.
