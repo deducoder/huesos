@@ -550,3 +550,61 @@ esa vista ya tenía.
 de las props opcionales. El patrón a reutilizar es `useFraccionCubierta` en
 `BoneDetailView`: un `ResizeObserver` sobre el elemento flotante, medido
 después del layout.
+
+## 2026-08-18 · Una palabra larga llena el botón de opción hasta el borde (e9.5, verificación manual)
+
+En el modo test, una opción cuyo nombre contiene una palabra indivisible larga
+—«metacarpiano», «metatarsiano»— ocupa el botón entero de lado a lado. Medido
+en 390 px: el contenido da 99 px de `scrollWidth` contra 98 de `clientWidth`,
+un píxel; pero con `rounded-full` y `px-2` las esquinas redondeadas se comen
+los extremos del texto y a la vista parece que se sale.
+
+**No lo introdujo e9.5** y la historia lo mejora: la derivación acorta el
+resto del nombre, nunca la palabra. La causa es el ancho de columna —tres
+columnas en 390 px dejan 86 px útiles— y ninguna abreviatura razonable la
+resuelve.
+
+**Por qué no se corrigió acá:** el remedio es de layout —dos columnas en vez
+de tres, o `hyphens: auto`— y toca la grilla de opciones, que es el objeto de
+**e9.2**, la historia que cambia el estado posterior a la respuesta y con él
+el alto de esa barra.
+
+**Destino:** entra en **e9.2**, junto a la barra de respuesta que no reserva
+sitio sobre el lienzo, ya aparcada desde e9.3 con el mismo dueño.
+
+**Un aviso sobre su guardia:** `e2e/mobile-shell.spec.ts:266` se llama «las
+opciones y sus botones usan el mínimo táctil, sin desbordar» y **no mide el
+desbordamiento del texto**: comprueba el alto de cada opción y que el botón
+«Responder» no se salga del viewport. El nombre promete más de lo que afirma.
+Si e9.2 quiere vigilar esto, la medida es `scrollWidth` contra `clientWidth`
+del propio botón.
+
+## 2026-08-18 · El nombre accesible ya no contiene al visible (e9.5, quality-review)
+
+Desde e9.5 un botón de hueso muestra «Falange proximal 2.º mano derecha» y
+anuncia «falange proximal del segundo dedo de la mano derecha». **WCAG 2.5.3
+«Label in Name» (nivel A)** exige que el nombre accesible *contenga* el texto
+visible: es lo que permite a quien usa control por voz decir lo que lee y
+activar el control. Decir «click Falange proximal 2.º mano» no encuentra el
+botón.
+
+Alcance medido: **75 de los 120 nombres** del catálogo — los que la derivación
+acorta. Los 45 que solo se capitalizan cumplen, porque la comparación ignora
+mayúsculas.
+
+**Por qué no se corrigió acá:** el arreglo es barato —que el `aria-label`
+empiece por el visible y añada el resto: «Falange proximal 2.º mano derecha,
+falange proximal del segundo dedo de la mano»— pero **contradice a ADR-014**,
+que decidió que el `aria-label` lleva el `es` del catálogo y nada más. Un ADR
+aceptado no se edita para cambiar de idea: hace falta uno que lo supersede, y
+esa decisión no cabe dentro de la historia que ejecuta la anterior.
+
+**Lo que ADR-014 no evaluó:** consideró al lector de pantalla, que no tiene el
+problema de espacio, y a la suite de Playwright, que localiza por nombre
+accesible. No consideró el control por voz, para quien las dos formas del
+nombre no son equivalentes sino incompatibles.
+
+**Destino:** un ADR que supersede a ADR-014 en este punto, y la línea de
+`bone-name.ts` que lo implemente. Sin dueño en E9 — ninguna de las historias
+restantes toca `bone-name.ts`. Candidato natural: la épica de consolidación
+visual, o una historia propia si alguien usa control por voz antes.

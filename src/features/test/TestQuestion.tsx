@@ -1,4 +1,5 @@
 import { type ReactNode, useState } from 'react'
+import { shortName } from '../../components/bone-name'
 import type { Bone } from '../../data/bone'
 import { isCorrectAnswer } from '../../domain/answer-check'
 import { pickDistractors } from '../../domain/distractors'
@@ -149,7 +150,7 @@ export function TestQuestion({
                         : 'bg-superficie text-tinta hover:bg-acento-suave'
                     }`}
                   >
-                    {opcion.es}
+                    {shortName(opcion.es)}
                   </button>
                 ))}
               </fieldset>

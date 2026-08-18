@@ -5,6 +5,7 @@ import { catalog } from '../../data/catalog'
 import type { ProgressRecord } from '../../domain/progress'
 import { findBone } from '../../domain/selection'
 import type { ProgressStore } from '../../storage/progress-store'
+import { shortName } from '../../components/bone-name'
 import { TestQuestion } from './TestQuestion'
 
 const renderScenaSustituida = (boneId: string) => <div data-testid="escena" data-hueso={boneId} />
@@ -204,7 +205,7 @@ describe('TestQuestion — modo opción múltiple (formato por defecto)', () => 
     if (!bone) throw new Error('la pregunta no eligió un hueso válido')
 
     const grupo = screen.getByRole('group', { name: /qué hueso es/i })
-    expect(within(grupo).getByRole('button', { name: bone.es })).toBeInTheDocument()
+    expect(within(grupo).getByRole('button', { name: shortName(bone.es) })).toBeInTheDocument()
   })
 
   it('"Responder" está deshabilitado hasta elegir una opción', async () => {
@@ -233,7 +234,7 @@ describe('TestQuestion — modo opción múltiple (formato por defecto)', () => 
     if (!bone) throw new Error('la pregunta no eligió un hueso válido')
 
     const grupo = screen.getByRole('group', { name: /qué hueso es/i })
-    await user.click(within(grupo).getByRole('button', { name: bone.es }))
+    await user.click(within(grupo).getByRole('button', { name: shortName(bone.es) }))
     await user.click(screen.getByRole('button', { name: /^responder$/i }))
 
     expect(screen.getByText(/^correcto$/i)).toBeInTheDocument()
@@ -319,5 +320,41 @@ describe('TestQuestion y el registro de progreso', () => {
     await responder(store, true)
 
     expect(document.body.textContent ?? '').not.toContain('9')
+  })
+
+  it('muestra el nombre corto en las tres opciones, no el del catálogo', () => {
+    render(
+      <TestQuestion bones={catalog} store={almacenFalso()} renderScene={renderScenaSustituida} />,
+    )
+    // Cualquiera que sea el hueso sorteado: cada opción tiene que ser un
+    // nombre corto. Mostrar el `es` del catálogo falla siempre, aunque la
+    // derivación no lo acorte, porque el corto va capitalizado y el `es` no.
+    const cortos = new Set(catalog.map((b) => shortName(b.es)))
+    const opciones = screen.getAllByRole('button', { pressed: false })
+    for (const opcion of opciones) {
+      expect(cortos, `«${opcion.textContent}» no es un nombre corto`).toContain(opcion.textContent)
+    }
+  })
+
+  it('revela el nombre completo del catálogo cuando se falla', async () => {
+    const user = userEvent.setup()
+    render(
+      <TestQuestion
+        bones={catalog}
+        store={almacenFalso()}
+        renderScene={renderScenaSustituida}
+        answerFormat="open"
+      />,
+    )
+    const boneId = screen.getByTestId('escena').dataset.hueso
+    const bone = findBone(catalog, boneId ?? null)
+    if (!bone) throw new Error('la pregunta no eligió un hueso válido')
+
+    await user.type(screen.getByRole('textbox'), 'una respuesta que no es')
+    await user.click(screen.getByRole('button', { name: /responder/i }))
+
+    // El revelado no es un botón estrecho: acortarlo aquí sería perder el
+    // nombre que el estudiante tenía que aprender.
+    expect(screen.getByText(`${bone.es} / ${bone.la}`)).toBeInTheDocument()
   })
 })

@@ -56,3 +56,7 @@
 - [Validar un discriminante con un Record, no con una lista](validate-a-discriminant-with-a-record-not-a-list.md) — la unión exige exhaustividad; la lista acepta la omisión en silencio.
 - ["Algo cambió" no es una aserción](something-changed-is-not-an-assertion.md) — el defecto puede estar presente y cambiar píxeles igual; afirmar el estado final.
 - [Descentrar la proyección, no la cámara](offset-the-projection-not-the-camera.md) — `setViewOffset` mantiene el punto de órbita en el objeto; mover la cámara lo desplaza.
+- [Un test puede defender el bug](tests-can-defend-the-bug.md) — el rojo al arreglar puede ser una prueba que exigía el defecto; y un matcher con `|` no vigila ninguna forma.
+- [El rojo de un módulo ausente no prueba nada](red-from-a-missing-module-proves-nothing.md) — el stub identidad revela qué afirmaciones del gate se cumplen solas.
+- [Acortar la etiqueta rompe «Label in Name»](shortened-labels-break-label-in-name.md) — el control por voz dice lo que se ve; el aria-label tiene que empezar por ahí.
+- [Contar líneas envueltas, no razones de ancho](count-wrapped-lines-not-width-ratios.md) — una palabra larga decide el wrap mucho antes que el total de caracteres.

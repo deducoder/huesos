@@ -67,4 +67,31 @@ describe('el navegador de huesos', () => {
     expect(screen.getByRole('button', { name: /fémur.*derecho/i })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /fémur.*izquierdo/i })).toBeInTheDocument()
   })
+
+  it('muestra el nombre corto y anuncia el completo, en una fila simple', () => {
+    render(<BoneNavigator bones={catalog} selected={null} onSelect={() => {}} />)
+    // La duodécima torácica es impar: fila simple, y su nombre es de los que
+    // el acortado tiene que tocar.
+    const boton = screen.getByRole('button', { name: 'duodécima vértebra torácica' })
+    expect(boton).toHaveTextContent('12.ª vértebra torácica')
+  })
+
+  // El caso que el gemba encontró: las píldoras de una fila pareada componían
+  // su nombre accesible con `aria-labelledby`, que lee el texto visible. Con
+  // el nombre de la fila ya acortado, eso habría acortado también lo que oye
+  // un lector de pantalla, sin que ninguna prueba lo notara.
+  it('muestra el nombre corto y anuncia el completo, en una píldora pareada', () => {
+    render(<BoneNavigator bones={catalog} selected={null} onSelect={() => {}} />)
+    const pildora = screen.getByRole('button', {
+      name: 'falange proximal del segundo dedo de la mano derecha',
+    })
+    expect(pildora).toHaveTextContent('derecha')
+    expect(screen.getByText('Falange proximal 2.º mano')).toBeInTheDocument()
+  })
+
+  it('concuerda el lado con el género del hueso', () => {
+    render(<BoneNavigator bones={catalog} selected={null} onSelect={() => {}} />)
+    expect(screen.getByRole('button', { name: 'clavícula derecha' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'fémur izquierdo' })).toBeInTheDocument()
+  })
 })

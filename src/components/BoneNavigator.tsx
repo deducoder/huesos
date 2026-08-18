@@ -1,12 +1,8 @@
 import type { Bone } from '../data/bone'
 import { toNavigatorRows } from '../domain/navigator-rows'
 import { groupByRegion } from '../domain/regions'
-import { REGION_LABEL, SIDE_LABEL } from './labels'
-
-/** El nombre que oye un lector de pantalla: el hueso y, si es par, su lado. */
-function accessibleName(bone: Bone): string {
-  return bone.side === null ? bone.es : `${bone.es} ${SIDE_LABEL[bone.side]}`
-}
+import { fullName, shortName, sideLabel, visibleName } from './bone-name'
+import { REGION_LABEL } from './labels'
 
 /** Las clases de una píldora o de una fila simple, según su selección. */
 function claseObjetivo(elegido: boolean): string {
@@ -57,12 +53,13 @@ export function BoneNavigator({ bones, selected, onSelect }: Props) {
                       <button
                         type="button"
                         aria-pressed={selected === bone.id}
+                        aria-label={fullName(bone)}
                         aria-describedby={descriptionId}
                         onClick={() => onSelect(bone.id)}
                         className={`min-h-tactil w-full rounded-suave px-2 text-left text-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-acento ${claseObjetivo(selected === bone.id)}`}
                       >
                         {selected === bone.id && <span aria-hidden="true">▸ </span>}
-                        {accessibleName(bone)}
+                        {visibleName(bone)}
                         {bone.meshName === null && <span aria-hidden="true"> ·</span>}
                       </button>
                       {descriptionId && (
@@ -73,8 +70,6 @@ export function BoneNavigator({ bones, selected, onSelect }: Props) {
                     </li>
                   )
                 }
-                const nombreId = `${fila.right.id}-nombre`
-
                 // Ningún lado tiene malla: los dos son indistinguibles en todo
                 // lo que se puede ver —mismo motivo, nunca aparecen en la
                 // escena, y `pickTestableBone` ya los excluye del modo test.
@@ -90,11 +85,12 @@ export function BoneNavigator({ bones, selected, onSelect }: Props) {
                       <button
                         type="button"
                         aria-pressed={selected === fila.right.id}
+                        aria-label={fila.name}
                         aria-describedby={descriptionId}
                         onClick={() => onSelect(fila.right.id)}
                         className={`min-h-tactil w-full rounded-suave px-2 text-left text-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-acento ${claseObjetivo(selected === fila.right.id)}`}
                       >
-                        {fila.name}
+                        {shortName(fila.name)}
                         <span aria-hidden="true"> ·</span>
                       </button>
                       <span id={descriptionId} className="sr-only">
@@ -106,11 +102,8 @@ export function BoneNavigator({ bones, selected, onSelect }: Props) {
 
                 return (
                   <li key={fila.right.id} className="flex flex-wrap items-center gap-x-2 gap-y-1">
-                    <span id={nombreId} className="min-w-20 flex-1">
-                      {fila.name}
-                    </span>
+                    <span className="min-w-20 flex-1">{shortName(fila.name)}</span>
                     {[fila.right, fila.left].map((bone) => {
-                      const ladoId = `${bone.id}-lado`
                       const descriptionId =
                         bone.meshName === null ? `${bone.id}-missing` : undefined
                       return (
@@ -118,13 +111,13 @@ export function BoneNavigator({ bones, selected, onSelect }: Props) {
                           <button
                             type="button"
                             aria-pressed={selected === bone.id}
-                            aria-labelledby={`${nombreId} ${ladoId}`}
+                            aria-label={fullName(bone)}
                             aria-describedby={descriptionId}
                             onClick={() => onSelect(bone.id)}
                             className={`min-h-tactil min-w-16 rounded-tarjeta border-2 border-tinta px-3 text-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-acento ${claseObjetivo(selected === bone.id)}`}
                           >
-                            <span id={ladoId}>
-                              {SIDE_LABEL[bone.side]}
+                            <span>
+                              {sideLabel(bone.side, bone.gender)}
                               {bone.meshName === null && <span aria-hidden="true"> ·</span>}
                             </span>
                           </button>

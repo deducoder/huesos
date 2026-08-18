@@ -50,4 +50,38 @@ describe('la integridad del catálogo', () => {
       }
     }
   })
+
+  it('da a toda entrada el género gramatical de su nombre', () => {
+    for (const hueso of catalog) {
+      expect(['m', 'f'], `${hueso.id} sin género declarado`).toContain(hueso.gender)
+    }
+  })
+
+  it('declara el mismo género en las dos entradas de un par', () => {
+    const porNombre = new Map<string, string>()
+    for (const hueso of catalog) {
+      const visto = porNombre.get(hueso.es)
+      if (visto === undefined) porNombre.set(hueso.es, hueso.gender)
+      else expect(hueso.gender, `'${hueso.es}' declara dos géneros distintos`).toBe(visto)
+    }
+  })
+
+  // La coherencia de arriba no basta y no puede bastar: las dos entradas de
+  // un par equivocado son coherentes entre sí. Este caso trae el criterio
+  // desde fuera del catálogo, y elige a propósito los nombres donde la regla
+  // ingenua —el género por terminación— falla: «falange» acaba en -e y es
+  // femenino, «cornete» acaba en -e y es masculino.
+  it('acierta el género donde la terminación engaña', () => {
+    const esperado: Record<string, 'm' | 'f'> = {
+      'clavicle-right': 'f',
+      'femur-right': 'm',
+      'hand-proximal-phalanx-2-right': 'f',
+      'inferior-nasal-concha-right': 'm',
+    }
+    for (const [id, genero] of Object.entries(esperado)) {
+      const hueso = catalog.find((b) => b.id === id)
+      expect(hueso, `${id} no está en el catálogo`).toBeDefined()
+      expect(hueso?.gender, `${id} declara el género equivocado`).toBe(genero)
+    }
+  })
 })

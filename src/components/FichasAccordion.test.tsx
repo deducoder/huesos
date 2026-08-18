@@ -67,4 +67,30 @@ describe('FichasAccordion', () => {
     const craneo = screen.getByRole('button', { name: /^cráneo/i })
     expect(within(craneo).getByText('22')).toBeInTheDocument()
   })
+
+  it('muestra el nombre corto en la etiqueta y anuncia el completo', async () => {
+    const user = userEvent.setup()
+    render(<FichasAccordion bones={catalog} onSelect={() => {}} />)
+    await user.click(screen.getByRole('button', { name: /^miembro superior/i }))
+
+    const etiqueta = screen.getByRole('button', {
+      name: 'falange proximal del segundo dedo de la mano derecha',
+    })
+    expect(etiqueta).toHaveTextContent('Falange proximal 2.º mano derecha')
+  })
+
+  it('concuerda el lado con el género del hueso', async () => {
+    const user = userEvent.setup()
+    render(<FichasAccordion bones={catalog} onSelect={() => {}} />)
+    await user.click(screen.getByRole('button', { name: /^cintura escapular/i }))
+    expect(screen.getByRole('button', { name: 'clavícula derecha' })).toBeInTheDocument()
+  })
+
+  it('capitaliza los subgrupos que el corte por «—» dejaba en minúscula', async () => {
+    const user = userEvent.setup()
+    render(<FichasAccordion bones={catalog} onSelect={() => {}} />)
+    await user.click(screen.getByRole('button', { name: /^cráneo/i }))
+    expect(screen.getByText('Neurocráneo')).toBeInTheDocument()
+    expect(screen.getByText('Cara')).toBeInTheDocument()
+  })
 })

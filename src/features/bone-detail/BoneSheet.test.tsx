@@ -59,4 +59,26 @@ describe('la ficha de un hueso', () => {
 
     expect(screen.getByText(/cavidad timpánica/i)).toBeVisible()
   })
+
+  it('titula con el nombre corto y conserva el completo como dato', () => {
+    render(<BoneSheet bone={hueso('hand-proximal-phalanx-2-right')} />)
+
+    expect(screen.getByRole('heading', { name: 'Falange proximal 2.º mano' })).toBeVisible()
+    // Lo que el título deja de decir tiene que seguir estando en la ficha:
+    // acortar es una concesión al ancho de la pantalla, no una pérdida de dato.
+    expect(screen.getByText('Nombre completo')).toBeVisible()
+    expect(screen.getByText('falange proximal del segundo dedo de la mano')).toBeVisible()
+  })
+
+  it('no repite el nombre cuando el corto no le quitó nada', () => {
+    render(<BoneSheet bone={hueso('femur-right')} />)
+
+    expect(screen.getByRole('heading', { name: 'Fémur' })).toBeVisible()
+    expect(screen.queryByText('Nombre completo')).not.toBeInTheDocument()
+  })
+
+  it('concuerda el lado con el género del hueso', () => {
+    render(<BoneSheet bone={hueso('clavicle-right')} />)
+    expect(screen.getByText('derecha')).toBeVisible()
+  })
 })

@@ -90,7 +90,7 @@ describe('la vista de exploración', () => {
       'true',
     )
 
-    await user.click(screen.getByRole('button', { name: /^tibia izquierda$|^tibia izquierdo$/i }))
+    await user.click(screen.getByRole('button', { name: /^tibia izquierda$/i }))
     expect(screen.getByRole('button', { name: /^fémur derecho$/i })).toHaveAttribute(
       'aria-pressed',
       'false',
@@ -136,7 +136,7 @@ describe('la vista de exploración', () => {
     const user = userEvent.setup()
     render(<ExploreViewConSuEstado />)
     await user.click(screen.getByRole('button', { name: /simular clic en la escena/i }))
-    expect(screen.getByRole('button', { name: /^tibia izquierdo$/i })).toHaveAttribute(
+    expect(screen.getByRole('button', { name: /^tibia izquierda$/i })).toHaveAttribute(
       'aria-pressed',
       'true',
     )
