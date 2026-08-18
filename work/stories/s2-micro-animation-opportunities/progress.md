@@ -56,3 +56,11 @@ starting:translate-y-3 starting:opacity-0`, mismo patrón que T3. Solo la
 primera aparición anima — cambiar de hueso con la tarjeta ya montada sigue
 instantáneo, tal como decidió el diseño (Part 2 del reporte de
 oportunidades). Gate: verde, 357/357. Sin desviaciones.
+
+## T6 · Píldora de pestaña activa: transición de color
+
+RED confirmado (21/22, el test nuevo falló solo). GREEN: `transition-colors
+duration-base ease-salida` agregado siempre (no condicional) a cada botón de
+`Pestanas`, para que ambas direcciones (activar/desactivar) interpolen. Gate:
+verde, 358/358. Sin desviaciones. Con esto terminan las 6 tareas de código
+del plan — queda T7, la integración manual.
