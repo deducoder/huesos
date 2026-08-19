@@ -8,21 +8,21 @@ metadata:
   originSessionId: 28d8bc13-d3f7-4426-8731-0c5c99d0c8bd
 ---
 
-Last session: **2026-08-18** — E9 cerrada y empujada (116 commits), primer
-deploy en producción (`bones.deducoder.com`, Cloudflare Worker
-`bones-learning`), y un descargo de responsabilidad agregado al panel de
-menú.
+Last session: **2026-08-18** — historia standalone `s2` (micro-animaciones)
+de punta a punta, embarcada a `main` y desplegada a producción
+(`bones.deducoder.com`).
 
-Full handoff: `work/sessions/2026-08-18-e9-close-and-deploy.md` (read it in
+Full handoff: `work/sessions/2026-08-18-micro-animations.md` (read it in
 full via `session-start`).
 
 Next action: **confirmar el foco** — no hay épica ni historia en curso;
-`session-start` debería preguntar si arranca una épica nueva o si el
-trabajo pasa a mantenimiento del sitio ya en vivo.
+`session-start` debería preguntar si aparece una idea nueva de alcance o un
+bug de uso real, en vez de asumir que hay una épica esperando.
 
-El código interno sigue llamándose `huesos-mono` a propósito: "Bones
-Learning" es solo el nombre público del deploy (título, Worker, dominio),
-no un rename del repositorio.
+El resaltado de color del hueso y el encuadre de cámara en las escenas 3D
+quedaron deliberadamente fuera de `s2` — aparcados como historia/spike
+futuro, no descartados, porque tocan directamente el código que
+`should-perf-007` mide.
 
 Overwritten on every `session-close`; this is a pointer, the handoff is the
 source of truth.

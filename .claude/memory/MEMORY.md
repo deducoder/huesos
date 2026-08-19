@@ -49,7 +49,7 @@
 - [El color del texto no viaja con su contenedor](text-color-doesnt-follow-its-container.md) — `text-tinta` sobre el lienzo oscuro fue ilegible desde e7.2 y ningún gate lo vio.
 - [Un gate apuntado al error conocido no vigila la regla](a-gate-aimed-at-the-known-error-misses-the-rule.md) — el color fuera de tokens se coló en E7 y en E8 por la misma rendija.
 - [Un criterio no debe exigir que un archivo quede intacto](acceptance-criteria-shouldnt-name-an-untouched-file.md) — describe el medio, no el fin, y se rompe con el cambio legítimo.
-- [Puntero de la última sesión](session-pointer.md) — 2026-08-18: E9 cerrada y empujada, primer deploy en `bones.deducoder.com`; sin foco siguiente definido.
+- [Puntero de la última sesión](session-pointer.md) — 2026-08-18: historia s2 (micro-animaciones) cerrada y desplegada; sin foco siguiente definido.
 - [Patrón de deploy de deducoder.com](deducoder-com-deploy-pattern.md) — Cloudflare Worker con activos estáticos + Workers Custom Domain, nunca Pages.
 - [Un cambio de solo contenido puede saltar la ceremonia de historia](content-only-changes-can-skip-story-ceremony.md) — TDD siempre; scope/design/plan solo cuando el tamaño real lo justifica.
 - [No matar el dev server ni el túnel](never-kill-the-dev-server-or-tunnel.md) — el usuario prueba en su teléfono por ahí; los `vite preview` huérfanos son otra cosa.
