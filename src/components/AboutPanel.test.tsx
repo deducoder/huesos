@@ -54,6 +54,13 @@ describe('AboutPanel', () => {
     expect(screen.getByText(/no (es|será) responsable/i)).toBeInTheDocument()
   })
 
+  it('entra con transición, no de golpe', () => {
+    render(<AboutPanel onClose={vi.fn()} />)
+    const dialogo = screen.getByRole('dialog')
+    expect(dialogo).toHaveClass('duration-panel', 'ease-salida')
+    expect(dialogo.parentElement).toHaveClass('duration-base', 'ease-salida')
+  })
+
   it('al montar, el foco entra al panel', () => {
     render(<AboutPanel onClose={vi.fn()} />)
     expect(screen.getByRole('dialog')).toHaveFocus()

@@ -5,14 +5,22 @@ import { catalog } from '../data/catalog'
 import { FichasAccordion } from './FichasAccordion'
 
 describe('FichasAccordion', () => {
-  it('muestra 9 categorías colapsadas al montar, sin ninguna etiqueta de hueso visible', () => {
+  it('muestra 9 categorías colapsadas al montar, con su contenido inerte', () => {
     render(<FichasAccordion bones={catalog} onSelect={() => {}} />)
     const categorias = screen.getAllByRole('button', { expanded: false })
     expect(categorias).toHaveLength(9)
-    expect(screen.queryByRole('button', { name: /^fémur derecho$/i })).not.toBeInTheDocument()
+    // s2: el contenido queda siempre montado (necesario para animar
+    // apertura/cierre con `grid-template-rows`), pero `inert` mientras la
+    // categoría está colapsada — nada adentro es activable por teclado,
+    // aunque ya no esté ausente del DOM.
+    const contenidos = screen.getAllByTestId(/^fichas-contenido-/)
+    expect(contenidos).toHaveLength(9)
+    for (const contenido of contenidos) {
+      expect(contenido).toHaveAttribute('inert', '')
+    }
   })
 
-  it('expandir "Cráneo" muestra sus 2 subgrupos y sus 22 etiquetas', async () => {
+  it('expandir "Cráneo" quita `inert` de su contenido y muestra sus 2 subgrupos y sus 22 etiquetas', async () => {
     const user = userEvent.setup()
     render(<FichasAccordion bones={catalog} onSelect={() => {}} />)
 
@@ -20,11 +28,19 @@ describe('FichasAccordion', () => {
     expect(craneo).toHaveAttribute('aria-expanded', 'false')
     await user.click(craneo)
     expect(craneo).toHaveAttribute('aria-expanded', 'true')
+    expect(screen.getByTestId('fichas-contenido-Cráneo')).not.toHaveAttribute('inert')
 
     expect(screen.getByText(/neurocráneo/i)).toBeInTheDocument()
     expect(screen.getByText(/^cara$/i)).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /^hueso frontal$/i })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /^maxilar.*derecho$/i })).toBeInTheDocument()
+  })
+
+  it('la flecha de cada categoría anima su rotación', () => {
+    render(<FichasAccordion bones={catalog} onSelect={() => {}} />)
+    const craneo = screen.getByRole('button', { name: /^cráneo/i })
+    const flecha = craneo.querySelector('[aria-hidden="true"]')
+    expect(flecha).toHaveClass('transition-transform')
   })
 
   it('activar una etiqueta llama a onSelect con el id del hueso', async () => {

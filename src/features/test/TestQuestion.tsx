@@ -171,7 +171,10 @@ export function TestQuestion({
             </form>
           ) : (
             <div className="flex items-center gap-4">
-              <div role="status">
+              <div
+                role="status"
+                className="transition-opacity duration-base ease-salida starting:opacity-0"
+              >
                 <p className="font-semibold text-sm">
                   {resultado === 'correcto' ? 'Correcto' : 'Incorrecto'}
                 </p>
@@ -203,7 +206,7 @@ export function TestQuestion({
                     aria-pressed={seleccionId === opcion.id}
                     disabled={resultado !== 'pendiente'}
                     onClick={() => setSeleccionId(opcion.id)}
-                    className={`min-h-tactil rounded-full border-2 border-tinta px-2 font-semibold text-sm [hyphens:auto] ${CLASE_POR_ESTADO[estado]}`}
+                    className={`min-h-tactil rounded-full border-2 border-tinta px-2 font-semibold text-sm [hyphens:auto] transition-transform duration-rapida ease-salida active:scale-[0.97] ${CLASE_POR_ESTADO[estado]}`}
                   >
                     {estado === 'acierto' && '✓ '}
                     {estado === 'error' && '✗ '}
@@ -213,7 +216,10 @@ export function TestQuestion({
               })}
             </fieldset>
             {resultado !== 'pendiente' && (
-              <div role="status">
+              <div
+                role="status"
+                className="transition-opacity duration-base ease-salida starting:opacity-0"
+              >
                 <p className="font-semibold text-sm">
                   {resultado === 'correcto' ? 'Correcto' : 'Incorrecto'}
                 </p>

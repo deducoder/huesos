@@ -27,7 +27,11 @@ export function AboutPanel({ onClose }: { onClose: () => void }) {
   }, [onClose])
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center bg-tinta/40 md:items-center">
+    // s2: solo entrada — `onClose` desmonta este componente de inmediato
+    // (`App.tsx`, `{menuAbierto && <AboutPanel .../>}`), y animar la salida
+    // exigiría retrasar ese desmontaje. No se justifica para un panel que
+    // se abre pocas veces por sesión.
+    <div className="fixed inset-0 z-50 flex items-end justify-center bg-tinta/40 transition-opacity duration-base ease-salida starting:opacity-0 md:items-center">
       <div className="absolute inset-0" onClick={onClose} aria-hidden="true" />
       <div
         ref={panelRef}
@@ -35,7 +39,7 @@ export function AboutPanel({ onClose }: { onClose: () => void }) {
         aria-modal="true"
         aria-labelledby="about-panel-titulo"
         tabIndex={-1}
-        className="relative max-h-[85vh] w-full max-w-md overflow-y-auto rounded-tarjeta border-2 border-tinta bg-panel p-5 shadow-dura"
+        className="relative max-h-[85vh] w-full max-w-md overflow-y-auto rounded-tarjeta border-2 border-tinta bg-panel p-5 shadow-dura transition-[opacity,transform] duration-panel ease-salida starting:translate-y-4 starting:opacity-0"
       >
         <div className="flex items-start justify-between gap-3">
           <h2 id="about-panel-titulo" className="font-display font-semibold text-lg">

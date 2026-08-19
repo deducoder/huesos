@@ -426,7 +426,11 @@ test('el hueso más chico del modelo se sigue viendo, y el que no tiene geometr�
   // (ADR-006): su ficha explica la ausencia y no monta ninguna escena.
   await page.goto('/')
   await page.getByRole('button', { name: /^fichas$/i }).click()
-  await page.getByRole('button', { name: /^hioides/i }).click()
+  // s2: "Hioides" es una categoría de un solo hueso, y desde que su
+  // contenido queda siempre montado (para poder animar apertura/cierre) el
+  // botón de categoría y el del hueso comparten el mismo nombre accesible.
+  // `expanded` los distingue: solo el de categoría declara `aria-expanded`.
+  await page.getByRole('button', { name: /^hioides/i, expanded: false }).click()
   await page.getByRole('button', { name: 'hioides', exact: true }).click()
   await expect(page.getByText(/no está en el modelo 3D/i)).toBeVisible()
   await expect(page.locator('canvas')).toHaveCount(0)

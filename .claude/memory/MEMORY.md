@@ -71,3 +71,4 @@
 - [Una capa fuera del enrutamiento sigue necesitando un dueño de sincronía](a-layer-outside-routing-still-needs-a-sync-owner.md) — el panel de e9.7 no era un `Modo` a propósito, y por eso nadie lo cerraba ante un «atrás» real.
 - [El ADR se escribe cuando el diseño lo nombra, no en la revisión](write-the-adr-when-the-design-names-it-not-at-review.md) — si `design.md` ya declara la decisión con alternativas rechazadas, esperar a `quality-review` es un paso tarde.
 - [Un checkpoint E2E a mitad de épica vale su costo aunque no encuentre nada](a-mid-epic-e2e-checkpoint-earns-its-cost-even-at-zero-findings.md) — un verde ahí confirma la ausencia de regresión cruzada, no la asume.
+- [Siempre-montar para animar necesita rerun del E2E completo](always-mount-for-animation-needs-full-e2e-rerun.md) — un checklist manual acotado a lo nuevo no atrapa el locator viejo que asumía ausencia del DOM.

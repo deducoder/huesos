@@ -70,6 +70,13 @@ describe('la vista de exploración', () => {
     expect(screen.getByText('os femoris')).toBeInTheDocument()
   })
 
+  it('la tarjeta entra con transición al aparecer', async () => {
+    const user = userEvent.setup()
+    render(<ExploreViewConSuEstado />)
+    await user.click(screen.getByRole('button', { name: /^fémur derecho$/i }))
+    expect(screen.getByTestId('tarjeta-identidad')).toHaveClass('duration-panel', 'ease-salida')
+  })
+
   it('la tarjeta tiene un botón para cerrarla sin volver a tocar el hueso en la escena', async () => {
     const user = userEvent.setup()
     render(<ExploreViewConSuEstado />)
