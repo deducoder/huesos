@@ -60,6 +60,23 @@ describe('TestQuestion', () => {
     expect(screen.getAllByTestId('escena')).toHaveLength(1)
   })
 
+  it('el panel de resultado entra con transición también en el formato abierto', async () => {
+    const user = userEvent.setup()
+    render(
+      <TestQuestion
+        bones={catalog}
+        store={almacenFalso()}
+        renderScene={renderScenaSustituida}
+        answerFormat="open"
+        onCambiarModo={cambiarModoNoop}
+      />,
+    )
+    await user.type(screen.getByRole('textbox'), 'una respuesta cualquiera')
+    await user.click(screen.getByRole('button', { name: /responder/i }))
+
+    expect(screen.getByRole('status')).toHaveClass('duration-base', 'ease-salida')
+  })
+
   it('muestra "Correcto" en texto al responder bien', async () => {
     const user = userEvent.setup()
     render(
