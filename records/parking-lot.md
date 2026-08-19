@@ -608,3 +608,22 @@ nombre no son equivalentes sino incompatibles.
 `bone-name.ts` que lo implemente. Sin dueño en E9 — ninguna de las historias
 restantes toca `bone-name.ts`. Candidato natural: la épica de consolidación
 visual, o una historia propia si alguien usa control por voz antes.
+
+## 2026-08-18 · El panel de resultado del test está duplicado (s2)
+
+`TestQuestion.tsx` tiene dos bloques `role="status"` casi idénticos —uno para
+`answerFormat="open"`, otro para `"choice"`— que muestran "Correcto"/
+"Incorrecto" y, si falló, el nombre del hueso en ambas nomenclaturas. s2
+(micro-animaciones) agregó la misma clase de transición en los dos, sin
+resolver la duplicación.
+
+**Por qué importa:** un cambio futuro al panel de resultado (otra clase, otro
+texto, otra condición) tiene que aplicarse dos veces a mano; nada avisa si
+alguien lo olvida en uno de los dos lugares.
+
+**Por qué no se corrigió acá:** la duplicación es anterior a s2, que solo la
+tocó — extraer un componente compartido (`ResultadoTest`) excede el alcance
+de una historia sobre animaciones.
+
+**Destino:** una historia de refactor sobre `TestQuestion.tsx`, o el próximo
+`architecture-review` que toque este archivo.
